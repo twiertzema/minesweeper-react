@@ -1,0 +1,42 @@
+{
+  "name": "minesweeper-react",
+  "version": "1.0.0",
+  "description": "An XP Minesweeper clone using react (for fun)",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack -d",
+    "start:dev": "webpack-dev-server",
+    "prestart": "npm run build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/javasplice/minesweeper-react.git"
+  },
+  "author": "Travis Wiertzema",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/javasplice/minesweeper-react/issues"
+  },
+  "homepage": "https://github.com/javasplice/minesweeper-react#readme",
+  "dependencies": {
+    "babel-core": "^6.26.0",
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0",
+    "react-redux": "^5.0.6",
+    "redux": "^3.7.2",
+    "webpack": "^3.8.1"
+  },
+  "devDependencies": {
+    "babel-loader": "^7.1.2",
+    "babel-plugin-transform-react-jsx": "^6.24.1",
+    "babel-preset-env": "^1.6.1",
+    "classnames": "^2.2.5",
+    "css-loader": "^0.28.7",
+    "postcss-cssnext": "^3.0.2",
+    "postcss-load-config": "^1.2.0",
+    "postcss-loader": "^2.0.8",
+    "style-loader": "^0.19.0",
+    "webpack-dev-server": "^2.9.3"
+  }
+}
