@@ -24,6 +24,17 @@ app.get("/assets/bundle.js", (req, res) => {
     });
 });
 
+app.get("/favicon.ico", (req, res) => {
+    let icoFile = path.join(__dirname + "/src/i/smiley.ico");
+    res.sendFile(icoFile, err => {
+        if (err) {
+            next(err)
+        } else {
+            console.log(`Sent: ${icoFile}`);
+        }
+    });
+});
+
 app.listen(3000, () => {
     console.log("minesweeper server now listening on port 3000");
 });
