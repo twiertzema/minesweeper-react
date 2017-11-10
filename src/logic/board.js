@@ -2,7 +2,7 @@ export const CONFIG_EASY = { x: 9, y: 9, mines: 10 };
 export const CONFIG_INTERMEDIATE = { x: 16, y: 16, mines: 40 };
 export const CONFIG_EXPERT = { x: 30, y: 16, mines: 99 };
 
-const CELL_STATE = {
+export const CELL_STATE = {
     DEFAULT: 0,
     FLAGGED: 1,
     REVEALED: 2,
@@ -51,9 +51,11 @@ export function mainReducer(state = initialState, action) {
         case CONFIGURE_BOARD: {
             const config = action.configuration, board = [];
 
-            for (let i = 0; i < config.x; i++) {
+            for (let i = 0; i < config.y; i++) {
+                // Rows
                 board.push([]);
-                for (let j = 0; j < config.y; j++) {
+                for (let j = 0; j < config.x; j++) {
+                    // Columns
                     board[i].push({
                         state: CELL_STATE.DEFAULT,
                         hasMine: false

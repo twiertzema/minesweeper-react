@@ -9,6 +9,9 @@
     "prestart": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "browserslist": [
+    "last 3 Chrome versions"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/javasplice/minesweeper-react.git"
@@ -29,6 +32,7 @@
   },
   "devDependencies": {
     "babel-loader": "^7.1.2",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-plugin-transform-react-jsx": "^6.24.1",
     "babel-preset-env": "^1.6.1",
     "classnames": "^2.2.5",

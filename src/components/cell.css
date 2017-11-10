@@ -1,0 +1,11 @@
+.cell {
+    width: 30px;
+    height: 30px;
+    background-color: var(--bg-color-primary);
+    border-width: 3px;
+    border-style: solid;
+    border-color: var(--bg-color-light) var(--bg-color-dark) var(--bg-color-dark) var(--bg-color-light);
+}
+.cell:active {
+    border: none;
+}
