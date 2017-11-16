@@ -30,7 +30,7 @@ export default class CellComponent extends React.Component {
 
     render() {
         return (
-            <td className={styles.cell} onClick={this._handleClick}>
+            <td className={styles.cell} onClick={this._handleClick} draggable={false}>
                 { /* TODO: Add conditional logic to reflect state. */ }
             </td>
         );
