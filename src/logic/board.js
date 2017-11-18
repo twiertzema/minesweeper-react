@@ -35,16 +35,16 @@ export const revealCell = (x, y) => {
 
 const modifyCell = (board, x, y, mod) => {
     return [
-        ...board.slice(0, x),
+        ...board.slice(0, y),
         [
-            ...board[x].slice(0, y),
+            ...board[y].slice(0, x),
             {
-                ...board[x][y],
+                ...board[y][x],
                 ...mod
             },
-            ...board[x].slice(y + 1)
+            ...board[y].slice(x + 1)
         ],
-        ...board.slice(x + 1)
+        ...board.slice(y + 1)
     ];
 };
 
@@ -122,7 +122,6 @@ const placeMine = (config, board, x, y) => {
             if (i === 0 && j === 0) continue; // Skip the specified cell.
             if (isOutOfBounds(config, checkX, checkY)) continue;
 
-            console.log(`Incrementing mineCount of [${checkX}, ${checkY}]`);
             board[checkY][checkX].mineCount++;
         }
     }
