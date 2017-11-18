@@ -38,7 +38,6 @@ export default class CellComponent extends React.Component {
 
     handleClick(evt) {
         const { x, y, state, mineCount, hasMine, onClick } = this.props;
-        console.log(`Click; which: ${evt.which}, button: ${evt.button}`);
         if (evt.button === 0) {
             // Left click
             // TODO: If hasMine, enter lose state; else, reveal cell.

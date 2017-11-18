@@ -123,6 +123,28 @@ const placeMine = (config, board, x, y) => {
     cell.hasMine = true;
 
     // Update the mineCount of adjacent cells.
+    forEachAdjacentCell(config, board, x, y, cell => cell.mineCount++);
+    
+    return true;
+};
+
+/**
+ * Modifies the given board by revealing all empty and empty-adjacent cells
+ * connected to the given coordinates.
+ * @param {{x: number, y: number, mines: number}} config 
+ * @param {Cell[][]} board 
+ * @param {number} x 
+ * @param {number} y 
+ */
+const cascadeCells = (config, board, x, y) => {
+    forEachAdjacentCell(config, board, x, y, (cell, x, y) => {
+        if (cell.state === CELL_STATE.REVEALED) return;
+        cell.state = CELL_STATE.REVEALED;
+        if (cell.mineCount === 0) cascadeCells(config, board, x, y);
+    });
+};
+
+const forEachAdjacentCell = (config, board, x, y, action) => {
     for (let i = -1; i < 2; i++) {
         for (let j = -1; j < 2; j++) {
             const checkX = x + j;
@@ -130,12 +152,9 @@ const placeMine = (config, board, x, y) => {
 
             if (i === 0 && j === 0) continue; // Skip the specified cell.
             if (isOutOfBounds(config, checkX, checkY)) continue;
-
-            board[checkY][checkX].mineCount++;
+            action(board[checkY][checkX], checkX, checkY);
         }
     }
-    
-    return true;
 };
 
 export function mainReducer(state = initialState, action) {
@@ -146,12 +165,28 @@ export function mainReducer(state = initialState, action) {
                 config: action.configuration,
                 board: getBoard(action.configuration)
             };
-        case REVEAL_CELL:
-            return {
-                ...state,
-                board: modifyCell(state.board, action.x, action.y, { state: CELL_STATE.REVEALED })
-            };
-        case TURN_CELL_STATE:
+
+        case REVEAL_CELL: {
+            const { x, y } = action;
+            const cell = state.board[y][x];
+
+            let newBoard = modifyCell(state.board, x, y, { state: CELL_STATE.REVEALED });
+            if (cell.mineCount === 0) {
+                // Cell cascade.
+                cascadeCells(state.config, newBoard, x, y);
+                return {
+                    ...state,
+                    board: newBoard
+                };
+            } else {
+                return {
+                    ...state,
+                    board: newBoard
+                };
+            }
+        }
+
+        case TURN_CELL_STATE: {
             const { x, y } = action;
             const cell = state.board[y][x];
 
@@ -179,6 +214,8 @@ export function mainReducer(state = initialState, action) {
                 ...state,
                 board: modifyCell(state.board, action.x, action.y, { state: newState })
             };
+        }
+
         default:
             return state;
     }
