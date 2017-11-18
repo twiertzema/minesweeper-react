@@ -3,3 +3,7 @@
     --bg-color-light: #fff;
     --bg-color-dark: #888;
 }
+
+body {
+    font-family: monospace;
+}

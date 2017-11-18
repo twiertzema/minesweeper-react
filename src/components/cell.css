@@ -1,10 +1,16 @@
 .cell {
+    --border-size: 3px;
+
     width: 30px;
     height: 30px;
-    line-height: 30px;
+    box-sizing: border-box;
+    line-height: calc(30px - var(--border-size) * 2);
     text-align: center;
+    font-weight: bold;
+    font-size: 1.2em;
+    user-select: none;
     background-color: var(--bg-color-primary);
-    border-width: 3px;
+    border-width: var(--border-size);
     border-style: solid;
     border-color: var(--bg-color-light) var(--bg-color-dark) var(--bg-color-dark) var(--bg-color-light);
 }
