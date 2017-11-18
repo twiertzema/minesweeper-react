@@ -4,6 +4,7 @@
     width: 30px;
     height: 30px;
     box-sizing: border-box;
+    padding: 0;
     line-height: calc(30px - var(--border-size) * 2);
     text-align: center;
     font-weight: bold;
@@ -14,6 +15,6 @@
     border-style: solid;
     border-color: var(--bg-color-light) var(--bg-color-dark) var(--bg-color-dark) var(--bg-color-light);
 }
-.cell:active:hover, .cell.revealed {
+.cell:active:hover:not(.flagged), .cell.revealed {
     border: none;
 }

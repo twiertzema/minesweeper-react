@@ -17,6 +17,7 @@ const initialState = {
 
 const CONFIGURE_BOARD = "CONFIGURE_BOARD";
 const REVEAL_CELL = "REVEAL_CELL";
+const TURN_CELL_STATE = "TURN_CELL_STATE";
 
 export const configureBoard = (configuration) => {
     return {
@@ -26,11 +27,19 @@ export const configureBoard = (configuration) => {
 };
 
 export const revealCell = (x, y) => {
-   return {
-       type: REVEAL_CELL,
-       x,
-       y
-   }
+    return {
+        type: REVEAL_CELL,
+        x,
+        y
+    };
+};
+
+export const turnCellState = (x, y) => {
+    return {
+        type: TURN_CELL_STATE,
+        x,
+        y
+    };
 };
 
 const modifyCell = (board, x, y, mod) => {
@@ -141,6 +150,34 @@ export function mainReducer(state = initialState, action) {
             return {
                 ...state,
                 board: modifyCell(state.board, action.x, action.y, { state: CELL_STATE.REVEALED })
+            };
+        case TURN_CELL_STATE:
+            const { x, y } = action;
+            const cell = state.board[y][x];
+
+            if (cell.state === CELL_STATE.REVEALED) return state;
+
+            let newState = CELL_STATE.DEFAULT;
+
+            switch (cell.state) {
+                case CELL_STATE.DEFAULT:
+                    newState = CELL_STATE.FLAGGED;
+                    break;
+                case CELL_STATE.FLAGGED:
+                    // Check if question is enabled.
+                    newState = CELL_STATE.QUESTIONED;
+                    break;
+                case CELL_STATE.QUESTIONED:
+                    newState = CELL_STATE.DEFAULT;
+                    break;
+                case CELL_STATE.REVEALED:
+                default:
+                    break;
+            }
+
+            return {
+                ...state,
+                board: modifyCell(state.board, action.x, action.y, { state: newState })
             };
         default:
             return state;

@@ -23,6 +23,7 @@ const getCellTextColor = (mineCount) => {
  * - x: number
  * - y: number
  * - onClick: function
+ * - onRightClick: function
  * - mineCount: number
  * - hasMine: boolean
  * - state: CELL_STATE
@@ -32,20 +33,29 @@ export default class CellComponent extends React.Component {
         super(props);
 
         this._handleClick = this.handleClick.bind(this);
+        this._handleRightClick = this.handleRightClick.bind(this);
     }
 
     handleClick(evt) {
-        const { x, y, mineCount, hasMine, onClick } = this.props;
+        const { x, y, state, mineCount, hasMine, onClick } = this.props;
+        console.log(`Click; which: ${evt.which}, button: ${evt.button}`);
         if (evt.button === 0) {
             // Left click
             // TODO: If hasMine, enter lose state; else, reveal cell.
             console.log(`Cell clicked: ${JSON.stringify(this.props)}`);
-            onClick(x, y);
-        } else if (evt.button === 2) {
-            // Right click
-            // TODO: Cycle cell state.
-            console.log(`Cell state changed: ${JSON.stringify(this.props)}`);
+            if (state !== CELL_STATE.FLAGGED && state !== CELL_STATE.REVEALED) {
+                onClick(x, y);
+            }
         }
+    }
+    
+    handleRightClick(evt) {
+        console.log(`Cell right-clicked: ${JSON.stringify(this.props)}`);
+        evt.preventDefault();
+
+        const { x, y, onRightClick } = this.props;
+        onRightClick(x, y);
+        return false;
     }
 
     render() {
@@ -56,6 +66,7 @@ export default class CellComponent extends React.Component {
         switch (state) {
             case CELL_STATE.FLAGGED:
                 content = "F";
+                cellClassName = classnames(cellClassName, styles.flagged);
                 break;
             case CELL_STATE.QUESTIONED:
                 content = "?";
@@ -77,7 +88,12 @@ export default class CellComponent extends React.Component {
         }
 
         return (
-            <td className={cellClassName} onClick={this._handleClick} draggable={false}>
+            <td
+                className={cellClassName}
+                onClick={this._handleClick}
+                onContextMenu={this._handleRightClick}
+                draggable={false}
+            >
                 {content}
             </td>
         );

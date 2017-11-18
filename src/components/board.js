@@ -3,11 +3,11 @@ import { connect } from "react-redux";
 
 import styles from "./board.css";
 import Cell from "./cell";
-import { revealCell } from "../logic/board";
+import { revealCell, turnCellState } from "../logic/board";
 
 class BoardComponent extends React.Component {
     render() {
-        const { board, onCellClick } = this.props;
+        const { board, onCellClick, onCellRightClick } = this.props;
 
         const boardRows = board.map((row, i) => (
             <tr key={`row_${i}`}>
@@ -17,6 +17,7 @@ class BoardComponent extends React.Component {
                             x={j}
                             y={i}
                             onClick={onCellClick}
+                            onRightClick={onCellRightClick}
                             {...cell}
                         />
                     ))
@@ -42,7 +43,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        onCellClick: (x, y) => dispatch(revealCell(x, y))
+        onCellClick: (x, y) => dispatch(revealCell(x, y)),
+        onCellRightClick: (x, y) => dispatch(turnCellState(x, y))
     };
 };
 
