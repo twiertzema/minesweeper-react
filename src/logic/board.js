@@ -1,3 +1,4 @@
+const CONFIG_DEFAULT = { x: 0, y: 0, mines: 0 };
 export const CONFIG_EASY = { x: 9, y: 9, mines: 10 };
 export const CONFIG_INTERMEDIATE = { x: 16, y: 16, mines: 40 };
 export const CONFIG_EXPERT = { x: 30, y: 16, mines: 99 };
@@ -10,7 +11,8 @@ export const CELL_STATE = {
 };
 
 const initialState = {
-    board: []
+    config: CONFIG_DEFAULT,
+    board: [[]]
 };
 
 const CONFIGURE_BOARD = "CONFIGURE_BOARD";
@@ -46,29 +48,99 @@ const modifyCell = (board, x, y, mod) => {
     ];
 };
 
+/**
+ * @param {{ x: number, y: number, mines: number }} config 
+ * @param {number} x 
+ * @param {number} y 
+ * @returns {boolean} 
+ */
+const isOutOfBounds = (config, x, y) => {
+    return x < 0 || x >= config.x || y < 0 || y >= config.y;
+};
+
+/**
+ * Generates a new board based on the provided config.
+ * @param {{x: number, y: number, mines: number}} config 
+ * @returns {Cell[][]} New board.
+ */
+const getBoard = (config) => {
+    const { x: maxX, y: maxY, mines } = config;
+    const board = [];
+
+    // Rows
+    for (let y = 0; y < maxY; y++) {
+        // Columns
+        let column = [];
+        for (let x = 0; x < maxX; x++) {
+            column.push({
+                state: CELL_STATE.DEFAULT,
+                hasMine: false,
+                mineCount: 0
+            });
+        }
+        board.push(column);
+    }
+
+    let minesLeftToAssign = mines;
+    while (minesLeftToAssign > 0) {
+        let randX = Math.floor(Math.random() * maxX);
+        let randY = Math.floor(Math.random() * maxY);
+
+        if (isOutOfBounds(config, randX, randY)) continue;
+        if (placeMine(config, board, randX, randY)) minesLeftToAssign--;
+    }
+
+    return board;
+};
+
+/**
+ * Modifies the given board by placing a mine at the specified coordinates
+ * and incrementing the mineCount of adjacent cells.
+ * @param {{x: number, y: number, mines: number}} config 
+ * @param {Cell[][]} board 
+ * @param {number} x 
+ * @param {number} y 
+ * @returns {boolean} <code>true</code> if a modification took place; <code>false</code> otherwise.
+ */
+const placeMine = (config, board, x, y) => {
+    const cell = board[y][x];
+
+    if (cell == null) throw new Error(`No mine at [${y}, ${x}].`);
+
+    // If it already has a mine, do nothing.
+    if (cell.hasMine) return false;
+
+    console.log(`Placing mine at [${x}, ${y}]`);
+    cell.hasMine = true;
+
+    // Update the mineCount of adjacent cells.
+    for (let i = -1; i < 2; i++) {
+        for (let j = -1; j < 2; j++) {
+            const checkX = x + j;
+            const checkY = y + i;
+
+            if (i === 0 && j === 0) continue; // Skip the specified cell.
+            if (isOutOfBounds(config, checkX, checkY)) continue;
+
+            console.log(`Incrementing mineCount of [${checkX}, ${checkY}]`);
+            board[checkY][checkX].mineCount++;
+        }
+    }
+    
+    return true;
+};
+
 export function mainReducer(state = initialState, action) {
     switch(action.type) {
-        case CONFIGURE_BOARD: {
-            const config = action.configuration, board = [];
-
-            for (let i = 0; i < config.y; i++) {
-                // Rows
-                board.push([]);
-                for (let j = 0; j < config.x; j++) {
-                    // Columns
-                    board[i].push({
-                        state: CELL_STATE.DEFAULT,
-                        hasMine: false
-                    });
-                }
-            }
-
+        case CONFIGURE_BOARD:
             return {
-                board
+                ...state,
+                config: action.configuration,
+                board: getBoard(action.configuration)
             };
-        }
         case REVEAL_CELL:
             return {
+                ...state,
                 board: modifyCell(state.board, action.x, action.y, { state: CELL_STATE.REVEALED })
             };
         default:

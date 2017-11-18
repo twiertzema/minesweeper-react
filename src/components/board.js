@@ -10,7 +10,15 @@ class BoardComponent extends React.Component {
 
         const boardRows = board.map((row, i) => (
             <tr key={`row_${i}`}>
-                { row.map((cell, j) => <Cell key={`cell_${j}`} x={j} y={i} />) }
+                {
+                    row.map((cell, j) => (
+                        <Cell key={`cell_${j}`}
+                            x={j}
+                            y={i}
+                            {...cell}
+                        />
+                    ))
+                }
             </tr>
         ));
 
