@@ -16,5 +16,8 @@
     border-color: var(--bg-color-light) var(--bg-color-dark) var(--bg-color-dark) var(--bg-color-light);
 }
 .cell:active:hover:not(.flagged), .cell.revealed {
-    border: none;
+    --border-size-revealed: 1px;
+
+    border: var(--border-size-revealed) solid darkgrey;
+    line-height: calc(30px - var(--border-size-revealed) * 2);
 }
