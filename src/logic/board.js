@@ -12,6 +12,7 @@ export const CELL_STATE = {
 
 const initialState = {
     config: CONFIG_DEFAULT,
+    seeded: false,
     board: [[]]
 };
 
@@ -68,12 +69,12 @@ const isOutOfBounds = (config, x, y) => {
 };
 
 /**
- * Generates a new board based on the provided config.
+ * Generates a new blank board based on the provided config.
  * @param {{x: number, y: number, mines: number}} config 
  * @returns {Cell[][]} New board.
  */
 const getBoard = (config) => {
-    const { x: maxX, y: maxY, mines } = config;
+    const { x: maxX, y: maxY } = config;
     const board = [];
 
     // Rows
@@ -90,11 +91,25 @@ const getBoard = (config) => {
         board.push(column);
     }
 
+    return board;
+};
+
+/**
+ * Places mines on the given board, avoiding the specified seed coordinates.
+ * @param {{x: number, y: number, mines: number}} config
+ * @param {Cell[][]} board
+ * @param {number} x
+ * @param {number} y
+ */
+const placeMines = (config, board, x, y) => {
+    const { x: maxX, y: maxY, mines } = config;
+
     let minesLeftToAssign = mines;
     while (minesLeftToAssign > 0) {
         let randX = Math.floor(Math.random() * maxX);
         let randY = Math.floor(Math.random() * maxY);
 
+        if (randX === x && randY === y) continue; // Skip the seed cell.
         if (isOutOfBounds(config, randX, randY)) continue;
         if (placeMine(config, board, randX, randY)) minesLeftToAssign--;
     }
@@ -168,9 +183,13 @@ export function mainReducer(state = initialState, action) {
 
         case REVEAL_CELL: {
             const { x, y } = action;
-            const cell = state.board[y][x];
 
             let newBoard = modifyCell(state.board, x, y, { state: CELL_STATE.REVEALED });
+            if (!state.seeded) {
+                placeMines(state.config, newBoard, x, y);
+            }
+
+            const cell = newBoard[y][x];
             if (cell.mineCount === 0) {
                 // Cell cascade.
                 cascadeCells(state.config, newBoard, x, y);
@@ -181,6 +200,7 @@ export function mainReducer(state = initialState, action) {
             } else {
                 return {
                     ...state,
+                    seeded: true,
                     board: newBoard
                 };
             }
