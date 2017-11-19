@@ -8,7 +8,7 @@
     line-height: calc(30px - var(--border-size) * 2);
     text-align: center;
     font-weight: bold;
-    font-size: 1.2em;
+    font-size: 1.3em;
     user-select: none;
     background-color: var(--bg-color-primary);
     border-width: var(--border-size);
