@@ -176,7 +176,7 @@ export function mainReducer(state = initialState, action) {
     switch(action.type) {
         case CONFIGURE_BOARD:
             return {
-                ...state,
+                seeded: false,
                 config: action.configuration,
                 board: getBoard(action.configuration)
             };
@@ -190,11 +190,12 @@ export function mainReducer(state = initialState, action) {
             }
 
             const cell = newBoard[y][x];
-            if (cell.mineCount === 0) {
+            if (cell.mineCount === 0 && !cell.hasMine) {
                 // Cell cascade.
                 cascadeCells(state.config, newBoard, x, y);
                 return {
                     ...state,
+                    seeded: true,
                     board: newBoard
                 };
             } else {
