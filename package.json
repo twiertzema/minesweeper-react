@@ -37,6 +37,7 @@
     "babel-preset-env": "^1.6.1",
     "classnames": "^2.2.5",
     "css-loader": "^0.28.7",
+    "file-loader": "^1.1.5",
     "postcss-cssnext": "^3.0.2",
     "postcss-load-config": "^1.2.0",
     "postcss-loader": "^2.0.8",

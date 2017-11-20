@@ -21,3 +21,9 @@
     border: var(--border-size-revealed) solid darkgrey;
     line-height: calc(30px - var(--border-size-revealed) * 2);
 }
+
+.cell > img {
+    display: block;
+    margin: auto;
+    height: 80%;
+}

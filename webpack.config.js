@@ -26,6 +26,15 @@ module.exports = {
                     },
                     "postcss-loader"
                 ]
+            },
+            {
+                test: /\.(png|jpg|bmp)$/,
+                use: [
+                    {
+                        loader: "file-loader",
+                        options: {}
+                    }
+                ]
             }
         ]
     }

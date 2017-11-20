@@ -2,6 +2,7 @@ import React from "react";
 import classnames from "classnames";
 
 import { CELL_STATE } from "../logic/board";
+import FlagIcon from "../i/flag.png";
 import styles from "./cell.css";
 
 const getCellTextColor = (mineCount) => {
@@ -64,7 +65,7 @@ export default class CellComponent extends React.Component {
 
         switch (state) {
             case CELL_STATE.FLAGGED:
-                content = "F";
+                content = <img src={FlagIcon}/>;
                 cellClassName = classnames(cellClassName, styles.flagged);
                 break;
             case CELL_STATE.QUESTIONED:
