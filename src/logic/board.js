@@ -4,7 +4,7 @@
 /** @typedef {{config: Config, seeded: boolean, board: Board}} BoardState
 
 /** @type Config */
-const CONFIG_DEFAULT = { x: 0, y: 0, mines: 0 };
+export const CONFIG_DEFAULT = { x: 0, y: 0, mines: 0 };
 
 /** @type Config */
 export const CONFIG_EASY = { x: 9, y: 9, mines: 10 };
@@ -27,15 +27,15 @@ export const CELL_STATE = {
 };
 
 /** @type {BoardState} */
-const initialState = {
+export const defaultState = {
   config: CONFIG_DEFAULT,
   seeded: false,
   board: [ [] ]
 };
 
-const CONFIGURE_BOARD = 'CONFIGURE_BOARD';
-const REVEAL_CELL = 'REVEAL_CELL';
-const TURN_CELL_STATE = 'TURN_CELL_STATE';
+export const CONFIGURE_BOARD = 'CONFIGURE_BOARD';
+export const REVEAL_CELL = 'REVEAL_CELL';
+export const TURN_CELL_STATE = 'TURN_CELL_STATE';
 
 /**
  * Action creator for `CONFIGURE_BOARD`.
@@ -227,7 +227,7 @@ const forEachAdjacentCell = (config, board, x, y, action) => {
   }
 };
 
-export function mainReducer(state = initialState, action) {
+export function mainReducer(state = defaultState, action) {
   switch (action.type) {
     case CONFIGURE_BOARD:
       return {
