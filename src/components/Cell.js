@@ -34,14 +34,7 @@ const getCellTextColor = (mineCount) => {
 };
 
 export class Cell extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this._handleClick = this.handleClick.bind(this);
-    this._handleRightClick = this.handleRightClick.bind(this);
-  }
-
-  handleClick(evt) {
+  handleClick = (evt) => {
     const {
       // hasMine,
       // mineCount,
@@ -50,6 +43,7 @@ export class Cell extends React.Component {
       x,
       y
     } = this.props;
+
     if (evt.button === 0) {
       // Left click
       // TODO: If hasMine, enter lose state; else, reveal cell.
@@ -58,22 +52,34 @@ export class Cell extends React.Component {
         onClick(x, y);
       }
     }
-  }
+  };
 
-  handleRightClick(evt) {
+  handleRightClick = (evt) => {
     evt.preventDefault();
 
-    const { x, y, onRightClick } = this.props;
+    const {
+      onRightClick,
+      x,
+      y
+    } = this.props;
+
     onRightClick(x, y);
+
     return false;
-  }
+  };
 
   render() {
-    const { children, hasMine, mineCount, state } = this.props;
+    const {
+      children,
+      hasMine,
+      mineCount,
+      state
+    } = this.props;
+
     return (
       children({
-        handleClick: this._handleClick,
-        handleRightClick: this._handleRightClick,
+        handleClick: this.handleClick,
+        handleRightClick: this.handleRightClick,
         hasMine,
         mineCount,
         state
@@ -108,12 +114,14 @@ export const XPCell = ({ className, ...props }) => (
 
       switch (state) {
         case CELL_STATE.FLAGGED:
-          content = <img src={FlagIcon}/>;
+          content = <img src={FlagIcon} alt='flag' />;
           cellClassName = classnames('cell', 'flagged');
           break;
+
         case CELL_STATE.QUESTIONED:
           content = '?';
           break;
+
         case CELL_STATE.REVEALED:
           if (hasMine) {
             // TODO: Show mine icon.
@@ -125,6 +133,7 @@ export const XPCell = ({ className, ...props }) => (
           }
           cellClassName = classnames('cell', 'revealed');
           break;
+
         case CELL_STATE.DEFAULT:
         default:
           break;
