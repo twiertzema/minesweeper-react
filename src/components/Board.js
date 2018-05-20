@@ -4,9 +4,9 @@ import { connect } from 'react-redux';
 
 import { revealCell, turnCellState } from '../logic/board';
 
-import Cell from './cell';
+import Cell from './Cell';
 
-import './board.css';
+import './Board.css';
 
 class Board extends Component {
   render() {
