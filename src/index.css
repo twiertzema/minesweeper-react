@@ -1,9 +1,5 @@
-:root {
-    --bg-color-primary: #ccc;
-    --bg-color-light: #fff;
-    --bg-color-dark: #888;
-}
-
 body {
-    font-family: Lucida Console, monospace;
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
 }
