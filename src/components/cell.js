@@ -1,10 +1,15 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 import { CELL_STATE } from '../logic/board';
 import FlagIcon from '../i/flag.png';
 import './cell.css';
 
+/**
+ * @param {number} mineCount
+ * @returns {string}
+ */
 const getCellTextColor = (mineCount) => {
   switch (mineCount) {
     case 1:
@@ -28,17 +33,8 @@ const getCellTextColor = (mineCount) => {
   }
 };
 
-/**
- * Expects the following props:
- * - x: number
- * - y: number
- * - onClick: function
- * - onRightClick: function
- * - mineCount: number
- * - hasMine: boolean
- * - state: CELL_STATE
- */
-export default class CellComponent extends React.Component {
+
+export default class Cell extends React.Component {
   constructor(props) {
     super(props);
 
@@ -75,7 +71,7 @@ export default class CellComponent extends React.Component {
     switch (state) {
       case CELL_STATE.FLAGGED:
         content = <img src={FlagIcon}/>;
-        cellClassName = classnames(cellClassName, 'flagged');
+        cellClassName = classnames('cell', 'flagged');
         break;
       case CELL_STATE.QUESTIONED:
         content = '?';
@@ -89,7 +85,7 @@ export default class CellComponent extends React.Component {
             content = <span style={{ color: getCellTextColor(mineCount) }}>{mineCount}</span>;
           }
         }
-        cellClassName = classnames(cellClassName, 'revealed');
+        cellClassName = classnames('cell', 'revealed');
         break;
       case CELL_STATE.DEFAULT:
       default:
@@ -108,3 +104,13 @@ export default class CellComponent extends React.Component {
     );
   }
 }
+
+Cell.propTypes = {
+  hasMine: PropTypes.bool,
+  mineCount: PropTypes.number,
+  onClick: PropTypes.func,
+  onRightClick: PropTypes.func,
+  state: PropTypes.number,
+  x: PropTypes.number,
+  y: PropTypes.number
+};

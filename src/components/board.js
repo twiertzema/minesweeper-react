@@ -1,15 +1,16 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import { revealCell, turnCellState } from '../logic/board';
 
 import Cell from './cell';
 
-import styles from './board.css';
+import './board.css';
 
-class BoardComponent extends Component {
+class Board extends Component {
   render() {
-    const { board, onCellClick, onCellRightClick } = this.props;
+    const { board, revealCell, turnCellState } = this.props;
 
     const boardRows = board.map((row, i) => (
       <tr key={`row_${i}`}>
@@ -18,8 +19,8 @@ class BoardComponent extends Component {
             <Cell key={`cell_${j}`}
               x={j}
               y={i}
-              onClick={onCellClick}
-              onRightClick={onCellRightClick}
+              onClick={revealCell}
+              onRightClick={turnCellState}
               {...cell}
             />
           ))
@@ -37,6 +38,19 @@ class BoardComponent extends Component {
   }
 }
 
+Board.propTypes = {
+  // state
+  board: PropTypes.arrayOf(
+    PropTypes.arrayOf(
+      PropTypes.object
+    )
+  ),
+
+  // dispatch
+  revealCell: PropTypes.func.isRequired,
+  turnCellState: PropTypes.func.isRequired
+};
+
 const mapStateToProps = (state) => {
   return {
     board: state.board
@@ -45,12 +59,12 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onCellClick: (x, y) => dispatch(revealCell(x, y)),
-    onCellRightClick: (x, y) => dispatch(turnCellState(x, y))
+    revealCell: (x, y) => dispatch(revealCell(x, y)),
+    turnCellState: (x, y) => dispatch(turnCellState(x, y))
   };
 };
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(BoardComponent);
+)(Board);

@@ -1,8 +1,24 @@
+/** @typedef {{x: number, y: number, mines: number}} Config */
+/** @typedef {{state: number, hasMine: boolean, mineCount: number}} Cell */
+/** @typedef {Cell[][]} Board */
+/** @typedef {{config: Config, seeded: boolean, board: Board}} BoardState
+
+/** @type Config */
 const CONFIG_DEFAULT = { x: 0, y: 0, mines: 0 };
+
+/** @type Config */
 export const CONFIG_EASY = { x: 9, y: 9, mines: 10 };
+
+/** @type Config */
 export const CONFIG_INTERMEDIATE = { x: 16, y: 16, mines: 40 };
+
+/** @type Config */
 export const CONFIG_EXPERT = { x: 30, y: 16, mines: 99 };
 
+/**
+ * Enum for cell states
+ * @enum {number}
+ */
 export const CELL_STATE = {
   DEFAULT: 0,
   FLAGGED: 1,
@@ -10,6 +26,7 @@ export const CELL_STATE = {
   QUESTIONED: 4
 };
 
+/** @type {BoardState} */
 const initialState = {
   config: CONFIG_DEFAULT,
   seeded: false,
@@ -20,6 +37,11 @@ const CONFIGURE_BOARD = 'CONFIGURE_BOARD';
 const REVEAL_CELL = 'REVEAL_CELL';
 const TURN_CELL_STATE = 'TURN_CELL_STATE';
 
+/**
+ * Action creator for `CONFIGURE_BOARD`.
+ * @param {Config} configuration
+ * @returns {{type: string, configuration: Config}}
+ */
 export const configureBoard = (configuration) => {
   return {
     type: CONFIGURE_BOARD,
@@ -27,6 +49,12 @@ export const configureBoard = (configuration) => {
   };
 };
 
+/**
+ * Action creator for `REVEAL_CELL`.
+ * @param {number} x
+ * @param {number} y
+ * @returns {{type: string, x: number, y: number}}
+ */
 export const revealCell = (x, y) => {
   return {
     type: REVEAL_CELL,
@@ -35,6 +63,12 @@ export const revealCell = (x, y) => {
   };
 };
 
+/**
+ * Action creator for `TURN_CELL_STATE`.
+ * @param {number} x
+ * @param {number} y
+ * @returns {{type: string, x: number, y: number}}
+ */
 export const turnCellState = (x, y) => {
   return {
     type: TURN_CELL_STATE,
@@ -43,6 +77,14 @@ export const turnCellState = (x, y) => {
   };
 };
 
+/**
+ * Merges an update into the specified {@link Cell} in a {@link Board}.
+ * @param {Board} board
+ * @param {number} x
+ * @param {number} y
+ * @param {Object} mod
+ * @returns {Cell}
+ */
 const modifyCell = (board, x, y, mod) => {
   return [
     ...board.slice(0, y),
@@ -59,7 +101,7 @@ const modifyCell = (board, x, y, mod) => {
 };
 
 /**
- * @param {{ x: number, y: number, mines: number }} config
+ * @param {Config} config
  * @param {number} x
  * @param {number} y
  * @returns {boolean}
@@ -70,8 +112,8 @@ const isOutOfBounds = (config, x, y) => {
 
 /**
  * Generates a new blank board based on the provided config.
- * @param {{x: number, y: number, mines: number}} config
- * @returns {Cell[][]} New board.
+ * @param {Config} config
+ * @returns {Board} New board.
  */
 const getBoard = (config) => {
   const { x: maxX, y: maxY } = config;
@@ -96,8 +138,8 @@ const getBoard = (config) => {
 
 /**
  * Places mines on the given board, avoiding the specified seed coordinates.
- * @param {{x: number, y: number, mines: number}} config
- * @param {Cell[][]} board
+ * @param {Config} config
+ * @param {Board} board
  * @param {number} x
  * @param {number} y
  */
@@ -120,8 +162,8 @@ const placeMines = (config, board, x, y) => {
 /**
  * Modifies the given board by placing a mine at the specified coordinates
  * and incrementing the mineCount of adjacent cells.
- * @param {{x: number, y: number, mines: number}} config
- * @param {Cell[][]} board
+ * @param {Config} config
+ * @param {Board} board
  * @param {number} x
  * @param {number} y
  * @returns {boolean} <code>true</code> if a modification took place; <code>false</code> otherwise.
@@ -146,8 +188,8 @@ const placeMine = (config, board, x, y) => {
 /**
  * Modifies the given board by revealing all empty and empty-adjacent cells
  * connected to the given coordinates.
- * @param {{x: number, y: number, mines: number}} config
- * @param {Cell[][]} board
+ * @param {Config} config
+ * @param {Board} board
  * @param {number} x
  * @param {number} y
  */
@@ -159,6 +201,19 @@ const cascadeCells = (config, board, x, y) => {
   });
 };
 
+/**
+ * @callback forEachCell
+ * @param {Cell} cell
+ * @param {number} x
+ * @param {number} y
+ */
+/**
+ * @param {Config} config
+ * @param {Board} board
+ * @param {number} x
+ * @param {number} y
+ * @param {forEachCell} action
+ */
 const forEachAdjacentCell = (config, board, x, y, action) => {
   for (let i = -1; i < 2; i++) {
     for (let j = -1; j < 2; j++) {
