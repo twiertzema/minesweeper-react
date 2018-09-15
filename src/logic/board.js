@@ -30,19 +30,19 @@ export const CELL_STATE = {
 export const defaultState = {
   config: CONFIG_DEFAULT,
   seeded: false,
-  board: [ [] ]
+  board: [[]]
 };
 
-export const CONFIGURE_BOARD = 'CONFIGURE_BOARD';
-export const REVEAL_CELL = 'REVEAL_CELL';
-export const TURN_CELL_STATE = 'TURN_CELL_STATE';
+export const CONFIGURE_BOARD = "CONFIGURE_BOARD";
+export const REVEAL_CELL = "REVEAL_CELL";
+export const TURN_CELL_STATE = "TURN_CELL_STATE";
 
 /**
  * Action creator for `CONFIGURE_BOARD`.
  * @param {Config} configuration
  * @returns {{type: string, configuration: Config}}
  */
-export const configureBoard = (configuration) => {
+export const configureBoard = configuration => {
   return {
     type: CONFIGURE_BOARD,
     configuration
@@ -83,18 +83,18 @@ export const turnCellState = (x, y) => {
  * @param {number} x
  * @param {number} y
  * @param {Object} mod
- * @returns {Cell}
+ * @returns {Board}
  */
 const modifyCell = (board, x, y, mod) => {
   return [
     ...board.slice(0, y),
     [
-      ...board[ y ].slice(0, x),
+      ...board[y].slice(0, x),
       {
-        ...board[ y ][ x ],
+        ...board[y][x],
         ...mod
       },
-      ...board[ y ].slice(x + 1)
+      ...board[y].slice(x + 1)
     ],
     ...board.slice(y + 1)
   ];
@@ -115,7 +115,7 @@ const isOutOfBounds = (config, x, y) => {
  * @param {Config} config
  * @returns {Board} New board.
  */
-const getBoard = (config) => {
+const getBoard = config => {
   const { x: maxX, y: maxY } = config;
   const board = [];
 
@@ -169,7 +169,7 @@ const placeMines = (config, board, x, y) => {
  * @returns {boolean} <code>true</code> if a modification took place; <code>false</code> otherwise.
  */
 const placeMine = (config, board, x, y) => {
-  const cell = board[ y ][ x ];
+  const cell = board[y][x];
 
   if (cell == null) throw new Error(`No mine at [${y}, ${x}].`);
 
@@ -222,7 +222,7 @@ const forEachAdjacentCell = (config, board, x, y, action) => {
 
       if (i === 0 && j === 0) continue; // Skip the specified cell.
       if (isOutOfBounds(config, checkX, checkY)) continue;
-      action(board[ checkY ][ checkX ], checkX, checkY);
+      action(board[checkY][checkX], checkX, checkY);
     }
   }
 };
@@ -239,12 +239,14 @@ export function mainReducer(state = defaultState, action) {
     case REVEAL_CELL: {
       const { x, y } = action;
 
-      let newBoard = modifyCell(state.board, x, y, { state: CELL_STATE.REVEALED });
+      let newBoard = modifyCell(state.board, x, y, {
+        state: CELL_STATE.REVEALED
+      });
       if (!state.seeded) {
         placeMines(state.config, newBoard, x, y);
       }
 
-      const cell = newBoard[ y ][ x ];
+      const cell = newBoard[y][x];
       if (cell.mineCount === 0 && !cell.hasMine) {
         // Cell cascade.
         cascadeCells(state.config, newBoard, x, y);
@@ -264,7 +266,7 @@ export function mainReducer(state = defaultState, action) {
 
     case TURN_CELL_STATE: {
       const { x, y } = action;
-      const cell = state.board[ y ][ x ];
+      const cell = state.board[y][x];
 
       if (cell.state === CELL_STATE.REVEALED) return state;
 

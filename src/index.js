@@ -1,15 +1,15 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { createStore } from 'redux';
-import { Provider } from 'react-redux';
+import React from "react";
+import ReactDOM from "react-dom";
+import { createStore } from "redux";
+import { Provider } from "react-redux";
 
-import { mainReducer } from './logic/board';
-import bootstrapper from './bootstrapper';
-import registerServiceWorker from './registerServiceWorker';
+import { mainReducer } from "./logic/board";
+import bootstrapper from "./bootstrapper";
+import registerServiceWorker from "./registerServiceWorker";
 
-import './index.css';
+import "./index.css";
 
-import App from './App';
+import App from "./App";
 
 const store = createStore(mainReducer);
 
@@ -19,7 +19,7 @@ ReactDOM.render(
   <Provider store={store}>
     <App />
   </Provider>,
-  document.getElementById('root')
+  document.getElementById("root")
 );
 
 registerServiceWorker();

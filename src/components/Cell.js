@@ -1,40 +1,40 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import classnames from 'classnames';
+import React from "react";
+import PropTypes from "prop-types";
+import classnames from "classnames";
 
-import { CELL_STATE } from '../logic/board';
-import FlagIcon from '../i/flag.png';
-import './Cell.css';
+import { CELL_STATE } from "../logic/board";
+import FlagIcon from "../i/flag.png";
+import "./Cell.css";
 
 /**
  * @param {number} mineCount
  * @returns {string}
  */
-const getCellTextColor = (mineCount) => {
+const getCellTextColor = mineCount => {
   switch (mineCount) {
     case 1:
-      return '#0000fe';
+      return "#0000fe";
     case 2:
-      return '#017f01';
+      return "#017f01";
     case 3:
-      return '#fe0000';
+      return "#fe0000";
     case 4:
-      return '#010080';
+      return "#010080";
     case 5:
-      return '#810102';
+      return "#810102";
     case 6:
-      return '#007f7e';
+      return "#007f7e";
     case 7:
-      return '#fff';
+      return "#fff";
     case 8:
-      return '#808080';
+      return "#808080";
     default:
-      return '#000';
+      return "#000";
   }
 };
 
 export class Cell extends React.Component {
-  handleClick = (evt) => {
+  handleClick = evt => {
     const {
       // hasMine,
       // mineCount,
@@ -54,14 +54,10 @@ export class Cell extends React.Component {
     }
   };
 
-  handleRightClick = (evt) => {
+  handleRightClick = evt => {
     evt.preventDefault();
 
-    const {
-      onRightClick,
-      x,
-      y
-    } = this.props;
+    const { onRightClick, x, y } = this.props;
 
     onRightClick(x, y);
 
@@ -69,22 +65,15 @@ export class Cell extends React.Component {
   };
 
   render() {
-    const {
-      children,
+    const { children, hasMine, mineCount, state } = this.props;
+
+    return children({
+      handleClick: this.handleClick,
+      handleRightClick: this.handleRightClick,
       hasMine,
       mineCount,
       state
-    } = this.props;
-
-    return (
-      children({
-        handleClick: this.handleClick,
-        handleRightClick: this.handleRightClick,
-        hasMine,
-        mineCount,
-        state
-      })
-    );
+    });
   }
 }
 
@@ -109,29 +98,33 @@ export const XPCell = ({ className, ...props }) => (
         state
       } = props;
 
-      let cellClassName = 'cell';
+      let cellClassName = "cell";
       let content = null;
 
       switch (state) {
         case CELL_STATE.FLAGGED:
-          content = <img src={FlagIcon} alt='flag' />;
-          cellClassName = classnames('cell', 'flagged');
+          content = <img src={FlagIcon} alt="flag" />;
+          cellClassName = classnames("cell", "flagged");
           break;
 
         case CELL_STATE.QUESTIONED:
-          content = '?';
+          content = "?";
           break;
 
         case CELL_STATE.REVEALED:
           if (hasMine) {
             // TODO: Show mine icon.
-            content = 'X';
+            content = "X";
           } else {
             if (mineCount > 0) {
-              content = <span style={{ color: getCellTextColor(mineCount) }}>{mineCount}</span>;
+              content = (
+                <span style={{ color: getCellTextColor(mineCount) }}>
+                  {mineCount}
+                </span>
+              );
             }
           }
-          cellClassName = classnames('cell', 'revealed');
+          cellClassName = classnames("cell", "revealed");
           break;
 
         case CELL_STATE.DEFAULT:

@@ -4,31 +4,29 @@ import {
   CONFIG_INTERMEDIATE,
   CONFIG_EXPERT,
   CELL_STATE,
-
   CONFIGURE_BOARD,
-
   defaultState,
   mainReducer
-} from './board';
+} from "./board";
 
-it('should return the default state if `state` is undefined', () => {
+it("should return the default state if `state` is undefined", () => {
   const result = mainReducer(undefined, {});
   expect(result).toBe(defaultState);
 });
 
-it('should return the current state if action type is unrecognized', () => {
+it("should return the current state if action type is unrecognized", () => {
   const stateBefore = {
     ...defaultState
   };
   const action = {
-    type: 'bogus_action'
+    type: "bogus_action"
   };
   const result = mainReducer(stateBefore, action);
   expect(result).toBe(stateBefore);
 });
 
-describe('CONFIGURE_BOARD', () => {
-  it('should configure for CONFIG_DEFAULT', () => {
+describe("CONFIGURE_BOARD", () => {
+  it("should configure for CONFIG_DEFAULT", () => {
     const stateBefore = {
       ...defaultState
     };
@@ -44,7 +42,7 @@ describe('CONFIGURE_BOARD', () => {
     });
   });
 
-  it('should configure for CONFIG_EASY', () => {
+  it("should configure for CONFIG_EASY", () => {
     const stateBefore = {
       ...defaultState
     };
@@ -53,10 +51,10 @@ describe('CONFIGURE_BOARD', () => {
       configuration: CONFIG_EASY
     };
     const result = mainReducer(stateBefore, action);
-    expect(result).toMatchSnapshot()
+    expect(result).toMatchSnapshot();
   });
 
-  it('should configure for CONFIG_INTERMEDIATE', () => {
+  it("should configure for CONFIG_INTERMEDIATE", () => {
     const stateBefore = {
       ...defaultState
     };
@@ -65,10 +63,10 @@ describe('CONFIGURE_BOARD', () => {
       configuration: CONFIG_INTERMEDIATE
     };
     const result = mainReducer(stateBefore, action);
-    expect(result).toMatchSnapshot()
+    expect(result).toMatchSnapshot();
   });
 
-  it('should configure for CONFIG_EXPERT', () => {
+  it("should configure for CONFIG_EXPERT", () => {
     const stateBefore = {
       ...defaultState
     };
@@ -77,7 +75,7 @@ describe('CONFIGURE_BOARD', () => {
       configuration: CONFIG_EXPERT
     };
     const result = mainReducer(stateBefore, action);
-    expect(result).toMatchSnapshot()
+    expect(result).toMatchSnapshot();
   });
 
   // TODO: REVEAL_CELL

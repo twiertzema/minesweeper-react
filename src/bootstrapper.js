@@ -1,5 +1,5 @@
-import { CONFIG_EASY, configureBoard } from './logic/board';
+import { CONFIG_EASY, configureBoard } from "./logic/board";
 
-export default (store) => {
+export default store => {
   store.dispatch(configureBoard(CONFIG_EASY));
 };

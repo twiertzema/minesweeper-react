@@ -1,12 +1,12 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
 
-import { revealCell, turnCellState } from '../logic/board';
+import { revealCell, turnCellState } from "../logic/board";
 
-import Cell from './Cell';
+import Cell from "./Cell";
 
-import './Board.css';
+import "./Board.css";
 
 class Board extends Component {
   render() {
@@ -14,25 +14,22 @@ class Board extends Component {
 
     const boardRows = board.map((row, i) => (
       <tr key={`row_${i}`}>
-        {
-          row.map((cell, j) => (
-            <Cell key={`cell_${j}`}
-              x={j}
-              y={i}
-              onClick={revealCell}
-              onRightClick={turnCellState}
-              {...cell}
-            />
-          ))
-        }
+        {row.map((cell, j) => (
+          <Cell
+            key={`cell_${j}`}
+            x={j}
+            y={i}
+            onClick={revealCell}
+            onRightClick={turnCellState}
+            {...cell}
+          />
+        ))}
       </tr>
     ));
 
     return (
-      <table className='board'>
-        <tbody>
-          {boardRows}
-        </tbody>
+      <table className="board">
+        <tbody>{boardRows}</tbody>
       </table>
     );
   }
@@ -40,24 +37,20 @@ class Board extends Component {
 
 Board.propTypes = {
   // state
-  board: PropTypes.arrayOf(
-    PropTypes.arrayOf(
-      PropTypes.object
-    )
-  ),
+  board: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)),
 
   // dispatch
   revealCell: PropTypes.func.isRequired,
   turnCellState: PropTypes.func.isRequired
 };
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return {
     board: state.board
   };
 };
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
   return {
     revealCell: (x, y) => dispatch(revealCell(x, y)),
     turnCellState: (x, y) => dispatch(turnCellState(x, y))
