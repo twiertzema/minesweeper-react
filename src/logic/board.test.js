@@ -1,13 +1,13 @@
+import seedrandom from "seedrandom";
+
 import {
+  CELL_STATE,
   CONFIG_DEFAULT,
   CONFIG_EASY,
   CONFIG_INTERMEDIATE,
-  CONFIG_EXPERT,
-  CELL_STATE,
-  CONFIGURE_BOARD,
-  defaultState,
-  mainReducer
-} from "./board";
+  CONFIG_EXPERT
+} from "../lib/constants";
+import { CONFIGURE_BOARD, defaultState, mainReducer } from "./board";
 
 it("should return the default state if `state` is undefined", () => {
   const result = mainReducer(undefined, {});
@@ -77,7 +77,21 @@ describe("CONFIGURE_BOARD", () => {
     const result = mainReducer(stateBefore, action);
     expect(result).toMatchSnapshot();
   });
-
-  // TODO: REVEAL_CELL
-  // TODO: TURN_CELL_STATE
 });
+
+describe("REVEAL_CELL", () => {
+  const __originalRandom = Math.random;
+  beforeEach(() => {
+    global.Math.random = new seedrandom("minesweeper-react");
+  });
+
+  afterEach(() => {
+    global.Math.random = __originalRandom;
+  });
+
+  it("should place mines if the board hasn't been seeded yet", () => {
+    expect(true).toBe(true);
+  });
+});
+
+// TODO: TURN_CELL_STATE

@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import classnames from "classnames";
 
-import { CELL_STATE } from "../logic/board";
+import { CELL_STATE } from "../lib/constants";
 import FlagIcon from "../i/flag.png";
 import "./Cell.css";
 
@@ -11,6 +11,7 @@ import "./Cell.css";
  * @returns {string}
  */
 const getCellTextColor = mineCount => {
+  // TODO: Extract into CSS classnames that use global CSS vars.
   switch (mineCount) {
     case 1:
       return "#0000fe";
