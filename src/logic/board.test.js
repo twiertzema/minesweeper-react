@@ -79,6 +79,7 @@ describe("CONFIGURE_BOARD", () => {
   });
 });
 
+/*
 describe("REVEAL_CELL", () => {
   const __originalRandom = Math.random;
   beforeEach(() => {
@@ -93,5 +94,6 @@ describe("REVEAL_CELL", () => {
     expect(true).toBe(true);
   });
 });
+*/
 
 // TODO: TURN_CELL_STATE
