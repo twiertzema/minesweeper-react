@@ -8,22 +8,26 @@ import {
   CONFIG_INTERMEDIATE
 } from "./constants";
 import {
+  cascadeCells,
   forEachAdjacentCell,
   getBoard,
   isConfigValid,
   isOutOfBounds,
+  modifyCell,
   placeMine,
   placeMines,
   InvalidConfigError,
   OutOfBoundsError
 } from "./utils";
+import { turnCellState } from "../logic/board";
 
 const testConfig = { x: 13, y: 13, mines: 13 };
 let __defaultBoard = getBoard(testConfig);
 const cloneBoard = board => board.map(row => row.map(cell => ({ ...cell })));
 
 const __originalRandom = Math.random;
-const seedRandom = () => (global.Math.random = seedrandom("minesweeper-react"));
+const seedRandom = (seed = "minesweeper-react") =>
+  (global.Math.random = seedrandom(seed));
 const restoreRandom = () => (global.Math.random = __originalRandom);
 const seededMineCoords = [
   { x: 0, y: 3 },
@@ -575,9 +579,20 @@ describe("placeMines", () => {
     expect(result0).toEqual(result1);
   });
 
-  it("should randomly place mines on the board, avoiding the seed coordinates", () => {
+  it("should skip the seed cell", () => {
     const x = 4;
-    const y = 4;
+    const y = 7;
+
+    // Seed random with a pre-determined value to try to place a mine on the seed cell.
+    seedRandom(1401);
+    placeMines(testConfig, testBoard, x, y);
+
+    expect(testBoard[y][x].hasMine).toBe(false);
+  });
+
+  it("should randomly place mines on the board", () => {
+    const x = 4;
+    const y = 7;
 
     placeMines(testConfig, testBoard, x, y);
 
@@ -588,13 +603,11 @@ describe("placeMines", () => {
         else expect(cell.hasMine).toBe(false);
       })
     );
-
-    expect(testBoard[y][x].hasMine).toBe(false);
   });
 
   it("should correctly add the `mineCount` of the cells adjacent to mines", () => {
     const x = 4;
-    const y = 4;
+    const y = 7;
 
     placeMines(testConfig, testBoard, x, y);
 
@@ -622,6 +635,82 @@ describe("placeMines", () => {
 
   it("should throw an OutOfBoundsError for out of bounds coordinates", () => {
     expect(() => placeMines(testConfig, testBoard, 1337, 1337)).toThrowError(
+      OutOfBoundsError
+    );
+  });
+});
+
+describe("cascadeCells", () => {
+  let testBoard = getBoard(testConfig);
+
+  beforeEach(() => {
+    seedRandom();
+  });
+
+  afterEach(() => {
+    testBoard = cloneBoard(__defaultBoard);
+    restoreRandom();
+  });
+
+  it("should reveal all empty and empty-adjacent cells connected to the specified empty coordinate", () => {
+    placeMines(testConfig, testBoard, 4, 7);
+    cascadeCells(testConfig, testBoard, 0, 0);
+
+    const seededReveals = [
+      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      [0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    ];
+
+    testBoard.forEach((row, j) =>
+      row.forEach((cell, i) =>
+        expect(cell.state).toBe(
+          seededReveals[j][i] ? CELL_STATE.REVEALED : CELL_STATE.DEFAULT
+        )
+      )
+    );
+  });
+
+  it("shouldn't cascade if the target cell is not empty", () => {
+    const x = 4;
+    const y = 7;
+
+    placeMines(testConfig, testBoard, x, y);
+
+    const boardBefore = cloneBoard(testBoard);
+
+    cascadeCells(testConfig, testBoard, 1, 3);
+
+    expect(testBoard).toEqual(boardBefore);
+  });
+
+  it("should throw an InvalidConfigError for an invalid config", () => {
+    expect(() => cascadeCells(undefined, testBoard, 5, 5)).toThrowError(
+      InvalidConfigError
+    );
+    expect(() => cascadeCells(null, testBoard, 5, 5)).toThrowError(
+      InvalidConfigError
+    );
+    expect(() => cascadeCells({}, testBoard, 5, 5)).toThrowError(
+      InvalidConfigError
+    );
+    expect(() =>
+      cascadeCells({ x: -1, y: 42, mines: 13 }, testBoard, 5, 5)
+    ).toThrowError(InvalidConfigError);
+  });
+
+  it("should throw an OutOfBoundsError for out of bounds coordinates", () => {
+    expect(() => cascadeCells(testConfig, testBoard, 1337, 1337)).toThrowError(
       OutOfBoundsError
     );
   });

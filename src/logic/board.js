@@ -1,4 +1,9 @@
-import { cascadeCells, getBoard, modifyCell, placeMines } from "../lib/utils";
+import {
+  cascadeCells,
+  getBoard,
+  placeMines,
+  OutOfBoundsError
+} from "../lib/utils";
 import { CELL_STATE, CONFIG_DEFAULT } from "../lib/constants";
 
 /**
@@ -59,6 +64,29 @@ export const turnCellState = (x, y) => {
   };
 };
 
+/**
+ * Merges an update into the specified {@link Cell} in a {@link Board}.
+ * @param {Board} board
+ * @param {number} x
+ * @param {number} y
+ * @param {Object} mod
+ * @returns {Board} A _new_ board.
+ * @throws {OutOfBoundsError}
+ */
+export const modifyCell = (board, x, y, mod) => {
+  if (!board[y][x]) throw new OutOfBoundsError(x, y);
+  return board.map((row, j) => {
+    if (j !== y) return row;
+    return row.map((cell, i) => {
+      if (i !== x) return cell;
+      return {
+        ...cell,
+        ...mod
+      };
+    });
+  });
+};
+
 export function mainReducer(state = defaultState, action) {
   switch (action.type) {
     case CONFIGURE_BOARD:
@@ -75,7 +103,7 @@ export function mainReducer(state = defaultState, action) {
         state: CELL_STATE.REVEALED
       });
       if (!state.seeded) {
-        // TODO: Split this out into a different action so this action is idempotent.
+        // TODO: Split this out into a different action so this one is idempotent.
         placeMines(state.config, newBoard, x, y);
       }
 

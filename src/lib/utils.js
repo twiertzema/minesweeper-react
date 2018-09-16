@@ -171,8 +171,17 @@ export const placeMines = (config, board, seedX, seedY) => {
     let randX = Math.floor(Math.random() * maxX);
     let randY = Math.floor(Math.random() * maxY);
 
-    if (randX === seedX && randY === seedY) continue; // Skip the seed cell.
-    if (isOutOfBounds(config, randX, randY)) continue;
+    if (randX === seedX && randY === seedY) continue;
+    if (isOutOfBounds(config, randX, randY)) {
+      // Should be impossible...
+      console.warn("Tried to place mine out of bounds!", {
+        config,
+        board,
+        seedX,
+        seedY
+      });
+      continue;
+    }
     if (placeMine(config, board, randX, randY)) minesLeftToAssign--;
   }
 
@@ -186,32 +195,29 @@ export const placeMines = (config, board, seedX, seedY) => {
  * @param {Board} board
  * @param {number} x
  * @param {number} y
+ * @throws {InvalidConfigError}
+ * @throws {OutOfBoundsError}
  */
 export const cascadeCells = (config, board, x, y) => {
-  forEachAdjacentCell(config, board, x, y, (cell, _x, _y) => {
-    if (cell.state === CELL_STATE.REVEALED) return;
-    cell.state = CELL_STATE.REVEALED;
-    if (cell.mineCount === 0) cascadeCells(config, board, _x, _y);
-  });
+  if (!isConfigValid(config)) throw new InvalidConfigError(config);
+  if (isOutOfBounds(config, x, y)) throw new OutOfBoundsError(x, y);
+
+  // If the target is empty, begin the recursion.
+  if (board[y][x].mineCount === 0) _cascadeCells(config, board, x, y);
 };
 
 /**
- * Merges an update into the specified {@link Cell} in a {@link Board}.
+ * Internal recursion callback for {@link cascadeCells}.
+ * @param {Config} config
  * @param {Board} board
  * @param {number} x
  * @param {number} y
- * @param {Object} mod
- * @returns {Board}
+ * @private
  */
-export const modifyCell = (board, x, y, mod) => {
-  return board.map((row, i) => {
-    if (i !== y) return row;
-    return row.map((cell, i) => {
-      if (i !== x) return cell;
-      return {
-        ...cell,
-        ...mod
-      };
-    });
+const _cascadeCells = (config, board, x, y) => {
+  forEachAdjacentCell(config, board, x, y, (cell, _x, _y) => {
+    if (cell.state === CELL_STATE.REVEALED) return;
+    cell.state = CELL_STATE.REVEALED;
+    if (cell.mineCount === 0) _cascadeCells(config, board, _x, _y);
   });
 };
