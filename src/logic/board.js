@@ -1,6 +1,13 @@
 import { cascadeCells, getBoard, modifyCell, placeMines } from "../lib/utils";
 import { CELL_STATE, CONFIG_DEFAULT } from "../lib/constants";
 
+/**
+ * @typedef {Object} BoardState
+ * @property {Config} config
+ * @property {boolean} seeded
+ * @property {Board} board
+ */
+
 /** @type {BoardState} */
 export const defaultState = {
   config: CONFIG_DEFAULT,

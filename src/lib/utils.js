@@ -1,5 +1,6 @@
 import { CELL_STATE } from "./constants";
 
+/** Indicates that the supplied configuration is not valid. */
 export class InvalidConfigError extends Error {
   constructor(...params) {
     super("invalid confifg", ...params);
@@ -10,6 +11,7 @@ export class InvalidConfigError extends Error {
   }
 }
 
+/** Indicates that the supplied coordinates are out of bounds for the given board. */
 export class OutOfBoundsError extends Error {
   constructor(...params) {
     super("out of bounds", ...params);
@@ -50,11 +52,10 @@ export const isConfigValid = config => {
  * @param {number} x
  * @param {number} y
  * @returns {boolean}
+ * @throws {InvalidConfigError}
  */
 export const isOutOfBounds = (config, x, y) => {
-  if (!isConfigValid(config)) {
-    throw new InvalidConfigError(config);
-  }
+  if (!isConfigValid(config)) throw new InvalidConfigError(config);
   return x < 0 || x >= config.x || y < 0 || y >= config.y;
 };
 
@@ -62,12 +63,12 @@ export const isOutOfBounds = (config, x, y) => {
  * Generates a new blank board based on the provided config.
  * @param {Config} config
  * @returns {Board} New board.
+ * @throws {InvalidConfigError}
  */
 export const getBoard = config => {
+  if (!isConfigValid(config)) throw new InvalidConfigError(config);
+
   const board = [];
-  if (!isConfigValid(config)) {
-    throw new InvalidConfigError(config);
-  }
 
   const { x: maxX, y: maxY } = config;
 
@@ -100,14 +101,12 @@ export const getBoard = config => {
  * @param {number} x
  * @param {number} y
  * @param {forEachCell} action
+ * @throws {InvalidConfigError}
+ * @throws {OutOfBoundsError}
  */
 export const forEachAdjacentCell = (config, board, x, y, action) => {
-  if (!isConfigValid(config)) {
-    throw new InvalidConfigError(config);
-  }
-  if (isOutOfBounds(config, x, y)) {
-    throw new OutOfBoundsError(x, y);
-  }
+  if (!isConfigValid(config)) throw new InvalidConfigError(config);
+  if (isOutOfBounds(config, x, y)) throw new OutOfBoundsError(x, y);
 
   for (let i = -1; i < 2; i++) {
     for (let j = -1; j < 2; j++) {
@@ -128,17 +127,20 @@ export const forEachAdjacentCell = (config, board, x, y, action) => {
  * @param {Board} board
  * @param {number} x
  * @param {number} y
- * @returns {boolean} <code>true</code> if a modification took place; <code>false</code> otherwise.
+ * @returns {boolean} `true` if a modification took place; `false` otherwise.
+ * @throws {InvalidConfigError}
+ * @throws {OutOfBoundsError}
  */
 export const placeMine = (config, board, x, y) => {
-  const cell = board[y][x];
+  if (!isConfigValid(config)) throw new InvalidConfigError(config);
+  if (isOutOfBounds(config, x, y)) throw new OutOfBoundsError(x, y);
 
-  if (cell == null) throw new Error(`No mine at [${y}, ${x}].`);
+  const cell = board[y][x];
 
   // If it already has a mine, do nothing.
   if (cell.hasMine) return false;
 
-  console.log(`Placing mine at [${x}, ${y}]`);
+  // console.log(`Placing mine at [${x}, ${y}]`);
   cell.hasMine = true;
 
   // Update the mineCount of adjacent cells.
@@ -148,13 +150,20 @@ export const placeMine = (config, board, x, y) => {
 };
 
 /**
- * Places mines on the given board, avoiding the specified seed coordinates.
+ * Randomly places mines on the given board, avoiding the specified seed coordinates.
  * @param {Config} config
  * @param {Board} board
- * @param {number} x
- * @param {number} y
+ * @param {number} seedX
+ * @param {number} seedY
+ * @returns {Board} Modified `board` with randomly placed mines.
+ * @throws {InvalidConfigError}
+ * @throws {OutOfBoundsError}
  */
-export const placeMines = (config, board, x, y) => {
+export const placeMines = (config, board, seedX, seedY) => {
+  if (!isConfigValid(config)) throw new InvalidConfigError(config);
+  if (isOutOfBounds(config, seedX, seedY))
+    throw new OutOfBoundsError(seedX, seedY);
+
   const { x: maxX, y: maxY, mines } = config;
 
   let minesLeftToAssign = mines;
@@ -162,7 +171,7 @@ export const placeMines = (config, board, x, y) => {
     let randX = Math.floor(Math.random() * maxX);
     let randY = Math.floor(Math.random() * maxY);
 
-    if (randX === x && randY === y) continue; // Skip the seed cell.
+    if (randX === seedX && randY === seedY) continue; // Skip the seed cell.
     if (isOutOfBounds(config, randX, randY)) continue;
     if (placeMine(config, board, randX, randY)) minesLeftToAssign--;
   }
@@ -179,10 +188,10 @@ export const placeMines = (config, board, x, y) => {
  * @param {number} y
  */
 export const cascadeCells = (config, board, x, y) => {
-  forEachAdjacentCell(config, board, x, y, (cell, x, y) => {
+  forEachAdjacentCell(config, board, x, y, (cell, _x, _y) => {
     if (cell.state === CELL_STATE.REVEALED) return;
     cell.state = CELL_STATE.REVEALED;
-    if (cell.mineCount === 0) cascadeCells(config, board, x, y);
+    if (cell.mineCount === 0) cascadeCells(config, board, _x, _y);
   });
 };
 

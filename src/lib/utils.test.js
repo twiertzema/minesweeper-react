@@ -1,3 +1,5 @@
+import seedrandom from "seedrandom";
+
 import {
   CELL_STATE,
   CONFIG_DEFAULT,
@@ -11,11 +13,48 @@ import {
   isConfigValid,
   isOutOfBounds,
   placeMine,
+  placeMines,
   InvalidConfigError,
   OutOfBoundsError
 } from "./utils";
 
 const testConfig = { x: 13, y: 13, mines: 13 };
+let __defaultBoard = getBoard(testConfig);
+const cloneBoard = board => board.map(row => row.map(cell => ({ ...cell })));
+
+const __originalRandom = Math.random;
+const seedRandom = () => (global.Math.random = seedrandom("minesweeper-react"));
+const restoreRandom = () => (global.Math.random = __originalRandom);
+const seededMineCoords = [
+  { x: 0, y: 3 },
+  { x: 1, y: 4 },
+  { x: 2, y: 4 },
+  { x: 2, y: 6 },
+  { x: 3, y: 7 },
+  { x: 5, y: 4 },
+  { x: 7, y: 5 },
+  { x: 7, y: 6 },
+  { x: 7, y: 12 },
+  { x: 8, y: 7 },
+  { x: 8, y: 8 },
+  { x: 9, y: 4 },
+  { x: 12, y: 5 }
+];
+const seededMineCounts = [
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [1, 3, 2, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0],
+  [2, 2, 1, 1, 1, 0, 2, 1, 2, 0, 1, 1, 1],
+  [1, 3, 3, 2, 1, 1, 3, 1, 3, 1, 1, 1, 0],
+  [0, 1, 1, 2, 1, 0, 2, 2, 3, 1, 0, 1, 1],
+  [0, 1, 2, 1, 1, 0, 1, 3, 2, 2, 0, 0, 0],
+  [0, 0, 1, 1, 1, 0, 0, 2, 1, 2, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0]
+];
 
 describe("isConfigValid", () => {
   it("should return `true` for a valid custom config`", () => {
@@ -437,28 +476,34 @@ describe("forEachAdjacentCell", () => {
 });
 
 describe("placeMine", () => {
+  let testBoard = getBoard(testConfig);
+
+  afterEach(() => {
+    testBoard = cloneBoard(__defaultBoard);
+  });
+
   it("should set `hasMine` and nothing else on the specified cell", () => {
-    const testBoard = getBoard(testConfig);
     const x = 4;
     const y = 7;
 
     const cellBefore = { ...testBoard[y][x] };
 
-    placeMine(testConfig, testBoard, x, y);
+    const result = placeMine(testConfig, testBoard, x, y);
 
+    expect(result).toBe(true);
     expect(testBoard[y][x]).toEqual({
       ...cellBefore,
       hasMine: true
     });
   });
 
-  it("should set increment the `mineCount` of adjacent cells", () => {
-    const testBoard = getBoard(testConfig);
+  it("should increment the `mineCount` of adjacent cells", () => {
     const x = 4;
     const y = 7;
 
-    placeMine(testConfig, testBoard, x, y);
+    const result = placeMine(testConfig, testBoard, x, y);
 
+    expect(result).toBe(true);
     expect(testBoard[y - 1][x - 1].mineCount).toBe(1);
     expect(testBoard[y - 1][x].mineCount).toBe(1);
     expect(testBoard[y - 1][x + 1].mineCount).toBe(1);
@@ -467,5 +512,117 @@ describe("placeMine", () => {
     expect(testBoard[y + 1][x - 1].mineCount).toBe(1);
     expect(testBoard[y + 1][x].mineCount).toBe(1);
     expect(testBoard[y + 1][x + 1].mineCount).toBe(1);
+  });
+
+  it("shouldn't modify anything if the cell already has a mine", () => {
+    const x = 4;
+    const y = 7;
+
+    testBoard[y][x].hasMine = true;
+
+    const boardBefore = cloneBoard(testBoard);
+
+    const result = placeMine(testConfig, testBoard, x, y);
+
+    expect(result).toBe(false);
+    expect(testBoard).toEqual(boardBefore);
+  });
+
+  it("should throw an InvalidConfigError for an invalid config", () => {
+    expect(() => placeMine(undefined, testBoard, 5, 5)).toThrowError(
+      InvalidConfigError
+    );
+    expect(() => placeMine(null, testBoard, 5, 5)).toThrowError(
+      InvalidConfigError
+    );
+    expect(() => placeMine({}, testBoard, 5, 5)).toThrowError(
+      InvalidConfigError
+    );
+    expect(() =>
+      placeMine({ x: -1, y: 42, mines: 13 }, testBoard, 5, 5)
+    ).toThrowError(InvalidConfigError);
+  });
+
+  it("should throw an OutOfBoundsError for out of bounds coordinates", () => {
+    expect(() => placeMine(testConfig, testBoard, 1337, 1337)).toThrowError(
+      OutOfBoundsError
+    );
+  });
+});
+
+describe("placeMines", () => {
+  let testBoard = getBoard(testConfig);
+
+  beforeEach(() => {
+    seedRandom();
+  });
+
+  afterEach(() => {
+    testBoard = cloneBoard(__defaultBoard);
+    restoreRandom();
+  });
+
+  it("should be predictably random for testing", () => {
+    const x = 4;
+    const y = 7;
+
+    const result0 = placeMines(testConfig, cloneBoard(__defaultBoard), x, y);
+
+    seedRandom(); // reset the seed so the results are the same
+
+    const result1 = placeMines(testConfig, cloneBoard(__defaultBoard), x, y);
+
+    expect(result0).toEqual(result1);
+  });
+
+  it("should randomly place mines on the board, avoiding the seed coordinates", () => {
+    const x = 4;
+    const y = 4;
+
+    placeMines(testConfig, testBoard, x, y);
+
+    testBoard.forEach((row, j) =>
+      row.forEach((cell, i) => {
+        if (seededMineCoords.some(coord => coord.x === i && coord.y === j))
+          expect(cell.hasMine).toBe(true);
+        else expect(cell.hasMine).toBe(false);
+      })
+    );
+
+    expect(testBoard[y][x].hasMine).toBe(false);
+  });
+
+  it("should correctly add the `mineCount` of the cells adjacent to mines", () => {
+    const x = 4;
+    const y = 4;
+
+    placeMines(testConfig, testBoard, x, y);
+
+    testBoard.forEach((row, j) =>
+      row.forEach((cell, i) =>
+        expect(cell.mineCount).toBe(seededMineCounts[j][i])
+      )
+    );
+  });
+
+  it("should throw an InvalidConfigError for an invalid config", () => {
+    expect(() => placeMines(undefined, testBoard, 5, 5)).toThrowError(
+      InvalidConfigError
+    );
+    expect(() => placeMines(null, testBoard, 5, 5)).toThrowError(
+      InvalidConfigError
+    );
+    expect(() => placeMines({}, testBoard, 5, 5)).toThrowError(
+      InvalidConfigError
+    );
+    expect(() =>
+      placeMines({ x: -1, y: 42, mines: 13 }, testBoard, 5, 5)
+    ).toThrowError(InvalidConfigError);
+  });
+
+  it("should throw an OutOfBoundsError for out of bounds coordinates", () => {
+    expect(() => placeMines(testConfig, testBoard, 1337, 1337)).toThrowError(
+      OutOfBoundsError
+    );
   });
 });
