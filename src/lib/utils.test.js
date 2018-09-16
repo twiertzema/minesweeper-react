@@ -13,13 +13,11 @@ import {
   getBoard,
   isConfigValid,
   isOutOfBounds,
-  modifyCell,
   placeMine,
   placeMines,
   InvalidConfigError,
   OutOfBoundsError
 } from "./utils";
-import { turnCellState } from "../logic/board";
 
 const testConfig = { x: 13, y: 13, mines: 13 };
 let __defaultBoard = getBoard(testConfig);
@@ -125,6 +123,10 @@ describe("isConfigValid", () => {
     expect(isConfigValid({ x: -1, y: 7, mines: 7 })).toBe(false);
     expect(isConfigValid({ x: 7, y: -1, mines: 7 })).toBe(false);
     expect(isConfigValid({ x: 7, y: 7, mines: -1 })).toBe(false);
+  });
+
+  it("should return `false` if there are more mines than possible", () => {
+    expect(isConfigValid({ x: 9, y: 9, mines: 1337 })).toBe(false);
   });
 });
 

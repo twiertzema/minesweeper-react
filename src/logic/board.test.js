@@ -1,7 +1,4 @@
-import seedrandom from "seedrandom";
-
 import {
-  CELL_STATE,
   CONFIG_DEFAULT,
   CONFIG_EASY,
   CONFIG_INTERMEDIATE,
@@ -79,21 +76,5 @@ describe("CONFIGURE_BOARD", () => {
   });
 });
 
-/*
-describe("REVEAL_CELL", () => {
-  const __originalRandom = Math.random;
-  beforeEach(() => {
-    global.Math.random = new seedrandom("minesweeper-react");
-  });
-
-  afterEach(() => {
-    global.Math.random = __originalRandom;
-  });
-
-  it("should place mines if the board hasn't been seeded yet", () => {
-    expect(true).toBe(true);
-  });
-});
-*/
-
+// TODO: REVEAL_CELL
 // TODO: TURN_CELL_STATE

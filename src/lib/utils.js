@@ -43,7 +43,8 @@ export const isConfigValid = config => {
     !isNaN(config.mines) &&
     config.x >= 0 &&
     config.y >= 0 &&
-    config.mines >= 0
+    config.mines >= 0 &&
+    config.mines <= config.x * config.y
   );
 };
 
