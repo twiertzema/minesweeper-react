@@ -11,56 +11,89 @@ An XP Minesweeper clone using React (for fun)
 
 #### Table of Contents
 
--   [Cell](#cell)
-    -   [Properties](#properties)
+-   [Data Model](#data-model)
+    -   [Config](#config)
+        -   [Properties](#properties)
+    -   [Board](#board)
+    -   [Cell](#cell)
+        -   [Properties](#properties-1)
+-   [Constants](#constants)
+    -   [CELL_STATE](#cell_state)
+        -   [DEFAULT](#default)
+        -   [FLAGGED](#flagged)
+        -   [REVEALED](#revealed)
+        -   [QUESTIONED](#questioned)
+    -   [CONFIG_EASY](#config_easy)
+    -   [CONFIG_INTERMEDIATE](#config_intermediate)
+    -   [CONFIG_EXPERT](#config_expert)
+    -   [CONFIG_DEFAULT](#config_default)
+-   [Errors](#errors)
+    -   [InvalidConfigError](#invalidconfigerror)
+        -   [Parameters](#parameters)
+    -   [OutOfBoundsError](#outofboundserror)
+        -   [Parameters](#parameters-1)
 -   [isConfigValid](#isconfigvalid)
-    -   [Parameters](#parameters)
+    -   [Parameters](#parameters-2)
     -   [Examples](#examples)
--   [Board](#board)
--   [Config](#config)
-    -   [Properties](#properties-1)
 -   [isOutOfBounds](#isoutofbounds)
-    -   [Parameters](#parameters-1)
+    -   [Parameters](#parameters-3)
     -   [Examples](#examples-1)
 -   [getBoard](#getboard)
-    -   [Parameters](#parameters-2)
+    -   [Parameters](#parameters-4)
     -   [Examples](#examples-2)
 -   [forEachAdjacentCellCallback](#foreachadjacentcellcallback)
-    -   [Parameters](#parameters-3)
+    -   [Parameters](#parameters-5)
 -   [forEachAdjacentCell](#foreachadjacentcell)
-    -   [Parameters](#parameters-4)
+    -   [Parameters](#parameters-6)
     -   [Examples](#examples-3)
 -   [placeMine](#placemine)
-    -   [Parameters](#parameters-5)
+    -   [Parameters](#parameters-7)
     -   [Examples](#examples-4)
 -   [placeMines](#placemines)
-    -   [Parameters](#parameters-6)
+    -   [Parameters](#parameters-8)
     -   [Examples](#examples-5)
 -   [cascadeCells](#cascadecells)
-    -   [Parameters](#parameters-7)
-    -   [Examples](#examples-6)
--   [InvalidConfigError](#invalidconfigerror)
-    -   [Parameters](#parameters-8)
--   [OutOfBoundsError](#outofboundserror)
     -   [Parameters](#parameters-9)
--   [CELL_STATE](#cell_state)
-    -   [DEFAULT](#default)
-    -   [FLAGGED](#flagged)
-    -   [REVEALED](#revealed)
-    -   [QUESTIONED](#questioned)
--   [CONFIG_EASY](#config_easy)
--   [CONFIG_INTERMEDIATE](#config_intermediate)
--   [CONFIG_EXPERT](#config_expert)
--   [CONFIG_DEFAULT](#config_default)
+    -   [Examples](#examples-6)
 
-### Cell
+### Data Model
+
+The data structures used in the API.
+
+
+#### Config
+
+Configuration object that defines a board's setup.
+
+Type: {x: [number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), y: [number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), mines: [number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)}
+
+##### Properties
+
+-   `x` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** Number of mines on the X axis. _Note:_ Must be >= `0`.
+-   `y` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** Number of mines on the Y axis. _Note:_ Must be >= `0`.
+-   `mines` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** Number of mines contained on the board.
+     _Note:_ Must adhere to the following rules:-   Must be >= `0`.
+    -   Must be &lt;= the product of `x` and `y`.
+
+#### Board
+
+2-dimensional [Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array) representing a board in Minesweeper.
+
+**Note:** The first order of [Arrays](Array) represents the rows of the
+ board, and the second order represents the columns. This means that the Y
+ coordinate of a given [Cell](#cell) is used as the index of the first order
+ and the X coordinate is used as the index of the second order.
+
+Type: [Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[Cell](#cell)>>
+
+#### Cell
 
 Object representing a cell on the board. These comprise the makeup of the
  [Board](#board).
 
 Type: {hasMine: [boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean), mineCount: [number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), state: [CELL_STATE](#cell_state)}
 
-#### Properties
+##### Properties
 
 -   `hasMine` **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** Indicates whether or not this cell contains a
      mine. Default value is `false`.
@@ -68,6 +101,83 @@ Type: {hasMine: [boolean](https://developer.mozilla.org/docs/Web/JavaScript/Refe
      cell. Default value is `0`.
 -   `state` **[CELL_STATE](#cell_state)** Enum value indicating what state the cell is in.
      Default value is `CELL_STATE.DEFAULT`.
+
+### Constants
+
+Constant values used internally as well as a set of pre-built configuration
+objects representing the 3 different difficulty levels.
+
+
+#### CELL_STATE
+
+Enum for cell states
+
+##### DEFAULT
+
+Initial state of all [Cells](Cell). Defined as the absence of all other state.
+
+##### FLAGGED
+
+The user has placed a flag on this [Cell](#cell). Flagged [Cells](Cell) are not revealed when the user clicks on them.
+
+##### REVEALED
+
+The user has revealed this [Cell](#cell). Once a [Cell](#cell) is revealed, the user can no longer interact with a cell.
+
+##### QUESTIONED
+
+The user has marked this [Cell](#cell) with a question mark indicating that they are unsure whether or not this [Cell](#cell) contains a mine.
+
+#### CONFIG_EASY
+
+A 9×9 board with 10 mines.
+
+Type: [Config](#config)
+
+#### CONFIG_INTERMEDIATE
+
+A 16×16 board with 40 mines.
+
+Type: [Config](#config)
+
+#### CONFIG_EXPERT
+
+A 30×16 board with 99 mines.
+
+Type: [Config](#config)
+
+#### CONFIG_DEFAULT
+
+A 0×0 board with 0 mines. The initial state of a board before a different configuration is loaded.
+
+Type: [Config](#config)
+
+### Errors
+
+Custom error types thrown by the API functions.
+
+
+#### InvalidConfigError
+
+**Extends Error**
+
+Indicates that the supplied configuration is not valid.
+Automatically supplies the error message of `"invalid config"`.
+
+##### Parameters
+
+-   `params` **...any** 
+
+#### OutOfBoundsError
+
+**Extends Error**
+
+Indicates that the supplied coordinates are out of bounds for the given board.
+Automatically supplies the error message of `"out of bounds"`.
+
+##### Parameters
+
+-   `params` **...any** 
 
 ### isConfigValid
 
@@ -92,31 +202,6 @@ console.log(isConfigValid({ x: "5", y: "5", mines: "13" })); // false
 ```
 
 Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
-
-### Board
-
-2-dimensional [Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array) representing a board in Minesweeper.
-
-**Note:** The first order of [Arrays](Array) represents the rows of the
- board, and the second order represents the columns. This means that the Y
- coordinate of a given [Cell](#cell) is used as the index of the first order
- and the X coordinate is used as the index of the second order.
-
-Type: [Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[Cell](#cell)>>
-
-### Config
-
-Configuration object that defines a board's setup.
-
-Type: {x: [number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), y: [number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), mines: [number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)}
-
-#### Properties
-
--   `x` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** Number of mines on the X axis. _Note:_ Must be >= `0`.
--   `y` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** Number of mines on the Y axis. _Note:_ Must be >= `0`.
--   `mines` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** Number of mines contained on the board.
-     _Note:_ Must adhere to the following rules:-   Must be >= `0`.
-    -   Must be &lt;= the product of `x` and `y`.
 
 ### isOutOfBounds
 
@@ -367,69 +452,3 @@ cascadeCells(myConfig, myBoard, 100, 100) // throws OutOfBoundsError
      bounds for `config`.
 
 Returns **void** 
-
-### InvalidConfigError
-
-**Extends Error**
-
-Indicates that the supplied configuration is not valid.
-Automatically supplies the error message of `"invalid config"`.
-
-#### Parameters
-
--   `params` **...any** 
-
-### OutOfBoundsError
-
-**Extends Error**
-
-Indicates that the supplied coordinates are out of bounds for the given board.
-Automatically supplies the error message of `"out of bounds"`.
-
-#### Parameters
-
--   `params` **...any** 
-
-### CELL_STATE
-
-Enum for cell states
-
-#### DEFAULT
-
-Initial state of all [Cells](Cell). Defined as the absence of all other state.
-
-#### FLAGGED
-
-The user has placed a flag on this [Cell](#cell). Flagged [Cells](Cell) are not revealed when the user clicks on them.
-
-#### REVEALED
-
-The user has revealed this [Cell](#cell). Once a [Cell](#cell) is revealed, the user can no longer interact with a cell.
-
-#### QUESTIONED
-
-The user has marked this [Cell](#cell) with a question mark indicating that they are unsure whether or not this [Cell](#cell) contains a mine.
-
-### CONFIG_EASY
-
-A 9×9 board with 10 mines.
-
-Type: [Config](#config)
-
-### CONFIG_INTERMEDIATE
-
-A 16×16 board with 40 mines.
-
-Type: [Config](#config)
-
-### CONFIG_EXPERT
-
-A 30×16 board with 99 mines.
-
-Type: [Config](#config)
-
-### CONFIG_DEFAULT
-
-A 0×0 board with 0 mines. The initial state of a board before a different configuration is loaded.
-
-Type: [Config](#config)
