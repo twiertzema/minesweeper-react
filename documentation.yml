@@ -1,0 +1,24 @@
+toc:
+  - name: Data Model
+    description: |
+      The data structures used in the API.
+    children:
+      - Config
+      - Board
+      - Cell
+  - name: Constants
+    description: |
+      Constant values used internally as well as a set of pre-built configuration
+      objects representing the 3 different difficulty levels.
+    children:
+      - CELL_STATE
+      - CONFIG_EASY
+      - CONFIG_INTERMEDIATE
+      - CONFIG_EXPERT
+      - CONFIG_DEFAULT
+  - name: Errors
+    description: |
+      Custom error types thrown by the API functions.
+    children:
+      - InvalidConfigError
+      - OutOfBoundsError
