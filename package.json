@@ -19,7 +19,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "doc:readme": "documentation readme src/lib/utils.js -s API -f md -c documentation.yml",
+    "doc:readme": "documentation readme src/lib/utils.js -s API -c documentation.yml",
     "doc:serve": "documentation serve src/lib/utils.js -f md -c documentation.yml"
   },
   "browserslist": [

@@ -3,7 +3,13 @@
 
 # `minesweeper-react`
 
-An XP Minesweeper clone using React (for fun)
+An XP Minesweeper clone using React (for fun).
+
+## Roadmap
+At the moment, this is just a pretty bare-bones recreation of the game. However, in the future,
+I intend to split out the internal logic into a separate library that could be used to create
+a Minesweeper clone in whatever front end framework you like - or no framework at all, if that's
+your jam!
 
 ## API
 
