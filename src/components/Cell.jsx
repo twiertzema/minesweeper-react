@@ -8,29 +8,28 @@ import "./Cell.css";
 
 /**
  * @param {number} mineCount
- * @returns {string}
+ * @return {string}
  */
-const getCellTextColor = mineCount => {
-  // TODO: Extract into CSS classnames that use global CSS vars.
+const getCellTextClass = mineCount => {
   switch (mineCount) {
     case 1:
-      return "#0000fe";
+      return "one";
     case 2:
-      return "#017f01";
+      return "two";
     case 3:
-      return "#fe0000";
+      return "three";
     case 4:
-      return "#010080";
+      return "four";
     case 5:
-      return "#810102";
+      return "five";
     case 6:
-      return "#007f7e";
+      return "six";
     case 7:
-      return "#fff";
+      return "seven";
     case 8:
-      return "#808080";
+      return "eight";
     default:
-      return "#000";
+      return "";
   }
 };
 
@@ -119,7 +118,7 @@ export const XPCell = ({ className, ...props }) => (
           } else {
             if (mineCount > 0) {
               content = (
-                <span style={{ color: getCellTextColor(mineCount) }}>
+                <span className={getCellTextClass(mineCount)}>
                   {mineCount}
                 </span>
               );

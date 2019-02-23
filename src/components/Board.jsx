@@ -12,24 +12,26 @@ class Board extends Component {
   render() {
     const { board, revealCell, turnCellState } = this.props;
 
-    const boardRows = board.map((row, i) => (
-      <tr key={`row_${i}`}>
-        {row.map((cell, j) => (
-          <Cell
-            key={`cell_${j}`}
-            x={j}
-            y={i}
-            onClick={revealCell}
-            onRightClick={turnCellState}
-            {...cell}
-          />
-        ))}
-      </tr>
-    ));
-
     return (
       <table className="board">
-        <tbody>{boardRows}</tbody>
+        <tbody>
+          {
+            board.map((row, i) => (
+              <tr key={`row_${i}`}>
+                {row.map((cell, j) => (
+                  <Cell
+                    key={`cell_${j}`}
+                    x={j}
+                    y={i}
+                    onClick={revealCell}
+                    onRightClick={turnCellState}
+                    {...cell}
+                  />
+                ))}
+              </tr>
+            ))
+          }
+        </tbody>
       </table>
     );
   }
