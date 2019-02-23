@@ -7,12 +7,12 @@
   "private": true,
   "dependencies": {
     "classnames": "^2.2.6",
-    "prop-types": "^15.6.2",
-    "react": "^16.5.1",
-    "react-dom": "^16.5.1",
-    "react-redux": "^5.0.7",
-    "react-scripts": "2.1.1",
-    "redux": "^4.0.0"
+    "prop-types": "^15.7.2",
+    "react": "^16.8.3",
+    "react-dom": "^16.8.3",
+    "react-redux": "^6.0.1",
+    "react-scripts": "2.1.5",
+    "redux": "^4.0.1"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -29,8 +29,8 @@
     "last 2 Edge versions"
   ],
   "devDependencies": {
-    "documentation": "^8.1.2",
-    "prettier": "1.14.2",
+    "documentation": "^9.2.0",
+    "prettier": "1.16.4",
     "seedrandom": "^2.4.4"
   }
 }
