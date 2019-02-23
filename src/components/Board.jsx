@@ -44,18 +44,18 @@ Board.propTypes = {
   turnCellState: PropTypes.func.isRequired
 };
 
-const mapStateToProps = state => {
-  return {
-    board: state.board
-  };
-};
+/**
+ * @param {ReduxState} state
+ * @return {{board: MinesweeperBoard}}
+ */
+const mapStateToProps = state => ({
+  board: state.board
+});
 
-const mapDispatchToProps = dispatch => {
-  return {
-    revealCell: (x, y) => dispatch(revealCell(x, y)),
-    turnCellState: (x, y) => dispatch(turnCellState(x, y))
-  };
-};
+const mapDispatchToProps = dispatch => ({
+  revealCell: (x, y) => dispatch(revealCell(x, y)),
+  turnCellState: (x, y) => dispatch(turnCellState(x, y))
+});
 
 export default connect(
   mapStateToProps,

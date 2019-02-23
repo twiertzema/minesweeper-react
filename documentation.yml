@@ -3,9 +3,9 @@ toc:
     description: |
       The data structures used in the API.
     children:
-      - Config
-      - Board
-      - Cell
+      - MinesweeperConfig
+      - MinesweeperBoard
+      - MinesweeperCell
   - name: Constants
     description: |
       Constant values used internally as well as a set of pre-built configuration

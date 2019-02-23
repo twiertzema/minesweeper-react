@@ -6,6 +6,7 @@
 An XP Minesweeper clone using React (for fun).
 
 ## Roadmap
+
 At the moment, this is just a pretty bare-bones recreation of the game. However, in the future,
 I intend to split out the internal logic into a separate library that could be used to create
 a Minesweeper clone in whatever front end framework you like - or no framework at all, if that's
@@ -18,10 +19,10 @@ your jam!
 #### Table of Contents
 
 -   [Data Model](#data-model)
-    -   [Config](#config)
+    -   [MinesweeperConfig](#minesweeperconfig)
         -   [Properties](#properties)
-    -   [Board](#board)
-    -   [Cell](#cell)
+    -   [MinesweeperBoard](#minesweeperboard)
+    -   [MinesweeperCell](#minesweepercell)
         -   [Properties](#properties-1)
 -   [Constants](#constants)
     -   [CELL_STATE](#cell_state)
@@ -67,7 +68,7 @@ your jam!
 The data structures used in the API.
 
 
-#### Config
+#### MinesweeperConfig
 
 Configuration object that defines a board's setup.
 
@@ -81,21 +82,21 @@ Type: {x: [number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/G
      _Note:_ Must adhere to the following rules:-   Must be >= `0`.
     -   Must be &lt;= the product of `x` and `y`.
 
-#### Board
+#### MinesweeperBoard
 
 2-dimensional [Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array) representing a board in Minesweeper.
 
 **Note:** The first order of [Arrays](Array) represents the rows of the
  board, and the second order represents the columns. This means that the Y
- coordinate of a given [Cell](#cell) is used as the index of the first order
+ coordinate of a given [MinesweeperCell](#minesweepercell) is used as the index of the first order
  and the X coordinate is used as the index of the second order.
 
-Type: [Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[Cell](#cell)>>
+Type: [Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[MinesweeperCell](#minesweepercell)>>
 
-#### Cell
+#### MinesweeperCell
 
 Object representing a cell on the board. These comprise the makeup of the
- [Board](#board).
+ [MinesweeperBoard](#minesweeperboard).
 
 Type: {hasMine: [boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean), mineCount: [number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), state: [CELL_STATE](#cell_state)}
 
@@ -124,39 +125,39 @@ Initial state of all [Cells](Cell). Defined as the absence of all other state.
 
 ##### FLAGGED
 
-The user has placed a flag on this [Cell](#cell). Flagged [Cells](Cell) are not revealed when the user clicks on them.
+The user has placed a flag on this [MinesweeperCell](#minesweepercell). Flagged [Cells](Cell) are not revealed when the user clicks on them.
 
 ##### REVEALED
 
-The user has revealed this [Cell](#cell). Once a [Cell](#cell) is revealed, the user can no longer interact with a cell.
+The user has revealed this [MinesweeperCell](#minesweepercell). Once a [MinesweeperCell](#minesweepercell) is revealed, the user can no longer interact with a cell.
 
 ##### QUESTIONED
 
-The user has marked this [Cell](#cell) with a question mark indicating that they are unsure whether or not this [Cell](#cell) contains a mine.
+The user has marked this [MinesweeperCell](#minesweepercell) with a question mark indicating that they are unsure whether or not this [MinesweeperCell](#minesweepercell) contains a mine.
 
 #### CONFIG_EASY
 
 A 9×9 board with 10 mines.
 
-Type: [Config](#config)
+Type: [MinesweeperConfig](#minesweeperconfig)
 
 #### CONFIG_INTERMEDIATE
 
 A 16×16 board with 40 mines.
 
-Type: [Config](#config)
+Type: [MinesweeperConfig](#minesweeperconfig)
 
 #### CONFIG_EXPERT
 
 A 30×16 board with 99 mines.
 
-Type: [Config](#config)
+Type: [MinesweeperConfig](#minesweeperconfig)
 
 #### CONFIG_DEFAULT
 
 A 0×0 board with 0 mines. The initial state of a board before a different configuration is loaded.
 
-Type: [Config](#config)
+Type: [MinesweeperConfig](#minesweeperconfig)
 
 ### Errors
 
@@ -187,11 +188,11 @@ Automatically supplies the error message of `"out of bounds"`.
 
 ### isConfigValid
 
-Verifies that the supplied [Config](#config) is valid.
+Verifies that the supplied [MinesweeperConfig](#minesweeperconfig) is valid.
 
 #### Parameters
 
--   `config` **[Config](#config)** 
+-   `config` **[MinesweeperConfig](#minesweeperconfig)** 
 
 #### Examples
 
@@ -212,11 +213,11 @@ Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/
 ### isOutOfBounds
 
 Determines if the supplied `x` and `y` coordinates are out of bounds for the
- given [Config](#config).
+ given [MinesweeperConfig](#minesweeperconfig).
 
 #### Parameters
 
--   `config` **[Config](#config)** 
+-   `config` **[MinesweeperConfig](#minesweeperconfig)** 
 -   `x` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** 
 -   `y` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** 
 
@@ -240,14 +241,14 @@ Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/
 ### getBoard
 
 Generates the 2-dimensional [Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array) representing the board using the
- provided [Config](#config).
+ provided [MinesweeperConfig](#minesweeperconfig).
 
 **Note:** This does not place the mines on the board. For that, you must call
  [placeMines](#placemines).
 
 #### Parameters
 
--   `config` **[Config](#config)** 
+-   `config` **[MinesweeperConfig](#minesweeperconfig)** 
 
 #### Examples
 
@@ -262,7 +263,7 @@ getBoard(invalidConfig); // throws InvalidConfigError
 
 -   Throws **[InvalidConfigError](#invalidconfigerror)** if `config` is not valid.
 
-Returns **[Board](#board)** New blank board.
+Returns **[MinesweeperBoard](#minesweeperboard)** New blank board.
 
 ### forEachAdjacentCellCallback
 
@@ -272,7 +273,7 @@ Type: [Function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Sta
 
 #### Parameters
 
--   `cell` **[Cell](#cell)** The current [Cell](#cell) in the iteration.
+-   `cell` **[MinesweeperCell](#minesweepercell)** The current [MinesweeperCell](#minesweepercell) in the iteration.
 -   `x` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** X coordinate of the cell.
 -   `y` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** Y coordinate of the cell.
 
@@ -283,10 +284,10 @@ Executes the `action` callback for every cell adjacent to the target `x` and
 
 #### Parameters
 
--   `config` **[Config](#config)** [Config](#config) used to generate `board` (for reference).
--   `board` **[Board](#board)** [Board](#board) from which to retrive the [Cells](Cell).
--   `x` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** X coordinate of the target [Cell](#cell).
--   `y` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** Y coordinate of the target [Cell](#cell).
+-   `config` **[MinesweeperConfig](#minesweeperconfig)** [MinesweeperConfig](#minesweeperconfig) used to generate `board` (for reference).
+-   `board` **[MinesweeperBoard](#minesweeperboard)** [MinesweeperBoard](#minesweeperboard) from which to retrive the [Cells](Cell).
+-   `x` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** X coordinate of the target [MinesweeperCell](#minesweepercell).
+-   `y` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** Y coordinate of the target [MinesweeperCell](#minesweepercell).
 -   `action` **[forEachAdjacentCellCallback](#foreachadjacentcellcallback)** Callback function to be exectued
      for every (valid) adjacent cell.
 
@@ -314,23 +315,23 @@ Returns **void**
 
 ### placeMine
 
-Modifies the given [Board](#board) by setting `hasMine` to `true` for the
- [Cell](#cell) at the specified `x` and `y` coordinates and increments
+Modifies the given [MinesweeperBoard](#minesweeperboard) by setting `hasMine` to `true` for the
+ [MinesweeperCell](#minesweepercell) at the specified `x` and `y` coordinates and increments
  `mineCount` for all adjacent cells.
 
 This function is used by [placeMines](#placemines) to populate a board.
 
-If the specified [Cell](#cell) already has a mine, this function does nothing
+If the specified [MinesweeperCell](#minesweepercell) already has a mine, this function does nothing
  and returns `false`.
 
 **Warning:** This is <u>not</u> a pure function.
 
 #### Parameters
 
--   `config` **[Config](#config)** [Config](#config) used to generate `board` (for reference).
--   `board` **[Board](#board)** [Board](#board) on which to place the mine.
--   `x` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** X coordinate of the target [Cell](#cell).
--   `y` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** Y coordinate of the target [Cell](#cell).
+-   `config` **[MinesweeperConfig](#minesweeperconfig)** [MinesweeperConfig](#minesweeperconfig) used to generate `board` (for reference).
+-   `board` **[MinesweeperBoard](#minesweeperboard)** [MinesweeperBoard](#minesweeperboard) on which to place the mine.
+-   `x` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** X coordinate of the target [MinesweeperCell](#minesweepercell).
+-   `y` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** Y coordinate of the target [MinesweeperCell](#minesweepercell).
 
 #### Examples
 
@@ -375,7 +376,7 @@ Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/
 ### placeMines
 
 Randomly places mines on `board` (using [placeMine](#placemine)), avoiding the
- [Cell](#cell) specified by `seedX` and `seedY`.
+ [MinesweeperCell](#minesweepercell) specified by `seedX` and `seedY`.
 
 In practice, the board is not populated with mines until the user clicks the
  first cell. This means that the first cell the user clicks can never be a
@@ -385,10 +386,10 @@ In practice, the board is not populated with mines until the user clicks the
 
 #### Parameters
 
--   `config` **[Config](#config)** [Config](#config) used to generate `board` (for reference).
--   `board` **[Board](#board)** [Board](#board) on which to place the mines.
--   `seedX` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** X coordinate of the seed [Cell](#cell).
--   `seedY` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** Y coordinate of the seed [Cell](#cell).
+-   `config` **[MinesweeperConfig](#minesweeperconfig)** [MinesweeperConfig](#minesweeperconfig) used to generate `board` (for reference).
+-   `board` **[MinesweeperBoard](#minesweeperboard)** [MinesweeperBoard](#minesweeperboard) on which to place the mines.
+-   `seedX` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** X coordinate of the seed [MinesweeperCell](#minesweepercell).
+-   `seedY` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** Y coordinate of the seed [MinesweeperCell](#minesweepercell).
 
 #### Examples
 
@@ -406,11 +407,11 @@ placeMines(myConfig, myBoard, 4, 7)
 -   Throws **[OutOfBoundsError](#outofboundserror)** if `seedX` and `seedY` indicate a cell that is out
      of bounds for `config`.
 
-Returns **[Board](#board)** Modified `board` with randomly placed mines.
+Returns **[MinesweeperBoard](#minesweeperboard)** Modified `board` with randomly placed mines.
 
 ### cascadeCells
 
-If the origin [Cell](#cell) specified by `x` and `y` is "empty" (has a
+If the origin [MinesweeperCell](#minesweepercell) specified by `x` and `y` is "empty" (has a
  `mineCount` of `0`), this function modifies `board` by revealing all empty
  and empty-adjacent [Cells](Cell); otherwise, this function does nothing.
 
@@ -418,10 +419,10 @@ If the origin [Cell](#cell) specified by `x` and `y` is "empty" (has a
 
 #### Parameters
 
--   `config` **[Config](#config)** [Config](#config) used to generate `board` (for reference).
--   `board` **[Board](#board)** [Board](#board) for which to reveal the [Cells](Cell).
--   `x` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** X coordinate of the origin [Cell](#cell).
--   `y` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** Y coordinate of the origin [Cell](#cell).
+-   `config` **[MinesweeperConfig](#minesweeperconfig)** [MinesweeperConfig](#minesweeperconfig) used to generate `board` (for reference).
+-   `board` **[MinesweeperBoard](#minesweeperboard)** [MinesweeperBoard](#minesweeperboard) for which to reveal the [Cells](Cell).
+-   `x` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** X coordinate of the origin [MinesweeperCell](#minesweepercell).
+-   `y` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** Y coordinate of the origin [MinesweeperCell](#minesweepercell).
 
 #### Examples
 

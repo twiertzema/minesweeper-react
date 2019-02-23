@@ -11,6 +11,7 @@ import "./index.css";
 
 import App from "./App";
 
+/** @typedef {BoardState} ReduxState */
 const store = createStore(mainReducer);
 
 bootstrapper(store);

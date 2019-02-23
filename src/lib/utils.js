@@ -5,7 +5,7 @@ import { CELL_STATE } from "./constants";
 /**
  * Configuration object that defines a board's setup.
  *
- * @typedef {{x: number, y: number, mines: number}} Config
+ * @typedef {{x: number, y: number, mines: number}} MinesweeperConfig
  * @property {number} x Number of mines on the X axis. *Note:* Must be >= `0`.
  * @property {number} y Number of mines on the Y axis. *Note:* Must be >= `0`.
  * @property {number} mines Number of mines contained on the board.
@@ -18,16 +18,16 @@ import { CELL_STATE } from "./constants";
  *
  * **Note:** The first order of [Arrays](Array) represents the rows of the
  *  board, and the second order represents the columns. This means that the Y
- *  coordinate of a given {@link Cell} is used as the index of the first order
+ *  coordinate of a given {@link MinesweeperCell} is used as the index of the first order
  *  and the X coordinate is used as the index of the second order.
  *
- * @typedef {Array<Array<Cell>>} Board
+ * @typedef {Array<Array<MinesweeperCell>>} MinesweeperBoard
  */
 /**
  * Object representing a cell on the board. These comprise the makeup of the
- *  {@link Board}.
+ *  {@link MinesweeperBoard}.
  *
- * @typedef {{hasMine: boolean, mineCount: number, state: CELL_STATE}} Cell
+ * @typedef {{hasMine: boolean, mineCount: number, state: CELL_STATE}} MinesweeperCell
  * @property {boolean} hasMine Indicates whether or not this cell contains a
  *  mine. Default value is `false`.
  * @property {number} mineCount Indicates how many mines are adjacent to this
@@ -37,10 +37,10 @@ import { CELL_STATE } from "./constants";
  */
 
 /**
- * Verifies that the supplied {@link Config} is valid.
+ * Verifies that the supplied {@link MinesweeperConfig} is valid.
  *
  * @function
- * @param {Config} config
+ * @param {MinesweeperConfig} config
  * @returns {boolean}
  * @example
  * const myConfig = { x: 10, y: 15, mines: 100 };
@@ -72,10 +72,10 @@ export const isConfigValid = config => {
 
 /**
  * Determines if the supplied `x` and `y` coordinates are out of bounds for the
- *  given {@link Config}.
+ *  given {@link MinesweeperConfig}.
  *
  * @function
- * @param {Config} config
+ * @param {MinesweeperConfig} config
  * @param {number} x
  * @param {number} y
  * @returns {boolean}
@@ -97,14 +97,14 @@ export const isOutOfBounds = (config, x, y) => {
 
 /**
  * Generates the 2-dimensional {@link Array} representing the board using the
- *  provided {@link Config}.
+ *  provided {@link MinesweeperConfig}.
  *
  * **Note:** This does not place the mines on the board. For that, you must call
  *  {@link placeMines}.
  *
  * @function
- * @param {Config} config
- * @returns {Board} New blank board.
+ * @param {MinesweeperConfig} config
+ * @returns {MinesweeperBoard} New blank board.
  * @throws {InvalidConfigError} if `config` is not valid.
  * @example
  * getBoard(CONFIG_EASY); // Returns a 9x9 2D Array of Cells in their default state.
@@ -142,7 +142,7 @@ export const getBoard = config => {
  * The format for the `action` parameter of {@link forEachAdjacentCell}.
  *
  * @callback forEachAdjacentCellCallback
- * @param {Cell} cell The current {@link Cell} in the iteration.
+ * @param {MinesweeperCell} cell The current {@link MinesweeperCell} in the iteration.
  * @param {number} x X coordinate of the cell.
  * @param {number} y Y coordinate of the cell.
  */
@@ -151,10 +151,10 @@ export const getBoard = config => {
  *  `y` coordinates (excluding out-of-bounds coordinates).
  *
  * @function
- * @param {Config} config {@link Config} used to generate `board` (for reference).
- * @param {Board} board {@link Board} from which to retrive the [Cells](Cell).
- * @param {number} x X coordinate of the target {@link Cell}.
- * @param {number} y Y coordinate of the target {@link Cell}.
+ * @param {MinesweeperConfig} config {@link MinesweeperConfig} used to generate `board` (for reference).
+ * @param {MinesweeperBoard} board {@link MinesweeperBoard} from which to retrive the [Cells](Cell).
+ * @param {number} x X coordinate of the target {@link MinesweeperCell}.
+ * @param {number} y Y coordinate of the target {@link MinesweeperCell}.
  * @param {forEachAdjacentCellCallback} action Callback function to be exectued
  *  for every (valid) adjacent cell.
  * @returns {void}
@@ -191,22 +191,22 @@ export const forEachAdjacentCell = (config, board, x, y, action) => {
 };
 
 /**
- * Modifies the given {@link Board} by setting `hasMine` to `true` for the
- *  {@link Cell} at the specified `x` and `y` coordinates and increments
+ * Modifies the given {@link MinesweeperBoard} by setting `hasMine` to `true` for the
+ *  {@link MinesweeperCell} at the specified `x` and `y` coordinates and increments
  *  `mineCount` for all adjacent cells.
  *
  * This function is used by {@link placeMines} to populate a board.
  *
- * If the specified {@link Cell} already has a mine, this function does nothing
+ * If the specified {@link MinesweeperCell} already has a mine, this function does nothing
  *  and returns `false`.
  *
  * **Warning:** This is <u>not</u> a pure function.
  *
  * @function
- * @param {Config} config {@link Config} used to generate `board` (for reference).
- * @param {Board} board {@link Board} on which to place the mine.
- * @param {number} x X coordinate of the target {@link Cell}.
- * @param {number} y Y coordinate of the target {@link Cell}.
+ * @param {MinesweeperConfig} config {@link MinesweeperConfig} used to generate `board` (for reference).
+ * @param {MinesweeperBoard} board {@link MinesweeperBoard} on which to place the mine.
+ * @param {number} x X coordinate of the target {@link MinesweeperCell}.
+ * @param {number} y Y coordinate of the target {@link MinesweeperCell}.
  * @returns {boolean} `true` if a modification took place; `false` otherwise.
  * @throws {InvalidConfigError} if `config` is not valid.
  * @throws {OutOfBoundsError} if `x` and `y` indicate a cell that is out of
@@ -263,7 +263,7 @@ export const placeMine = (config, board, x, y) => {
 // TODO: Rename so as not to be so similar to `placeMine`.
 /**
  * Randomly places mines on `board` (using {@link placeMine}), avoiding the
- *  {@link Cell} specified by `seedX` and `seedY`.
+ *  {@link MinesweeperCell} specified by `seedX` and `seedY`.
  *
  * In practice, the board is not populated with mines until the user clicks the
  *  first cell. This means that the first cell the user clicks can never be a
@@ -272,11 +272,11 @@ export const placeMine = (config, board, x, y) => {
  * **Warning:** This is <u>not</u> a pure function.
  *
  * @function
- * @param {Config} config {@link Config} used to generate `board` (for reference).
- * @param {Board} board {@link Board} on which to place the mines.
- * @param {number} seedX X coordinate of the seed {@link Cell}.
- * @param {number} seedY Y coordinate of the seed {@link Cell}.
- * @returns {Board} Modified `board` with randomly placed mines.
+ * @param {MinesweeperConfig} config {@link MinesweeperConfig} used to generate `board` (for reference).
+ * @param {MinesweeperBoard} board {@link MinesweeperBoard} on which to place the mines.
+ * @param {number} seedX X coordinate of the seed {@link MinesweeperCell}.
+ * @param {number} seedY Y coordinate of the seed {@link MinesweeperCell}.
+ * @returns {MinesweeperBoard} Modified `board` with randomly placed mines.
  * @throws {InvalidConfigError} if `config` is not valid.
  * @throws {OutOfBoundsError} if `seedX` and `seedY` indicate a cell that is out
  *  of bounds for `config`.
@@ -320,17 +320,17 @@ export const placeMines = (config, board, seedX, seedY) => {
 };
 
 /**
- * If the origin {@link Cell} specified by `x` and `y` is "empty" (has a
+ * If the origin {@link MinesweeperCell} specified by `x` and `y` is "empty" (has a
  *  `mineCount` of `0`), this function modifies `board` by revealing all empty
  *  and empty-adjacent [Cells](Cell); otherwise, this function does nothing.
  *
  * **Warning:** This is <u>not</u> a pure function.
  *
  * @function
- * @param {Config} config {@link Config} used to generate `board` (for reference).
- * @param {Board} board {@link Board} for which to reveal the [Cells](Cell).
- * @param {number} x X coordinate of the origin {@link Cell}.
- * @param {number} y Y coordinate of the origin {@link Cell}.
+ * @param {MinesweeperConfig} config {@link MinesweeperConfig} used to generate `board` (for reference).
+ * @param {MinesweeperBoard} board {@link MinesweeperBoard} for which to reveal the [Cells](Cell).
+ * @param {number} x X coordinate of the origin {@link MinesweeperCell}.
+ * @param {number} y Y coordinate of the origin {@link MinesweeperCell}.
  * @returns {void}
  * @throws {InvalidConfigError} if `config` is not valid.
  * @throws {OutOfBoundsError} if `x` and `y` indicate a cell that is out of
@@ -372,8 +372,8 @@ export const cascadeCells = (config, board, x, y) => {
 
 /**
  * Internal recursion callback for {@link cascadeCells}.
- * @param {Config} config
- * @param {Board} board
+ * @param {MinesweeperConfig} config
+ * @param {MinesweeperBoard} board
  * @param {number} x
  * @param {number} y
  * @returns {void}

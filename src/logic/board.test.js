@@ -1,3 +1,4 @@
+/* eslint-env jest */
 import {
   CONFIG_DEFAULT,
   CONFIG_EASY,

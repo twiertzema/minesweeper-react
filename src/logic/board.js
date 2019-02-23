@@ -8,9 +8,9 @@ import { CELL_STATE, CONFIG_DEFAULT } from "../lib/constants";
 
 /**
  * @typedef {Object} BoardState
- * @property {Config} config
+ * @property {MinesweeperConfig} config
  * @property {boolean} seeded
- * @property {Board} board
+ * @property {MinesweeperBoard} board
  */
 
 /** @type {BoardState} */
@@ -26,8 +26,8 @@ export const TURN_CELL_STATE = "TURN_CELL_STATE";
 
 /**
  * Action creator for `CONFIGURE_BOARD`.
- * @param {Config} configuration
- * @returns {{type: string, configuration: Config}}
+ * @param {MinesweeperConfig} configuration
+ * @returns {{type: string, configuration: MinesweeperConfig}}
  */
 export const configureBoard = configuration => {
   return {
@@ -65,12 +65,12 @@ export const turnCellState = (x, y) => {
 };
 
 /**
- * Merges an update into the specified {@link Cell} in a {@link Board}.
- * @param {Board} board
+ * Merges an update into the specified {@link MinesweeperCell} in a {@link MinesweeperBoard}.
+ * @param {MinesweeperBoard} board
  * @param {number} x
  * @param {number} y
  * @param {Object} mod
- * @returns {Board} A _new_ board.
+ * @returns {MinesweeperBoard} A _new_ board.
  * @throws {OutOfBoundsError}
  */
 export const modifyCell = (board, x, y, mod) => {
@@ -87,6 +87,11 @@ export const modifyCell = (board, x, y, mod) => {
   });
 };
 
+/**
+ * @param {BoardState} state
+ * @param {{}} action
+ * @return {BoardState}
+ */
 export function mainReducer(state = defaultState, action) {
   switch (action.type) {
     case CONFIGURE_BOARD:
