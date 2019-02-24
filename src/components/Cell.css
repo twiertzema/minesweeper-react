@@ -32,9 +32,9 @@
 
 .one { color: var(--text-color-one); }
 .two { color: var(--text-color-two); }
-.three { color: var(--text-color-two); }
-.four { color: var(--text-color-two); }
-.five { color: var(--text-color-two); }
-.six { color: var(--text-color-two); }
-.seven { color: var(--text-color-two); }
-.eight { color: var(--text-color-two); }
+.three { color: var(--text-color-three); }
+.four { color: var(--text-color-four); }
+.five { color: var(--text-color-five); }
+.six { color: var(--text-color-six); }
+.seven { color: var(--text-color-seven); }
+.eight { color: var(--text-color-eight); }
