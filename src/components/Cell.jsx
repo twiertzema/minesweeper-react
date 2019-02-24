@@ -83,8 +83,15 @@ Cell.propTypes = {
   onClick: PropTypes.func,
   onRightClick: PropTypes.func,
   state: PropTypes.number,
-  x: PropTypes.number,
-  y: PropTypes.number
+  x: PropTypes.number.isRequired,
+  y: PropTypes.number.isRequired
+};
+Cell.defaultProps = {
+  hasMine: false,
+  mineCount: 0,
+  onClick: () => {},
+  onRightClick: () => {},
+  state: CELL_STATE.DEFAULT
 };
 
 export const XPCell = ({ className, ...props }) => (

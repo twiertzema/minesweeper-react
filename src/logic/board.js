@@ -15,9 +15,9 @@ import { CELL_STATE, CONFIG_DEFAULT } from "../lib/constants";
 
 /** @type {BoardState} */
 export const defaultState = {
+  board: [[]],
   config: CONFIG_DEFAULT,
-  seeded: false,
-  board: [[]]
+  seeded: false
 };
 
 export const CONFIGURE_BOARD = "CONFIGURE_BOARD";
@@ -92,7 +92,7 @@ export const modifyCell = (board, x, y, mod) => {
  * @param {{}} action
  * @return {BoardState}
  */
-export function mainReducer(state = defaultState, action) {
+export function reducer(state = defaultState, action) {
   switch (action.type) {
     case CONFIGURE_BOARD:
       return {
