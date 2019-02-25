@@ -5,10 +5,10 @@ import {
   CONFIG_INTERMEDIATE,
   CONFIG_EXPERT
 } from "../lib/constants";
-import { CONFIGURE_BOARD, defaultState, mainReducer } from "./board";
+import { CONFIGURE_BOARD, defaultState, reducer } from "./board";
 
 it("should return the default state if `state` is undefined", () => {
-  const result = mainReducer(undefined, {});
+  const result = reducer(undefined, {});
   expect(result).toBe(defaultState);
 });
 
@@ -19,7 +19,7 @@ it("should return the current state if action type is unrecognized", () => {
   const action = {
     type: "bogus_action"
   };
-  const result = mainReducer(stateBefore, action);
+  const result = reducer(stateBefore, action);
   expect(result).toBe(stateBefore);
 });
 
@@ -32,7 +32,7 @@ describe("CONFIGURE_BOARD", () => {
       type: CONFIGURE_BOARD,
       configuration: CONFIG_DEFAULT
     };
-    const result = mainReducer(stateBefore, action);
+    const result = reducer(stateBefore, action);
     expect(result).toEqual({
       ...stateBefore,
       config: CONFIG_DEFAULT,
@@ -48,7 +48,7 @@ describe("CONFIGURE_BOARD", () => {
       type: CONFIGURE_BOARD,
       configuration: CONFIG_EASY
     };
-    const result = mainReducer(stateBefore, action);
+    const result = reducer(stateBefore, action);
     expect(result).toMatchSnapshot();
   });
 
@@ -60,7 +60,7 @@ describe("CONFIGURE_BOARD", () => {
       type: CONFIGURE_BOARD,
       configuration: CONFIG_INTERMEDIATE
     };
-    const result = mainReducer(stateBefore, action);
+    const result = reducer(stateBefore, action);
     expect(result).toMatchSnapshot();
   });
 
@@ -72,7 +72,7 @@ describe("CONFIGURE_BOARD", () => {
       type: CONFIGURE_BOARD,
       configuration: CONFIG_EXPERT
     };
-    const result = mainReducer(stateBefore, action);
+    const result = reducer(stateBefore, action);
     expect(result).toMatchSnapshot();
   });
 });
