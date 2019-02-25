@@ -4,7 +4,7 @@ import {
   placeMines,
   OutOfBoundsError
 } from "../lib/utils";
-import { CELL_STATE, CONFIG_DEFAULT } from "../lib/constants";
+import { CELL_STATE } from "../lib/constants";
 
 /**
  * @typedef {Object} BoardState
@@ -13,25 +13,18 @@ import { CELL_STATE, CONFIG_DEFAULT } from "../lib/constants";
  * @property {MinesweeperBoard} board
  */
 
-/** @type {BoardState} */
-export const defaultState = {
-  board: [[]],
-  config: CONFIG_DEFAULT,
-  seeded: false
-};
-
-export const CONFIGURE_BOARD = "CONFIGURE_BOARD";
+export const RECONFIGURE_BOARD = "RECONFIGURE_BOARD";
 export const REVEAL_CELL = "REVEAL_CELL";
 export const TURN_CELL_STATE = "TURN_CELL_STATE";
 
 /**
- * Action creator for `CONFIGURE_BOARD`.
+ * Action creator for `RECONFIGURE_BOARD`.
  * @param {MinesweeperConfig} configuration
  * @returns {{type: string, configuration: MinesweeperConfig}}
  */
-export const configureBoard = configuration => {
+export const reconfigureBoard = configuration => {
   return {
-    type: CONFIGURE_BOARD,
+    type: RECONFIGURE_BOARD,
     configuration
   };
 };
@@ -88,18 +81,24 @@ export const modifyCell = (board, x, y, mod) => {
 };
 
 /**
+ * @param {MinesweeperConfig} config
+ * @return {BoardState}
+ */
+export const init = config => ({
+  seeded: false,
+  config,
+  board: getBoard(config)
+});
+
+/**
  * @param {BoardState} state
  * @param {{}} action
  * @return {BoardState}
  */
-export function reducer(state = defaultState, action) {
+export function reducer(state, action) {
   switch (action.type) {
-    case CONFIGURE_BOARD:
-      return {
-        seeded: false,
-        config: action.configuration,
-        board: getBoard(action.configuration)
-      };
+    case RECONFIGURE_BOARD:
+      return init(action.configuration);
 
     case REVEAL_CELL: {
       const { x, y } = action;
@@ -161,6 +160,6 @@ export function reducer(state = defaultState, action) {
     }
 
     default:
-      return state;
+      throw new Error(`unrecognized action: ${action.type}`);
   }
 }

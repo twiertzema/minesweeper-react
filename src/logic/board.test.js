@@ -5,33 +5,20 @@ import {
   CONFIG_INTERMEDIATE,
   CONFIG_EXPERT
 } from "../lib/constants";
-import { CONFIGURE_BOARD, defaultState, reducer } from "./board";
-
-it("should return the default state if `state` is undefined", () => {
-  const result = reducer(undefined, {});
-  expect(result).toBe(defaultState);
-});
+import { init, reconfigureBoard, reducer } from "./board";
 
 it("should return the current state if action type is unrecognized", () => {
-  const stateBefore = {
-    ...defaultState
-  };
+  const stateBefore = init(CONFIG_DEFAULT);
   const action = {
     type: "bogus_action"
   };
-  const result = reducer(stateBefore, action);
-  expect(result).toBe(stateBefore);
+  expect(() => reducer(stateBefore, action)).toThrowError();
 });
 
-describe("CONFIGURE_BOARD", () => {
+describe("RECONFIGURE_BOARD", () => {
   it("should configure for CONFIG_DEFAULT", () => {
-    const stateBefore = {
-      ...defaultState
-    };
-    const action = {
-      type: CONFIGURE_BOARD,
-      configuration: CONFIG_DEFAULT
-    };
+    const stateBefore = init(CONFIG_DEFAULT);
+    const action = reconfigureBoard(CONFIG_DEFAULT);
     const result = reducer(stateBefore, action);
     expect(result).toEqual({
       ...stateBefore,
@@ -41,37 +28,22 @@ describe("CONFIGURE_BOARD", () => {
   });
 
   it("should configure for CONFIG_EASY", () => {
-    const stateBefore = {
-      ...defaultState
-    };
-    const action = {
-      type: CONFIGURE_BOARD,
-      configuration: CONFIG_EASY
-    };
+    const stateBefore = init(CONFIG_DEFAULT);
+    const action = reconfigureBoard(CONFIG_EASY);
     const result = reducer(stateBefore, action);
     expect(result).toMatchSnapshot();
   });
 
   it("should configure for CONFIG_INTERMEDIATE", () => {
-    const stateBefore = {
-      ...defaultState
-    };
-    const action = {
-      type: CONFIGURE_BOARD,
-      configuration: CONFIG_INTERMEDIATE
-    };
+    const stateBefore = init(CONFIG_DEFAULT);
+    const action = reconfigureBoard(CONFIG_INTERMEDIATE);
     const result = reducer(stateBefore, action);
     expect(result).toMatchSnapshot();
   });
 
   it("should configure for CONFIG_EXPERT", () => {
-    const stateBefore = {
-      ...defaultState
-    };
-    const action = {
-      type: CONFIGURE_BOARD,
-      configuration: CONFIG_EXPERT
-    };
+    const stateBefore = init(CONFIG_DEFAULT);
+    const action = reconfigureBoard(CONFIG_EXPERT);
     const result = reducer(stateBefore, action);
     expect(result).toMatchSnapshot();
   });
@@ -79,3 +51,5 @@ describe("CONFIGURE_BOARD", () => {
 
 // TODO: REVEAL_CELL
 // TODO: TURN_CELL_STATE
+
+// TODO: modifyCell

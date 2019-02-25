@@ -1,32 +1,15 @@
-import React, { useEffect, useReducer } from "react";
+import React, { useReducer } from "react";
 
-import {
-  CONFIG_DEFAULT,
-  CONFIG_EASY
-} from '../lib/constants'
+import { CONFIG_EASY } from "../lib/constants";
 
-import {
-  configureBoard,
-  defaultState,
-  reducer,
-  revealCell,
-  turnCellState
-} from "../logic/board";
+import { init, reducer, revealCell, turnCellState } from "../logic/board";
 
 import Cell from "./Cell";
 
 import "./Board.css";
 
 export default () => {
-  const [state, dispatch] = useReducer(reducer, defaultState);
-
-  useEffect(
-    () => {
-      if (state.config === CONFIG_DEFAULT) {
-        dispatch(configureBoard(CONFIG_EASY))
-      }
-    }
-  );
+  const [state, dispatch] = useReducer(reducer, CONFIG_EASY, init);
 
   return (
     <table className="board">
@@ -35,17 +18,19 @@ export default () => {
           <tr key={`row_${i}`}>
             {row.map((cell, j) => (
               <Cell
+                hasMine={cell.hasMine}
                 key={`cell_${j}`}
+                mineCount={cell.mineCount}
                 onClick={() => dispatch(revealCell(j, i))}
                 onRightClick={() => dispatch(turnCellState(j, i))}
+                state={cell.state}
                 x={j}
                 y={i}
-                {...cell}
               />
             ))}
           </tr>
         ))}
       </tbody>
     </table>
-  )
+  );
 };

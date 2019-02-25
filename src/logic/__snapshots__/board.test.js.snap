@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`CONFIGURE_BOARD should configure for CONFIG_EASY 1`] = `
+exports[`RECONFIGURE_BOARD should configure for CONFIG_EASY 1`] = `
 Object {
   "board": Array [
     Array [
@@ -436,7 +436,7 @@ Object {
 }
 `;
 
-exports[`CONFIGURE_BOARD should configure for CONFIG_EXPERT 1`] = `
+exports[`RECONFIGURE_BOARD should configure for CONFIG_EXPERT 1`] = `
 Object {
   "board": Array [
     Array [
@@ -2881,7 +2881,7 @@ Object {
 }
 `;
 
-exports[`CONFIGURE_BOARD should configure for CONFIG_INTERMEDIATE 1`] = `
+exports[`RECONFIGURE_BOARD should configure for CONFIG_INTERMEDIATE 1`] = `
 Object {
   "board": Array [
     Array [
