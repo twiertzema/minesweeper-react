@@ -119,6 +119,8 @@ objects representing the 3 different difficulty levels.
 
 Enum for cell states
 
+Type: [number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
 ##### DEFAULT
 
 Initial state of all [Cells](Cell). Defined as the absence of all other state.

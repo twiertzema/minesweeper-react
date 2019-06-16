@@ -8,9 +8,9 @@
   "dependencies": {
     "classnames": "^2.2.6",
     "prop-types": "^15.7.2",
-    "react": "^16.8.3",
-    "react-dom": "^16.8.3",
-    "react-scripts": "2.1.5"
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "react-scripts": "3.0.1"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -27,8 +27,8 @@
     "last 2 Edge versions"
   ],
   "devDependencies": {
-    "documentation": "^9.2.0",
-    "prettier": "1.16.4",
-    "seedrandom": "^2.4.4"
+    "documentation": "^11.0.1",
+    "prettier": "1.18.2",
+    "seedrandom": "^3.0.1"
   }
 }
