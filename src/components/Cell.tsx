@@ -31,8 +31,8 @@ const getCellTextClass = (mineCount: number): string => {
 type ClickHandler = (x: number, y: number) => void;
 
 interface RenderPropProps {
-  handleClick: (evt: MouseEvent) => void;
-  handleRightClick: (evt: MouseEvent) => void;
+  handleClick: React.MouseEventHandler;
+  handleRightClick: React.MouseEventHandler;
   hasMine: boolean;
   mineCount: number;
   state: CELL_STATE;
@@ -62,7 +62,7 @@ const getCellProps = (props: CellProps) => ({
 });
 
 export class Cell extends React.Component<CellProps> {
-  handleClick = (evt: MouseEvent) => {
+  handleClick = (evt: React.MouseEvent) => {
     const {
       // hasMine,
       // mineCount,
@@ -82,7 +82,7 @@ export class Cell extends React.Component<CellProps> {
     }
   };
 
-  handleRightClick = (evt: MouseEvent) => {
+  handleRightClick = (evt: React.MouseEvent) => {
     evt.preventDefault();
 
     const { onRightClick, x, y } = getCellProps(this.props);
@@ -133,7 +133,7 @@ export const XPCell = (props: XPCellProps) => {
   const { className, ...rest } = getXPCellProps(props);
   return (
     <Cell {...rest}>
-      {props => {
+      {(props: RenderPropProps) => {
         const {
           handleClick,
           handleRightClick,
@@ -143,7 +143,7 @@ export const XPCell = (props: XPCellProps) => {
         } = props;
 
         let cellClassName = "cell";
-        let content = null;
+        let content: React.ReactNode = null;
 
         switch (state) {
           case CELL_STATE.FLAGGED:

@@ -151,7 +151,6 @@ export function reducer(state: BoardState, action: BoardAction): BoardState {
         case CELL_STATE.QUESTIONED:
           newState = CELL_STATE.DEFAULT;
           break;
-        case CELL_STATE.REVEALED:
         default:
           break;
       }
