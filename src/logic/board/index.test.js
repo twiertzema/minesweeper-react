@@ -4,15 +4,16 @@ import {
   CONFIG_EASY,
   CONFIG_INTERMEDIATE,
   CONFIG_EXPERT
-} from "../lib/constants";
-import { init, reconfigureBoard, reducer } from "./board";
+} from "../../lib/constants";
+import { init, reconfigureBoard, reducer } from "../board";
 
 it("should return the current state if action type is unrecognized", () => {
   const stateBefore = init(CONFIG_DEFAULT);
   const action = {
     type: "bogus_action"
   };
-  expect(() => reducer(stateBefore, action)).toThrowError();
+  const result = reducer(stateBefore, action);
+  expect(result).toBe(stateBefore);
 });
 
 describe("RECONFIGURE_BOARD", () => {

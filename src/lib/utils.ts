@@ -1,40 +1,11 @@
+import {
+  MinesweeperConfig,
+  MinesweeperBoard,
+  forEachAdjacentCellCallback
+} from "../types";
 import { CELL_STATE } from "./constants";
 
 // TODO: Derive more information from boards instead of requiring config to always be passed in.
-
-/**
- * Configuration object that defines a board's setup.
- *
- * @typedef {{x: number, y: number, mines: number}} MinesweeperConfig
- * @property {number} x Number of mines on the X axis. *Note:* Must be >= `0`.
- * @property {number} y Number of mines on the Y axis. *Note:* Must be >= `0`.
- * @property {number} mines Number of mines contained on the board.
- *  *Note:* Must adhere to the following rules:
- *  - Must be >= `0`.
- *  - Must be <= the product of `x` and `y`.
- */
-/**
- * 2-dimensional {@link Array} representing a board in Minesweeper.
- *
- * **Note:** The first order of [Arrays](Array) represents the rows of the
- *  board, and the second order represents the columns. This means that the Y
- *  coordinate of a given {@link MinesweeperCell} is used as the index of the first order
- *  and the X coordinate is used as the index of the second order.
- *
- * @typedef {Array<Array<MinesweeperCell>>} MinesweeperBoard
- */
-/**
- * Object representing a cell on the board. These comprise the makeup of the
- *  {@link MinesweeperBoard}.
- *
- * @typedef {{hasMine: boolean, mineCount: number, state: CELL_STATE}} MinesweeperCell
- * @property {boolean} hasMine Indicates whether or not this cell contains a
- *  mine. Default value is `false`.
- * @property {number} mineCount Indicates how many mines are adjacent to this
- *  cell. Default value is `0`.
- * @property {CELL_STATE} state Enum value indicating what state the cell is in.
- *  Default value is `CELL_STATE.DEFAULT`.
- */
 
 /**
  * Verifies that the supplied {@link MinesweeperConfig} is valid.
@@ -53,7 +24,7 @@ import { CELL_STATE } from "./constants";
  * console.log(isConfigValid({ x: 5, y: 5, mines: 1337 })); // false
  * console.log(isConfigValid({ x: "5", y: "5", mines: "13" })); // false
  */
-export const isConfigValid = config => {
+export const isConfigValid = (config: MinesweeperConfig): boolean => {
   return (
     config != null &&
     typeof config === "object" &&
@@ -90,7 +61,11 @@ export const isConfigValid = config => {
  *
  * isOutOfBounds(invalidConfig, 10, -1); // throws InvalidConfigError
  */
-export const isOutOfBounds = (config, x, y) => {
+export const isOutOfBounds = (
+  config: MinesweeperConfig,
+  x: number,
+  y: number
+): boolean => {
   if (!isConfigValid(config)) throw new InvalidConfigError(config);
   return x < 0 || x >= config.x || y < 0 || y >= config.y;
 };
@@ -114,7 +89,7 @@ export const isOutOfBounds = (config, x, y) => {
  *
  * getBoard(invalidConfig); // throws InvalidConfigError
  */
-export const getBoard = config => {
+export const getBoard = (config: MinesweeperConfig): MinesweeperBoard => {
   if (!isConfigValid(config)) throw new InvalidConfigError(config);
 
   const board = [];
@@ -139,14 +114,6 @@ export const getBoard = config => {
 };
 
 /**
- * The format for the `action` parameter of {@link forEachAdjacentCell}.
- *
- * @callback forEachAdjacentCellCallback
- * @param {MinesweeperCell} cell The current {@link MinesweeperCell} in the iteration.
- * @param {number} x X coordinate of the cell.
- * @param {number} y Y coordinate of the cell.
- */
-/**
  * Executes the `action` callback for every cell adjacent to the target `x` and
  *  `y` coordinates (excluding out-of-bounds coordinates).
  *
@@ -155,7 +122,7 @@ export const getBoard = config => {
  * @param {MinesweeperBoard} board {@link MinesweeperBoard} from which to retrive the [Cells](Cell).
  * @param {number} x X coordinate of the target {@link MinesweeperCell}.
  * @param {number} y Y coordinate of the target {@link MinesweeperCell}.
- * @param {forEachAdjacentCellCallback} action Callback function to be exectued
+ * @param {forEachAdjacentCellCallback} action Callback function to be executed
  *  for every (valid) adjacent cell.
  * @returns {void}
  * @throws {InvalidConfigError} if `config` is not valid.
@@ -174,7 +141,13 @@ export const getBoard = config => {
  * //  { x: 1, y: 5 }
  * //  { x: 1, y: 6 }
  */
-export const forEachAdjacentCell = (config, board, x, y, action) => {
+export const forEachAdjacentCell = (
+  config: MinesweeperConfig,
+  board: MinesweeperBoard,
+  x: number,
+  y: number,
+  action: forEachAdjacentCellCallback
+): void => {
   if (!isConfigValid(config)) throw new InvalidConfigError(config);
   if (isOutOfBounds(config, x, y)) throw new OutOfBoundsError(x, y);
 
@@ -242,7 +215,12 @@ export const forEachAdjacentCell = (config, board, x, y, action) => {
  * placeMine(invalidConfig, [][], 0, 0) // throws InvalidConfigError
  * placeMine(myConfig, myBoard, 100, 3) // throws OutOfBoundsError
  */
-export const placeMine = (config, board, x, y) => {
+export const placeMine = (
+  config: MinesweeperConfig,
+  board: MinesweeperBoard,
+  x: number,
+  y: number
+): boolean => {
   if (!isConfigValid(config)) throw new InvalidConfigError(config);
   if (isOutOfBounds(config, x, y)) throw new OutOfBoundsError(x, y);
 
@@ -289,7 +267,12 @@ export const placeMine = (config, board, x, y) => {
  * // `myBoard` will now be randomly populated with mines and the cells'
  * //  `mineCount` will be set.
  */
-export const placeMines = (config, board, seedX, seedY) => {
+export const placeMines = (
+  config: MinesweeperConfig,
+  board: MinesweeperBoard,
+  seedX: number,
+  seedY: number
+): MinesweeperBoard => {
   // TODO: Rename `seedX`/`seedY`; the names make it sound like this function is idempotent.
   if (!isConfigValid(config)) throw new InvalidConfigError(config);
   if (isOutOfBounds(config, seedX, seedY))
@@ -362,7 +345,12 @@ export const placeMines = (config, board, seedX, seedY) => {
  * cascadeCells(invalidConfig, [][], 0, 0) // throws InvalidConfigError
  * cascadeCells(myConfig, myBoard, 100, 100) // throws OutOfBoundsError
  */
-export const cascadeCells = (config, board, x, y) => {
+export const cascadeCells = (
+  config: MinesweeperConfig,
+  board: MinesweeperBoard,
+  x: number,
+  y: number
+): void => {
   if (!isConfigValid(config)) throw new InvalidConfigError(config);
   if (isOutOfBounds(config, x, y)) throw new OutOfBoundsError(x, y);
 
@@ -379,7 +367,12 @@ export const cascadeCells = (config, board, x, y) => {
  * @returns {void}
  * @private
  */
-const _cascadeCells = (config, board, x, y) => {
+const _cascadeCells = (
+  config: MinesweeperConfig,
+  board: MinesweeperBoard,
+  x: number,
+  y: number
+): void => {
   forEachAdjacentCell(config, board, x, y, (cell, _x, _y) => {
     if (cell.state === CELL_STATE.REVEALED) return;
     cell.state = CELL_STATE.REVEALED;
@@ -392,8 +385,8 @@ const _cascadeCells = (config, board, x, y) => {
  * Automatically supplies the error message of `"invalid config"`.
  */
 export class InvalidConfigError extends Error {
-  constructor(...params) {
-    super("invalid confifg", ...params);
+  constructor(config: MinesweeperConfig) {
+    super(`invalid config: ${JSON.stringify(config)}`);
 
     if (Error.captureStackTrace) {
       Error.captureStackTrace(this, InvalidConfigError);
@@ -406,8 +399,8 @@ export class InvalidConfigError extends Error {
  * Automatically supplies the error message of `"out of bounds"`.
  */
 export class OutOfBoundsError extends Error {
-  constructor(...params) {
-    super("out of bounds", ...params);
+  constructor(x: number, y: number) {
+    super(`out of bounds: {x: ${x}, y: ${y}}`);
 
     if (Error.captureStackTrace) {
       Error.captureStackTrace(this, OutOfBoundsError);

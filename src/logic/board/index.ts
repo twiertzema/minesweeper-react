@@ -1,28 +1,35 @@
+import { MinesweeperBoard, MinesweeperConfig } from "../../types";
+import {
+  RECONFIGURE_BOARD,
+  REVEAL_CELL,
+  TURN_CELL_STATE,
+  BoardAction,
+  ReconfigureBoardAction,
+  RevealCellAction,
+  TurnCellStateAction
+} from "./types";
 import {
   cascadeCells,
   getBoard,
   placeMines,
   OutOfBoundsError
-} from "../lib/utils";
-import { CELL_STATE } from "../lib/constants";
+} from "../../lib/utils";
+import { CELL_STATE } from "../../lib/constants";
 
-/**
- * @typedef {Object} BoardState
- * @property {MinesweeperConfig} config
- * @property {boolean} seeded
- * @property {MinesweeperBoard} board
- */
-
-export const RECONFIGURE_BOARD = "RECONFIGURE_BOARD";
-export const REVEAL_CELL = "REVEAL_CELL";
-export const TURN_CELL_STATE = "TURN_CELL_STATE";
+interface BoardState {
+  config: MinesweeperConfig;
+  seeded: boolean;
+  board: MinesweeperBoard;
+}
 
 /**
  * Action creator for `RECONFIGURE_BOARD`.
  * @param {MinesweeperConfig} configuration
  * @returns {{type: string, configuration: MinesweeperConfig}}
  */
-export const reconfigureBoard = configuration => {
+export const reconfigureBoard = (
+  configuration: MinesweeperConfig
+): ReconfigureBoardAction => {
   return {
     type: RECONFIGURE_BOARD,
     configuration
@@ -35,7 +42,7 @@ export const reconfigureBoard = configuration => {
  * @param {number} y
  * @returns {{type: string, x: number, y: number}}
  */
-export const revealCell = (x, y) => {
+export const revealCell = (x: number, y: number): RevealCellAction => {
   return {
     type: REVEAL_CELL,
     x,
@@ -49,7 +56,7 @@ export const revealCell = (x, y) => {
  * @param {number} y
  * @returns {{type: string, x: number, y: number}}
  */
-export const turnCellState = (x, y) => {
+export const turnCellState = (x: number, y: number): TurnCellStateAction => {
   return {
     type: TURN_CELL_STATE,
     x,
@@ -66,7 +73,12 @@ export const turnCellState = (x, y) => {
  * @returns {MinesweeperBoard} A _new_ board.
  * @throws {OutOfBoundsError}
  */
-export const modifyCell = (board, x, y, mod) => {
+export const modifyCell = (
+  board: MinesweeperBoard,
+  x: number,
+  y: number,
+  mod: Object
+): MinesweeperBoard => {
   if (!board[y][x]) throw new OutOfBoundsError(x, y);
   return board.map((row, j) => {
     if (j !== y) return row;
@@ -80,22 +92,13 @@ export const modifyCell = (board, x, y, mod) => {
   });
 };
 
-/**
- * @param {MinesweeperConfig} config
- * @return {BoardState}
- */
-export const init = config => ({
+export const init = (config: MinesweeperConfig): BoardState => ({
   seeded: false,
   config,
   board: getBoard(config)
 });
 
-/**
- * @param {BoardState} state
- * @param {{}} action
- * @return {BoardState}
- */
-export function reducer(state, action) {
+export function reducer(state: BoardState, action: BoardAction): BoardState {
   switch (action.type) {
     case RECONFIGURE_BOARD:
       return init(action.configuration);
@@ -160,6 +163,6 @@ export function reducer(state, action) {
     }
 
     default:
-      throw new Error(`unrecognized action: ${action.type}`);
+      return state;
   }
 }
