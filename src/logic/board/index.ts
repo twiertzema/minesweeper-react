@@ -157,7 +157,7 @@ export function reducer(state: BoardState, action: BoardAction): BoardState {
 
       return {
         ...state,
-        board: modifyCell(state.board, action.x, action.y, { state: newState })
+        board: modifyCell(state.board, x, y, { state: newState })
       };
     }
 

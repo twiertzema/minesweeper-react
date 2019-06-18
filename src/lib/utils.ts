@@ -26,11 +26,6 @@ import { CELL_STATE } from "./constants";
  */
 export const isConfigValid = (config: MinesweeperConfig): boolean => {
   return (
-    config != null &&
-    typeof config === "object" &&
-    typeof config.x === "number" &&
-    typeof config.y === "number" &&
-    typeof config.mines === "number" &&
     !isNaN(config.x) &&
     !isNaN(config.y) &&
     !isNaN(config.mines) &&

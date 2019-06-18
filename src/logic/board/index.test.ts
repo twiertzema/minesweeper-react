@@ -5,7 +5,7 @@ import {
   CONFIG_INTERMEDIATE,
   CONFIG_EXPERT
 } from "../../lib/constants";
-import { init, reconfigureBoard, reducer } from "../board";
+import { init, reconfigureBoard, reducer } from "./index";
 
 it("should return the current state if action type is unrecognized", () => {
   const stateBefore = init(CONFIG_DEFAULT);

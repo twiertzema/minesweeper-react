@@ -1,5 +1,7 @@
 import seedrandom from "seedrandom";
 
+import { MinesweeperBoard } from "../types";
+
 import {
   CELL_STATE,
   CONFIG_DEFAULT,
@@ -21,10 +23,11 @@ import {
 
 const testConfig = { x: 13, y: 13, mines: 13 };
 let __defaultBoard = getBoard(testConfig);
-const cloneBoard = board => board.map(row => row.map(cell => ({ ...cell })));
+const cloneBoard = (board: MinesweeperBoard) =>
+  board.map(row => row.map(cell => ({ ...cell })));
 
 const __originalRandom = Math.random;
-const seedRandom = (seed = "minesweeper-react") =>
+const seedRandom = (seed: any = "minesweeper-react") =>
   (global.Math.random = seedrandom(seed));
 const restoreRandom = () => (global.Math.random = __originalRandom);
 const seededMineCoords = [
@@ -70,53 +73,10 @@ describe("isConfigValid", () => {
     expect(isConfigValid(CONFIG_DEFAULT)).toBe(true);
   });
 
-  it("should return `false` for invalid `config` type", () => {
-    expect(isConfigValid(undefined)).toBe(false);
-    expect(isConfigValid(null)).toBe(false);
-    expect(isConfigValid(7)).toBe(false);
-    expect(isConfigValid("7")).toBe(false);
-    expect(isConfigValid([])).toBe(false);
-    expect(isConfigValid(function() {})).toBe(false);
-  });
-
-  it("should return `false` for properties of invalid type", () => {
-    expect(isConfigValid({ x: undefined, y: 7, mines: 7 })).toBe(false);
-    expect(isConfigValid({ x: 7, y: undefined, mines: 7 })).toBe(false);
-    expect(isConfigValid({ x: 7, y: 7, mines: undefined })).toBe(false);
-
-    expect(isConfigValid({ x: null, y: 7, mines: 7 })).toBe(false);
-    expect(isConfigValid({ x: 7, y: null, mines: 7 })).toBe(false);
-    expect(isConfigValid({ x: 7, y: 7, mines: null })).toBe(false);
-
-    expect(isConfigValid({ x: "7", y: 7, mines: 7 })).toBe(false);
-    expect(isConfigValid({ x: 7, y: "7", mines: 7 })).toBe(false);
-    expect(isConfigValid({ x: 7, y: 7, mines: "7" })).toBe(false);
-
+  it("should return `false` for NaN properties", () => {
     expect(isConfigValid({ x: NaN, y: 7, mines: 7 })).toBe(false);
     expect(isConfigValid({ x: 7, y: NaN, mines: 7 })).toBe(false);
     expect(isConfigValid({ x: 7, y: 7, mines: NaN })).toBe(false);
-
-    expect(isConfigValid({ x: {}, y: 7, mines: 7 })).toBe(false);
-    expect(isConfigValid({ x: 7, y: {}, mines: 7 })).toBe(false);
-    expect(isConfigValid({ x: 7, y: 7, mines: {} })).toBe(false);
-
-    expect(isConfigValid({ x: [], y: 7, mines: 7 })).toBe(false);
-    expect(isConfigValid({ x: 7, y: [], mines: 7 })).toBe(false);
-    expect(isConfigValid({ x: 7, y: 7, mines: [] })).toBe(false);
-
-    expect(isConfigValid({ x: function() {}, y: 7, mines: 7 })).toBe(false);
-    expect(isConfigValid({ x: 7, y: function() {}, mines: 7 })).toBe(false);
-    expect(isConfigValid({ x: 7, y: 7, mines: function() {} })).toBe(false);
-  });
-
-  it("should return `false` for missing properties", () => {
-    expect(isConfigValid({ y: 7, mines: 7 })).toBe(false);
-    expect(isConfigValid({ x: 7, mines: 7 })).toBe(false);
-    expect(isConfigValid({ x: 7, y: 7 })).toBe(false);
-    expect(isConfigValid({ x: 7 })).toBe(false);
-    expect(isConfigValid({ y: 7 })).toBe(false);
-    expect(isConfigValid({ mines: 7 })).toBe(false);
-    expect(isConfigValid({})).toBe(false);
   });
 
   it("should return `false` for negative properties", () => {
@@ -201,11 +161,6 @@ describe("isOutOfBounds", () => {
   });
 
   it("should throw an InvalidConfigError for an invalid config", () => {
-    expect(() => isOutOfBounds(undefined, 5, 5)).toThrowError(
-      InvalidConfigError
-    );
-    expect(() => isOutOfBounds(null, 5, 5)).toThrowError(InvalidConfigError);
-    expect(() => isOutOfBounds({}, 5, 5)).toThrowError(InvalidConfigError);
     expect(() => isOutOfBounds({ x: -1, y: 42, mines: 13 }, 5, 5)).toThrowError(
       InvalidConfigError
     );
@@ -273,9 +228,6 @@ describe("getBoard", () => {
   });
 
   it("should throw an InvalidConfigError for an invalid config", () => {
-    expect(() => getBoard(undefined)).toThrowError(InvalidConfigError);
-    expect(() => getBoard(null)).toThrowError(InvalidConfigError);
-    expect(() => getBoard({})).toThrowError(InvalidConfigError);
     expect(() => getBoard({ x: -1, y: 42, mines: 13 })).toThrowError(
       InvalidConfigError
     );
@@ -283,8 +235,8 @@ describe("getBoard", () => {
 });
 
 describe("forEachAdjacentCell", () => {
-  const getCallbackExpect = callback => {
-    return (_x, _y) => {
+  const getCallbackExpect = (callback: jest.Mock) => {
+    return (_x: number, _y: number) => {
       expect(
         callback.mock.calls.some(call => call[1] === _x && call[2] === _y)
       ).toBe(true);
@@ -455,15 +407,6 @@ describe("forEachAdjacentCell", () => {
 
   it("should throw an InvalidConfigError for an invalid config", () => {
     expect(() =>
-      forEachAdjacentCell(undefined, testBoard, 5, 5, () => {})
-    ).toThrowError(InvalidConfigError);
-    expect(() =>
-      forEachAdjacentCell(null, testBoard, 5, 5, () => {})
-    ).toThrowError(InvalidConfigError);
-    expect(() =>
-      forEachAdjacentCell({}, testBoard, 5, 5, () => {})
-    ).toThrowError(InvalidConfigError);
-    expect(() =>
       forEachAdjacentCell(
         { x: -1, y: 42, mines: 13 },
         testBoard,
@@ -535,15 +478,6 @@ describe("placeMine", () => {
   });
 
   it("should throw an InvalidConfigError for an invalid config", () => {
-    expect(() => placeMine(undefined, testBoard, 5, 5)).toThrowError(
-      InvalidConfigError
-    );
-    expect(() => placeMine(null, testBoard, 5, 5)).toThrowError(
-      InvalidConfigError
-    );
-    expect(() => placeMine({}, testBoard, 5, 5)).toThrowError(
-      InvalidConfigError
-    );
     expect(() =>
       placeMine({ x: -1, y: 42, mines: 13 }, testBoard, 5, 5)
     ).toThrowError(InvalidConfigError);
@@ -621,15 +555,6 @@ describe("placeMines", () => {
   });
 
   it("should throw an InvalidConfigError for an invalid config", () => {
-    expect(() => placeMines(undefined, testBoard, 5, 5)).toThrowError(
-      InvalidConfigError
-    );
-    expect(() => placeMines(null, testBoard, 5, 5)).toThrowError(
-      InvalidConfigError
-    );
-    expect(() => placeMines({}, testBoard, 5, 5)).toThrowError(
-      InvalidConfigError
-    );
     expect(() =>
       placeMines({ x: -1, y: 42, mines: 13 }, testBoard, 5, 5)
     ).toThrowError(InvalidConfigError);
@@ -697,15 +622,6 @@ describe("cascadeCells", () => {
   });
 
   it("should throw an InvalidConfigError for an invalid config", () => {
-    expect(() => cascadeCells(undefined, testBoard, 5, 5)).toThrowError(
-      InvalidConfigError
-    );
-    expect(() => cascadeCells(null, testBoard, 5, 5)).toThrowError(
-      InvalidConfigError
-    );
-    expect(() => cascadeCells({}, testBoard, 5, 5)).toThrowError(
-      InvalidConfigError
-    );
     expect(() =>
       cascadeCells({ x: -1, y: 42, mines: 13 }, testBoard, 5, 5)
     ).toThrowError(InvalidConfigError);

@@ -24,4 +24,11 @@ export interface TurnCellStateAction {
 export type BoardAction =
   | ReconfigureBoardAction
   | RevealCellAction
-  | TurnCellStateAction;
+  | TurnCellStateAction
+  | {
+      type: Exclude<
+        string,
+        typeof RECONFIGURE_BOARD | typeof REVEAL_CELL | typeof TURN_CELL_STATE
+      >;
+      [paramName: string]: any;
+    };
