@@ -9,10 +9,20 @@ An XP Minesweeper clone using React (for fun).
 This application is not currently hosted anywhere for interaction. Unfortunately, the only way
 to interact with it is to run it locally on your own machine.
 
-**NOTE:** Git and NodeJS are _currently_ necessary for these steps.
+**NOTE:** NodeJS is necessary for these steps.
 
+### Download the ZIP
+1. Download the ZIP file from the repository on GitHub.
+1. Extract the files into a directory locally.
+1. Navigate to that unpacked directory in the command line.
+1. Run `npm install`.
+1. Run `npm start`.
+   * This should launch the application in your default browser.
+
+### Clone the Repository
+If you have Git installed on your machine, you can alternatively clone the respository.
 1. Clone the repository to your machine.
-1. Navigate to the root directory of the repository.
+1. Navigate to the root directory of the repository in the command line.
 1. Run `npm install`.
 1. Run `npm run start`.
    * This should launch the application in your default browser.
