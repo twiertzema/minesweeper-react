@@ -24,7 +24,9 @@ export interface TurnCellStateAction {
 export type BoardAction =
   | ReconfigureBoardAction
   | RevealCellAction
-  | TurnCellStateAction
+  | TurnCellStateAction;
+// TODO: Figure out how to make a "loose" discriminated union.
+/*
   | {
       type: Exclude<
         string,
@@ -32,3 +34,4 @@ export type BoardAction =
       >;
       [paramName: string]: any;
     };
+ */
