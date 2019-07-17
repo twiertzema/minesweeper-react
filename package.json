@@ -24,7 +24,7 @@
     "doc:serve": "documentation serve src/lib/utils.js -f md -c documentation.yml",
     "start": "webpack-dev-server --open",
     "type-check": "tsc",
-    "type-check:watch": "npm run tye-check -- --watch",
+    "type-check:watch": "npm run type-check -- --watch",
     "test": "jest"
   },
   "browserslist": [
