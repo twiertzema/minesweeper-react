@@ -14,16 +14,18 @@
     "prop-types": "^15.7.2",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
-    "react-scripts": "3.0.1",
     "typescript": "^3.5.2"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
+    "build": "npm run build:types && npm run build:js",
+    "build:js": "webpack",
+    "build:types": "tsc -emitDeclarationOnly",
     "doc:readme": "documentation readme src/lib/utils.js -s API -c documentation.yml",
-    "doc:serve": "documentation serve src/lib/utils.js -f md -c documentation.yml"
+    "doc:serve": "documentation serve src/lib/utils.js -f md -c documentation.yml",
+    "start": "webpack-dev-server --open",
+    "type-check": "tsc",
+    "type-check:watch": "npm run tye-check -- --watch",
+    "test": "jest"
   },
   "browserslist": [
     "last 2 Chrome versions",
@@ -32,10 +34,24 @@
     "last 2 Edge versions"
   ],
   "devDependencies": {
+    "@babel/plugin-proposal-class-properties": "^7.5.0",
+    "@babel/plugin-proposal-object-rest-spread": "^7.5.4",
+    "@babel/preset-env": "^7.5.4",
+    "@babel/preset-typescript": "^7.3.3",
     "@types/jest": "^24.0.15",
     "@types/seedrandom": "^2.4.28",
+    "babel-loader": "^8.0.6",
     "documentation": "^11.0.1",
+    "eslint": "^6.0.1",
+    "eslint-config-prettier": "^6.0.0",
+    "eslint-plugin-import": "^2.18.0",
+    "eslint-plugin-jest": "^22.9.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "jest": "^24.8.0",
     "prettier": "1.18.2",
-    "seedrandom": "^3.0.1"
+    "seedrandom": "^3.0.1",
+    "webpack": "^4.36.0",
+    "webpack-cli": "^3.3.6",
+    "webpack-dev-server": "^3.7.2"
   }
 }

@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 
 import registerServiceWorker from "./registerServiceWorker";
 
+import "./module-fix";
 import "./index.css";
 
 import App from "./App";

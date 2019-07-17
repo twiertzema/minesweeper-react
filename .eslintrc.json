@@ -1,12 +1,25 @@
 {
-  "extends": "react-app",
+  "env": {
+    "browser": true,
+    "es6": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "prettier",
+    "plugin:jest/recommended"
+  ],
+  "parserOptions": {
+    "ecmaVersion": 2018,
+    "sourceType": "module"
+  },
   "rules": {
-    "valid-jsdoc": [
-      "error",
-      {
-        "requireParamDescription": false,
-        "requireReturnDescription": false
-      }
-    ]
+    "curly": "warn",
+    "no-console": "off",
+    "no-unused-vars": ["error", {
+      "args": "none",
+      "ignoreRestSiblings": true
+    }],
+    "strict": ["error", "global"],
+    "valid-jsdoc": "off"
   }
 }
