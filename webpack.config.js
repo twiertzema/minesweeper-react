@@ -1,6 +1,7 @@
 /* eslint-env node */
 
 const path = require("path");
+const webpack = require("webpack")
 
 module.exports = {
   mode: "development",
@@ -16,9 +17,10 @@ module.exports = {
         test: /\.css$/,
         use: [
           { loader: "style-loader" },
+          {loader: "@teamsupercell/typings-for-css-modules-loader"},
           {
             loader: "css-loader",
-            options: { modules: true, importLoaders: 2 }
+            options: { importLoaders: 1, modules: true, sourceMap: true }
           },
           { loader: "postcss-loader", options: { sourceMap: true } }
         ]
@@ -37,5 +39,10 @@ module.exports = {
   output: {
     filename: "[name].bundle.js",
     path: path.resolve(__dirname, "dist")
-  }
+  },
+  plugins: [
+    new webpack.WatchIgnorePlugin([
+      /css\.d\.ts$/
+    ])
+  ]
 };

@@ -11,13 +11,13 @@ import {
 
 import Cell from "./Cell";
 
-import "./Board.css";
+import styles from "./Board.css";
 
 export default () => {
   const [state, dispatch] = useReducer(boardReducer, CONFIG_EASY, init);
 
   return (
-    <table className="board">
+    <table className={styles.board}>
       <tbody>
         {state.board.map((row, i) => (
           <tr key={`row_${i}`}>
