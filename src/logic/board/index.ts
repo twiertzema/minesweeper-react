@@ -38,9 +38,6 @@ export const reconfigureBoard = (
 
 /**
  * Action creator for `REVEAL_CELL`.
- * @param {number} x
- * @param {number} y
- * @returns {{type: string, x: number, y: number}}
  */
 export const revealCell = (x: number, y: number): RevealCellAction => {
   return {

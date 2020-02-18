@@ -12,7 +12,7 @@ it("should return the current state if action type is unrecognized", () => {
   const action = {
     type: "bogus_action"
   };
-  const result = reducer(stateBefore, action);
+  const result = reducer(stateBefore, action as any);
   expect(result).toBe(stateBefore);
 });
 

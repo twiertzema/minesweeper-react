@@ -2,17 +2,22 @@ import React, { useReducer } from "react";
 
 import { CONFIG_EASY } from "../lib/constants";
 
-import { init, reducer, revealCell, turnCellState } from "../logic/board";
+import {
+  init,
+  reducer as boardReducer,
+  revealCell,
+  turnCellState
+} from "../logic/board";
 
 import Cell from "./Cell";
 
-import "./Board.css";
+import styles from "./Board.css";
 
 export default () => {
-  const [state, dispatch] = useReducer(reducer, CONFIG_EASY, init);
+  const [state, dispatch] = useReducer(boardReducer, CONFIG_EASY, init);
 
   return (
-    <table className="board">
+    <table className={styles.board}>
       <tbody>
         {state.board.map((row, i) => (
           <tr key={`row_${i}`}>

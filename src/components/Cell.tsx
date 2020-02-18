@@ -3,26 +3,27 @@ import classnames from "classnames";
 
 import { CELL_STATE } from "../lib/constants";
 import FlagIcon from "../i/flag.png";
-import "./Cell.css";
+
+import styles from "./Cell.css";
 
 const getCellTextClass = (mineCount: number): string => {
   switch (mineCount) {
     case 1:
-      return "one";
+      return styles.one;
     case 2:
-      return "two";
+      return styles.two;
     case 3:
-      return "three";
+      return styles.three;
     case 4:
-      return "four";
+      return styles.four;
     case 5:
-      return "five";
+      return styles.five;
     case 6:
-      return "six";
+      return styles.six;
     case 7:
-      return "seven";
+      return styles.seven;
     case 8:
-      return "eight";
+      return styles.eight;
     default:
       return "";
   }
@@ -142,13 +143,13 @@ export const XPCell = (props: XPCellProps) => {
           state
         } = props;
 
-        let cellClassName = "cell";
+        let cellClassName = styles.cell;
         let content: React.ReactNode = null;
 
         switch (state) {
           case CELL_STATE.FLAGGED:
             content = <img src={FlagIcon} alt="flag" />;
-            cellClassName = classnames("cell", "flagged");
+            cellClassName = classnames(styles.cell, styles.flagged);
             break;
 
           case CELL_STATE.QUESTIONED:
@@ -168,7 +169,7 @@ export const XPCell = (props: XPCellProps) => {
                 );
               }
             }
-            cellClassName = classnames("cell", "revealed");
+            cellClassName = classnames(styles.cell, styles.revealed);
             break;
 
           case CELL_STATE.DEFAULT:
