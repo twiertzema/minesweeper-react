@@ -2,7 +2,7 @@
 .idea/usage.statistics.xml
 .idea/workspace.xml
 
-dist
+dist/*.bundle.js
 
 # dependencies
 /node_modules

@@ -31,7 +31,7 @@ export declare const turnCellState: (x: number, y: number) => TurnCellStateActio
  * @returns {MinesweeperBoard} A _new_ board.
  * @throws {OutOfBoundsError}
  */
-export declare const modifyCell: (board: import("../../types").MinesweeperCell[][], x: number, y: number, mod: Object) => import("../../types").MinesweeperCell[][];
+export declare const modifyCell: (board: MinesweeperBoard, x: number, y: number, mod: Object) => MinesweeperBoard;
 export declare const init: (config: MinesweeperConfig) => BoardState;
 export declare function reducer(state: BoardState, action: BoardAction): BoardState;
 export {};

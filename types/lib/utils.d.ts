@@ -1,4 +1,4 @@
-import { MinesweeperConfig, forEachAdjacentCellCallback } from "../types";
+import { MinesweeperConfig, MinesweeperBoard, forEachAdjacentCellCallback } from "../types";
 /**
  * Verifies that the supplied {@link MinesweeperConfig} is valid.
  *
@@ -57,7 +57,7 @@ export declare const isOutOfBounds: (config: MinesweeperConfig, x: number, y: nu
  *
  * getBoard(invalidConfig); // throws InvalidConfigError
  */
-export declare const getBoard: (config: MinesweeperConfig) => import("../types").MinesweeperCell[][];
+export declare const getBoard: (config: MinesweeperConfig) => MinesweeperBoard;
 /**
  * Executes the `action` callback for every cell adjacent to the target `x` and
  *  `y` coordinates (excluding out-of-bounds coordinates).
@@ -86,7 +86,7 @@ export declare const getBoard: (config: MinesweeperConfig) => import("../types")
  * //  { x: 1, y: 5 }
  * //  { x: 1, y: 6 }
  */
-export declare const forEachAdjacentCell: (config: MinesweeperConfig, board: import("../types").MinesweeperCell[][], x: number, y: number, action: forEachAdjacentCellCallback) => void;
+export declare const forEachAdjacentCell: (config: MinesweeperConfig, board: MinesweeperBoard, x: number, y: number, action: forEachAdjacentCellCallback) => void;
 /**
  * Modifies the given {@link MinesweeperBoard} by setting `hasMine` to `true` for the
  *  {@link MinesweeperCell} at the specified `x` and `y` coordinates and increments
@@ -139,7 +139,7 @@ export declare const forEachAdjacentCell: (config: MinesweeperConfig, board: imp
  * placeMine(invalidConfig, [][], 0, 0) // throws InvalidConfigError
  * placeMine(myConfig, myBoard, 100, 3) // throws OutOfBoundsError
  */
-export declare const placeMine: (config: MinesweeperConfig, board: import("../types").MinesweeperCell[][], x: number, y: number) => boolean;
+export declare const placeMine: (config: MinesweeperConfig, board: MinesweeperBoard, x: number, y: number) => boolean;
 /**
  * Randomly places mines on `board` (using {@link placeMine}), avoiding the
  *  {@link MinesweeperCell} specified by `seedX` and `seedY`.
@@ -168,7 +168,7 @@ export declare const placeMine: (config: MinesweeperConfig, board: import("../ty
  * // `myBoard` will now be randomly populated with mines and the cells'
  * //  `mineCount` will be set.
  */
-export declare const placeMines: (config: MinesweeperConfig, board: import("../types").MinesweeperCell[][], seedX: number, seedY: number) => import("../types").MinesweeperCell[][];
+export declare const placeMines: (config: MinesweeperConfig, board: MinesweeperBoard, seedX: number, seedY: number) => MinesweeperBoard;
 /**
  * If the origin {@link MinesweeperCell} specified by `x` and `y` is "empty" (has a
  *  `mineCount` of `0`), this function modifies `board` by revealing all empty
@@ -212,7 +212,7 @@ export declare const placeMines: (config: MinesweeperConfig, board: import("../t
  * cascadeCells(invalidConfig, [][], 0, 0) // throws InvalidConfigError
  * cascadeCells(myConfig, myBoard, 100, 100) // throws OutOfBoundsError
  */
-export declare const cascadeCells: (config: MinesweeperConfig, board: import("../types").MinesweeperCell[][], x: number, y: number) => void;
+export declare const cascadeCells: (config: MinesweeperConfig, board: MinesweeperBoard, x: number, y: number) => void;
 /**
  * Indicates that the supplied configuration is not valid.
  * Automatically supplies the error message of `"invalid config"`.

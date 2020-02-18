@@ -15,19 +15,22 @@ module.exports = {
       {
         test: /\.css$/,
         use: [
-          { loader: "style-loader", options: { sourceMap: true } },
+          { loader: "style-loader" },
           {
             loader: "css-loader",
-            options: { modules: true, sourceMap: true, importLoaders: 2 }
+            options: { modules: true, importLoaders: 2 }
           },
           { loader: "postcss-loader", options: { sourceMap: true } }
         ]
       },
-      { test: /\.(gif|jpg|png|svg)$/, use: ["file-loader"] }
+      {
+        test: /\.(gif|jpg|png|svg|ico)$/,
+        use: ["file-loader?name=[name].[ext]"]
+      }
     ]
   },
   devServer: {
-    contentBase: "./public",
+    contentBase: path.join(__dirname, "dist"),
     compress: true,
     port: 9000
   },
