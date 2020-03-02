@@ -7,8 +7,11 @@ dist/*.bundle.js
 # dependencies
 /node_modules
 
+# Electron Webpack plugin
+.webpack
+
 # testing
-/coverage
+coverage
 
 # misc
 .DS_Store
@@ -20,3 +23,5 @@ dist/*.bundle.js
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+out/
