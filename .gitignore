@@ -7,8 +7,11 @@ dist/*.bundle.js
 # dependencies
 /node_modules
 
+# Electron Webpack plugin
+.webpack
+
 # testing
-/coverage
+coverage
 
 # misc
 .DS_Store

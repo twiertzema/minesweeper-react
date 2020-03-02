@@ -1,7 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
-import "./module-fix";
 import "./index.css";
 
 import App from "./App";
