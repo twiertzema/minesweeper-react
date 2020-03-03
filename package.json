@@ -8,7 +8,7 @@
   "main": ".webpack/main",
   "scripts": {
     "build": "npm run build:types && npm run build:js",
-    "build:js": "webpack",
+    "build:js": "npm run make",
     "build:types": "tsc --emitDeclarationOnly",
     "doc:readme": "documentation readme src/lib/utils.js -s API -c documentation.yml",
     "doc:serve": "documentation serve src/lib/utils.js -f md -c documentation.yml",
@@ -96,19 +96,37 @@
           }
         ]
       ],
-      "make_targets": {
-        "win32": [
-          "squirrel"
-        ],
-        "darwin": [
-          "zip"
-        ],
-        "linux": [
-          "deb",
-          "rpm"
-        ]
-      },
-      "electronPackagerConfig": {
+      "makers": [
+        {
+          "name": "@electron-forge/maker-squirrel",
+          "platforms": [
+            "win32"
+          ],
+          "config": {}
+        },
+        {
+          "name": "@electron-forge/maker-zip",
+          "platforms": [
+            "darwin"
+          ],
+          "config": {}
+        },
+        {
+          "name": "@electron-forge/maker-deb",
+          "platforms": [
+            "linux"
+          ],
+          "config": {}
+        },
+        {
+          "name": "@electron-forge/maker-rpm",
+          "platforms": [
+            "linux"
+          ],
+          "config": {}
+        }
+      ],
+      "packagerConfig": {
         "packageManager": "npm"
       },
       "electronWinstallerConfig": {
