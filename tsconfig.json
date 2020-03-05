@@ -2,8 +2,8 @@
   "compilerOptions": {
     // "allowJs": true,
     // "allowSyntheticDefaultImports": true,
-    // "declaration": true,
     "baseUrl": ".",
+    "declaration": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "jsx": "react",
