@@ -7,26 +7,10 @@
 An XP Minesweeper clone using React (for fun).
 
 ## Playing the Game
-This application is not currently hosted anywhere for interaction. Unfortunately, the only way
-to interact with it is to run it locally on your own machine.
-
-**NOTE:** NodeJS is necessary for these steps.
-
-### Download the ZIP
-1. Download the ZIP file from the repository on GitHub.
-1. Extract the files into a directory locally.
-1. Navigate to that unpacked directory in the command line.
-1. Run `npm install`.
-1. Run `npm start`.
-   * This should launch the application in your default browser.
-
-### Clone the Repository
-If you have Git installed on your machine, you can alternatively clone the respository.
-1. Clone the repository to your machine.
-1. Navigate to the root directory of the repository in the command line.
-1. Run `npm install`.
-1. Run `npm run start`.
-   * This should launch the application in your default browser.
+This game is built and distributed using Electron, meaning it can be installed as an
+application on your computer. To do so, go to the [releases](https://github.com/twiertzema/minesweeper-react/releases)
+section of the repo, choose a particular release, and download and run the relevant installer
+from the **Assets** of that release.
 
 ## Roadmap
 
