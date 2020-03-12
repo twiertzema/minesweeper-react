@@ -41,3 +41,7 @@ export const CONFIG_EXPERT: MinesweeperConfig = { x: 30, y: 16, mines: 99 };
  * configuration is loaded.
  */
 export const CONFIG_DEFAULT: MinesweeperConfig = { x: 0, y: 0, mines: 0 };
+
+export enum IPC_MESSAGE {
+  NEW_GAME = "new-game"
+}
