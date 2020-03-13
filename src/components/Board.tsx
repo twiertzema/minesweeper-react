@@ -19,10 +19,16 @@ export default () => {
   const [state, dispatch] = useReducer(boardReducer, CONFIG_EASY, init);
 
   useEffect(() => {
-    // Listen for the "new game" message from the main process.
-    ipcRenderer.on(IPC_MESSAGE.NEW_GAME, (event, arg) => {
+    const newGameListener = (event, arg) => {
       dispatch(reconfigureBoard(state.config));
-    });
+    };
+
+    // Listen for the "new game" message from the main process.
+    ipcRenderer.on(IPC_MESSAGE.NEW_GAME, newGameListener);
+
+    return () => {
+      ipcRenderer.removeListener(IPC_MESSAGE.NEW_GAME, newGameListener);
+    };
   }, []);
 
   return (
