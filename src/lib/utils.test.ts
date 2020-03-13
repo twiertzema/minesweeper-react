@@ -1,5 +1,4 @@
-import seedrandom from "seedrandom";
-
+import {seedRandom, restoreRandom} from '../../utils/test.utils'
 import { MinesweeperBoard } from "../types";
 
 import {
@@ -26,10 +25,6 @@ let __defaultBoard = getBoard(testConfig);
 const cloneBoard = (board: MinesweeperBoard) =>
   board.map(row => row.map(cell => ({ ...cell })));
 
-const __originalRandom = Math.random;
-const seedRandom = (seed: any = "minesweeper-react") =>
-  (global.Math.random = seedrandom(seed));
-const restoreRandom = () => (global.Math.random = __originalRandom);
 const seededMineCoords = [
   { x: 0, y: 3 },
   { x: 1, y: 4 },

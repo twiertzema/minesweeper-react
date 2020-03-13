@@ -22,7 +22,13 @@ class TestIpcRenderer {
   invoke: never;
 
   on(channel: string, listener: TestIpcRendererEventListener) {
-    this._channels[channel].push(listener);
+    const _channel = this._channels[channel];
+
+    if (!_channel) {
+      this._channels[channel] = [listener];
+    } else {
+      _channel.push(listener);
+    }
   }
 
   once: never;
@@ -31,7 +37,7 @@ class TestIpcRenderer {
     const _channel = this._channels[channel];
     if (!_channel) return;
 
-    _channel?.splice(_channel.findIndex(listener), 1);
+    _channel.splice(_channel.findIndex(listener), 1);
   }
 
   removeAllListeners(channel: string) {
