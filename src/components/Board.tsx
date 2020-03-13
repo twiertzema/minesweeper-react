@@ -1,10 +1,12 @@
-import React, { useReducer } from "react";
+import { ipcRenderer } from "electron";
+import React, { useEffect, useReducer } from "react";
 
-import { CONFIG_EASY } from "../lib/constants";
+import { CONFIG_EASY, IPC_MESSAGE } from "../lib/constants";
 
 import {
   init,
   reducer as boardReducer,
+  reconfigureBoard,
   revealCell,
   turnCellState
 } from "../logic/board";
@@ -15,6 +17,19 @@ import styles from "./Board.css";
 
 export default () => {
   const [state, dispatch] = useReducer(boardReducer, CONFIG_EASY, init);
+
+  useEffect(() => {
+    const newGameListener = () => {
+      dispatch(reconfigureBoard(state.config));
+    };
+
+    // Listen for the "new game" message from the main process.
+    ipcRenderer.on(IPC_MESSAGE.NEW_GAME, newGameListener);
+
+    return () => {
+      ipcRenderer.removeListener(IPC_MESSAGE.NEW_GAME, newGameListener);
+    };
+  }, []);
 
   return (
     <table className={styles.board}>

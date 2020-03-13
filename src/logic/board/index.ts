@@ -22,11 +22,7 @@ interface BoardState {
   board: MinesweeperBoard;
 }
 
-/**
- * Action creator for `RECONFIGURE_BOARD`.
- * @param {MinesweeperConfig} configuration
- * @returns {{type: string, configuration: MinesweeperConfig}}
- */
+/** Action creator for `RECONFIGURE_BOARD`. */
 export const reconfigureBoard = (
   configuration: MinesweeperConfig
 ): ReconfigureBoardAction => {
@@ -36,9 +32,7 @@ export const reconfigureBoard = (
   };
 };
 
-/**
- * Action creator for `REVEAL_CELL`.
- */
+/** Action creator for `REVEAL_CELL`. */
 export const revealCell = (x: number, y: number): RevealCellAction => {
   return {
     type: REVEAL_CELL,
@@ -47,12 +41,7 @@ export const revealCell = (x: number, y: number): RevealCellAction => {
   };
 };
 
-/**
- * Action creator for `TURN_CELL_STATE`.
- * @param {number} x
- * @param {number} y
- * @returns {{type: string, x: number, y: number}}
- */
+/** Action creator for `TURN_CELL_STATE`. */
 export const turnCellState = (x: number, y: number): TurnCellStateAction => {
   return {
     type: TURN_CELL_STATE,
@@ -63,10 +52,6 @@ export const turnCellState = (x: number, y: number): TurnCellStateAction => {
 
 /**
  * Merges an update into the specified {@link MinesweeperCell} in a {@link MinesweeperBoard}.
- * @param {MinesweeperBoard} board
- * @param {number} x
- * @param {number} y
- * @param {Object} mod
  * @returns {MinesweeperBoard} A _new_ board.
  * @throws {OutOfBoundsError}
  */

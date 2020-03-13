@@ -26,6 +26,12 @@
     "last 2 Safari versions",
     "last 2 Edge versions"
   ],
+  "jest": {
+    "moduleNameMapper": {
+      "\\.(jpg|jpeg|png|gif|svg|ttf|ico)$": "<rootDir>/__mocks__/fileMock.js",
+      "\\.(css)$": "identity-obj-proxy"
+    }
+  },
   "dependencies": {
     "electron-squirrel-startup": "^1.0.0"
   },
@@ -44,6 +50,7 @@
     "@electron-forge/publisher-github": "^6.0.0-beta.50",
     "@marshallofsound/webpack-asset-relocator-loader": "^0.5.0",
     "@teamsupercell/typings-for-css-modules-loader": "^2.1.0",
+    "@testing-library/react": "^9.5.0",
     "@types/classnames": "^2.2.9",
     "@types/electron": "^1.6.10",
     "@types/jest": "^25.1.2",
@@ -61,6 +68,7 @@
     "eslint-plugin-jest": "^23.7.0",
     "eslint-plugin-promise": "^4.2.1",
     "fork-ts-checker-webpack-plugin": "^4.0.4",
+    "identity-obj-proxy": "^3.0.0",
     "jest": "^25.1.0",
     "node-loader": "^0.6.0",
     "postcss-loader": "^3.0.0",
