@@ -19,7 +19,7 @@ export default () => {
   const [state, dispatch] = useReducer(boardReducer, CONFIG_EASY, init);
 
   useEffect(() => {
-    const newGameListener = (event, arg) => {
+    const newGameListener = () => {
       dispatch(reconfigureBoard(state.config));
     };
 
