@@ -14,12 +14,12 @@ import {
   placeMines,
   OutOfBoundsError
 } from "../../lib/utils";
-import { CELL_STATE } from "../../lib/constants";
+import { CELL_STATE, GAME_STATE } from "../../lib/constants";
 
 interface BoardState {
-  config: MinesweeperConfig;
-  seeded: boolean;
   board: MinesweeperBoard;
+  config: MinesweeperConfig;
+  gameState: GAME_STATE;
 }
 
 /** Action creator for `RECONFIGURE_BOARD`. */
@@ -74,10 +74,11 @@ export const modifyCell = (
   });
 };
 
+/** Creates a fresh `BoardState` from the provided `MinesweeperConfig`. */
 export const init = (config: MinesweeperConfig): BoardState => ({
-  seeded: false,
+  board: getBoard(config),
   config,
-  board: getBoard(config)
+  gameState: GAME_STATE.DEFAULT,
 });
 
 export function reducer(state: BoardState, action: BoardAction): BoardState {
@@ -91,7 +92,8 @@ export function reducer(state: BoardState, action: BoardAction): BoardState {
       let newBoard = modifyCell(state.board, x, y, {
         state: CELL_STATE.REVEALED
       });
-      if (!state.seeded) {
+      if (state.gameState === GAME_STATE.DEFAULT) {
+        // Seed the board.
         // TODO: Split this out into a different action so this one is idempotent.
         placeMines(state.config, newBoard, x, y);
       }
@@ -102,14 +104,14 @@ export function reducer(state: BoardState, action: BoardAction): BoardState {
         cascadeCells(state.config, newBoard, x, y);
         return {
           ...state,
-          seeded: true,
-          board: newBoard
+          board: newBoard,
+          gameState: GAME_STATE.SEEDED,
         };
       } else {
         return {
           ...state,
-          seeded: true,
-          board: newBoard
+          board: newBoard,
+          gameState: GAME_STATE.SEEDED
         };
       }
     }

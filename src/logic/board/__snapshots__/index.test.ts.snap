@@ -432,7 +432,7 @@ Object {
     "x": 9,
     "y": 9,
   },
-  "seeded": false,
+  "gameState": 0,
 }
 `;
 
@@ -2877,7 +2877,7 @@ Object {
     "x": 30,
     "y": 16,
   },
-  "seeded": false,
+  "gameState": 0,
 }
 `;
 
@@ -4202,6 +4202,6 @@ Object {
     "x": 16,
     "y": 16,
   },
-  "seeded": false,
+  "gameState": 0,
 }
 `;

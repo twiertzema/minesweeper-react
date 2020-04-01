@@ -23,8 +23,8 @@ describe("RECONFIGURE_BOARD", () => {
     const result = reducer(stateBefore, action);
     expect(result).toEqual({
       ...stateBefore,
-      config: CONFIG_DEFAULT,
-      board: []
+      board: [],
+      config: CONFIG_DEFAULT
     });
   });
 
