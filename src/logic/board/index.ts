@@ -78,7 +78,7 @@ export const modifyCell = (
 export const init = (config: MinesweeperConfig): BoardState => ({
   board: getBoard(config),
   config,
-  gameState: GAME_STATE.DEFAULT,
+  gameState: GAME_STATE.DEFAULT
 });
 
 export function reducer(state: BoardState, action: BoardAction): BoardState {
@@ -99,13 +99,20 @@ export function reducer(state: BoardState, action: BoardAction): BoardState {
       }
 
       const cell = newBoard[y][x];
-      if (cell.mineCount === 0 && !cell.hasMine) {
+      if (cell.hasMine) {
+        // Game lose! X(
+        return {
+          ...state,
+          board: newBoard,
+          gameState: GAME_STATE.LOSE
+        };
+      } else if (cell.mineCount === 0) {
         // Cell cascade.
         cascadeCells(state.config, newBoard, x, y);
         return {
           ...state,
           board: newBoard,
-          gameState: GAME_STATE.SEEDED,
+          gameState: GAME_STATE.SEEDED
         };
       } else {
         return {

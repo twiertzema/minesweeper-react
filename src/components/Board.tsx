@@ -1,7 +1,7 @@
 import { ipcRenderer } from "electron";
 import React, { useEffect, useReducer } from "react";
 
-import { CONFIG_EASY, IPC_MESSAGE } from "../lib/constants";
+import { CONFIG_EASY, IPC_MESSAGE, GAME_STATE } from "../lib/constants";
 
 import {
   init,
@@ -31,6 +31,20 @@ export default () => {
     };
   }, []);
 
+  const onCellClick = (x: number, y: number) => {
+    if (state.gameState < GAME_STATE.LOSE) {
+      // The game hasn't been won or lost yet.
+      dispatch(revealCell(x, y))
+    }
+  }
+
+  const onCellRightClick = (x: number, y: number) => {
+    if (state.gameState < GAME_STATE.LOSE) {
+      // The game hasn't been won or lost yet.
+      dispatch(turnCellState(x, y))
+    }
+  }
+
   return (
     <table className={styles.board}>
       <tbody>
@@ -41,8 +55,8 @@ export default () => {
                 hasMine={cell.hasMine}
                 key={`cell_${j}`}
                 mineCount={cell.mineCount}
-                onClick={() => dispatch(revealCell(j, i))}
-                onRightClick={() => dispatch(turnCellState(j, i))}
+                onClick={() => onCellClick(j, i)}
+                onRightClick={() => onCellRightClick(j, i)}
                 state={cell.state}
                 x={j}
                 y={i}
