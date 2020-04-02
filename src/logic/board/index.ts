@@ -9,7 +9,7 @@ import {
   TurnCellStateAction
 } from "./types";
 import {
-  cascadeCells,
+  chordCells,
   getBoard,
   placeMines,
   OutOfBoundsError
@@ -61,7 +61,7 @@ export const modifyCell = (
   y: number,
   mod: Object
 ): MinesweeperBoard => {
-  if (!board[y][x]) throw new OutOfBoundsError(x, y);
+  if (!board[y]?.[x]) throw new OutOfBoundsError(x, y);
   return board.map((row, j) => {
     if (j !== y) return row;
     return row.map((cell, i) => {
@@ -107,8 +107,8 @@ export function reducer(state: BoardState, action: BoardAction): BoardState {
           gameState: GAME_STATE.LOSE
         };
       } else if (cell.mineCount === 0) {
-        // Cell cascade.
-        cascadeCells(state.config, newBoard, x, y);
+        // Cell chording.
+        chordCells(state.config, newBoard, x, y);
         return {
           ...state,
           board: newBoard,

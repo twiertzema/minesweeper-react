@@ -1,4 +1,4 @@
-import {seedRandom, restoreRandom} from '../../utils/test.utils'
+import { seedRandom, restoreRandom } from "../../utils/test.utils";
 import { MinesweeperBoard } from "../types";
 
 import {
@@ -9,7 +9,7 @@ import {
   CONFIG_INTERMEDIATE
 } from "./constants";
 import {
-  cascadeCells,
+  chordCells,
   forEachAdjacentCell,
   getBoard,
   isConfigValid,
@@ -562,7 +562,7 @@ describe("placeMines", () => {
   });
 });
 
-describe("cascadeCells", () => {
+describe("chordCells", () => {
   let testBoard = getBoard(testConfig);
 
   beforeEach(() => {
@@ -576,7 +576,7 @@ describe("cascadeCells", () => {
 
   it("should reveal all empty and empty-adjacent cells connected to the specified empty coordinate", () => {
     placeMines(testConfig, testBoard, 4, 7);
-    cascadeCells(testConfig, testBoard, 0, 0);
+    chordCells(testConfig, testBoard, 0, 0);
 
     const seededReveals = [
       [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -603,7 +603,7 @@ describe("cascadeCells", () => {
     );
   });
 
-  it("shouldn't cascade if the target cell is not empty", () => {
+  it("shouldn't chord if the target cell is not empty", () => {
     const x = 4;
     const y = 7;
 
@@ -611,19 +611,19 @@ describe("cascadeCells", () => {
 
     const boardBefore = cloneBoard(testBoard);
 
-    cascadeCells(testConfig, testBoard, 1, 3);
+    chordCells(testConfig, testBoard, 1, 3);
 
     expect(testBoard).toEqual(boardBefore);
   });
 
   it("should throw an InvalidConfigError for an invalid config", () => {
     expect(() =>
-      cascadeCells({ x: -1, y: 42, mines: 13 }, testBoard, 5, 5)
+      chordCells({ x: -1, y: 42, mines: 13 }, testBoard, 5, 5)
     ).toThrowError(InvalidConfigError);
   });
 
   it("should throw an OutOfBoundsError for out of bounds coordinates", () => {
-    expect(() => cascadeCells(testConfig, testBoard, 1337, 1337)).toThrowError(
+    expect(() => chordCells(testConfig, testBoard, 1337, 1337)).toThrowError(
       OutOfBoundsError
     );
   });
