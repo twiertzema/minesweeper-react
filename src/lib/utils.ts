@@ -325,7 +325,7 @@ export const placeMines = (
  * //  x x x x x
  * //  x 4 3 3 2
  *
- * cascadeCells(myConfig, myBoard, 2, 0)
+ * chordCells(myConfig, myBoard, 2, 0)
  *
  * // This will reveal the following cells (r = revealed):
  * //  - r r r r
@@ -334,13 +334,13 @@ export const placeMines = (
  * //  - - - - -
  * //  - - - - -
  *
- * cascadeCells(myConfig, myBoard, 1, 4)
+ * chordCells(myConfig, myBoard, 1, 4)
  * // Since the target cell would have a `minCount` of 4, this would do nothing.
  *
- * cascadeCells(invalidConfig, [][], 0, 0) // throws InvalidConfigError
- * cascadeCells(myConfig, myBoard, 100, 100) // throws OutOfBoundsError
+ * chordCells(invalidConfig, [][], 0, 0) // throws InvalidConfigError
+ * chordCells(myConfig, myBoard, 100, 100) // throws OutOfBoundsError
  */
-export const cascadeCells = (
+export const chordCells = (
   config: MinesweeperConfig,
   board: MinesweeperBoard,
   x: number,
@@ -350,11 +350,11 @@ export const cascadeCells = (
   if (isOutOfBounds(config, x, y)) throw new OutOfBoundsError(x, y);
 
   // If the target is empty, begin the recursion.
-  if (board[y][x].mineCount === 0) _cascadeCells(config, board, x, y);
+  if (board[y][x].mineCount === 0) _chordCells(config, board, x, y);
 };
 
 /**
- * Internal recursion callback for {@link cascadeCells}.
+ * Internal recursion callback for {@link chordCells}.
  * @param {MinesweeperConfig} config
  * @param {MinesweeperBoard} board
  * @param {number} x
@@ -362,7 +362,7 @@ export const cascadeCells = (
  * @returns {void}
  * @private
  */
-const _cascadeCells = (
+const _chordCells = (
   config: MinesweeperConfig,
   board: MinesweeperBoard,
   x: number,
@@ -371,7 +371,7 @@ const _cascadeCells = (
   forEachAdjacentCell(config, board, x, y, (cell, _x, _y) => {
     if (cell.state === CELL_STATE.REVEALED) return;
     cell.state = CELL_STATE.REVEALED;
-    if (cell.mineCount === 0) _cascadeCells(config, board, _x, _y);
+    if (cell.mineCount === 0) _chordCells(config, board, _x, _y);
   });
 };
 

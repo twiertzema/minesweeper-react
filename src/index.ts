@@ -37,7 +37,7 @@ const createWindow = () => {
         { label: "Beginner", type: "checkbox", enabled: false, checked: true },
         { label: "Intermediate", type: "checkbox", enabled: false },
         { label: "Expert", type: "checkbox", enabled: false },
-        { label: "Customer...", type: "checkbox", enabled: false },
+        { label: "Custom...", type: "checkbox", enabled: false },
         { type: "separator" },
         { label: "Marks (?)", type: "checkbox", enabled: false, checked: true },
         { label: "Color", type: "checkbox", enabled: false, checked: true },

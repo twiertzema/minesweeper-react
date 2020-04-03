@@ -3,7 +3,7 @@ import { MinesweeperConfig } from "../types";
 export enum CELL_STATE {
   /**
    * Initial state of all [Cells](Cell). Defined as the absence of all other state.
-   * */
+   */
   DEFAULT,
   /**
    * The user has placed a flag on this {@link MinesweeperCell}. Flagged [Cells](Cell)
@@ -42,6 +42,21 @@ export const CONFIG_EXPERT: MinesweeperConfig = { x: 30, y: 16, mines: 99 };
  */
 export const CONFIG_DEFAULT: MinesweeperConfig = { x: 0, y: 0, mines: 0 };
 
+/**
+ * Enum respresenting the overall game state.
+ */
+export enum GAME_STATE {
+  /** The default state of a board before it has been seeded with mines. */
+  DEFAULT,
+  /** The state of a board after it has been seeded with mines. */
+  SEEDED,
+  /** A state representing the player having lost. X( */
+  LOSE,
+  /** A state representing the player having won. B) */
+  WIN
+}
+
+/** Enum representing the Electron IPC message channels. */
 export enum IPC_MESSAGE {
   NEW_GAME = "new-game"
 }
