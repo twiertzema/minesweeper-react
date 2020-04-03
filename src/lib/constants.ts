@@ -50,10 +50,10 @@ export enum GAME_STATE {
   DEFAULT,
   /** The state of a board after it has been seeded with mines. */
   SEEDED,
-  /** A state representing the player having won. B) */
-  WIN,
   /** A state representing the player having lost. X( */
-  LOSE
+  LOSE,
+  /** A state representing the player having won. B) */
+  WIN
 }
 
 /** Enum representing the Electron IPC message channels. */

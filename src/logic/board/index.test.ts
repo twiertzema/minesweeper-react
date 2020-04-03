@@ -1,8 +1,5 @@
 /* eslint-env jest */
-import {
-  restoreRandom,
-  seedRandom
-} from "../../../utils/test.utils";
+import { restoreRandom, seedRandom } from "../../../utils/test.utils";
 
 import {
   CELL_STATE,
@@ -15,6 +12,22 @@ import {
 import { OutOfBoundsError } from "../../lib/utils";
 
 import { init, reconfigureBoard, reducer, revealCell } from "./index";
+import { MinesweeperBoard, MinesweeperConfig } from "../../types";
+
+const expectBlankBoard = (
+  board: MinesweeperBoard,
+  config: MinesweeperConfig
+) => {
+  for (let j = 0; j < config.y; j++) {
+    for (let i = 0; i < config.x; i++) {
+      expect(board?.[j]?.[i]).toEqual({
+        hasMine: false,
+        mineCount: 0,
+        state: CELL_STATE.DEFAULT
+      });
+    }
+  }
+};
 
 it("should return the current state if action type is unrecognized", () => {
   const stateBefore = init(CONFIG_DEFAULT);
@@ -41,21 +54,24 @@ describe("RECONFIGURE_BOARD", () => {
     const stateBefore = init(CONFIG_DEFAULT);
     const action = reconfigureBoard(CONFIG_EASY);
     const result = reducer(stateBefore, action);
-    expect(result).toMatchSnapshot();
+
+    expectBlankBoard(result.board, CONFIG_EASY);
   });
 
   it("should configure for CONFIG_INTERMEDIATE", () => {
     const stateBefore = init(CONFIG_DEFAULT);
     const action = reconfigureBoard(CONFIG_INTERMEDIATE);
     const result = reducer(stateBefore, action);
-    expect(result).toMatchSnapshot();
+
+    expectBlankBoard(result.board, CONFIG_INTERMEDIATE);
   });
 
   it("should configure for CONFIG_EXPERT", () => {
     const stateBefore = init(CONFIG_DEFAULT);
     const action = reconfigureBoard(CONFIG_EXPERT);
     const result = reducer(stateBefore, action);
-    expect(result).toMatchSnapshot();
+
+    expectBlankBoard(result.board, CONFIG_EXPERT);
   });
 });
 
