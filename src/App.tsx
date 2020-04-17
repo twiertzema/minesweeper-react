@@ -1,5 +1,5 @@
 import React from "react";
 
-import Board from "./components/Board";
+import Game from "./components/Game";
 
-export default () => <Board />;
+export default () => <Game />;

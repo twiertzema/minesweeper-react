@@ -1,0 +1,33 @@
+.container {
+  width: fit-content;
+  border: 4px solid var(--bg-color-light);
+  padding: 6px;
+  background-color: var(--bg-color-primary);
+}
+
+.slot,
+.display {
+  border-style: solid;
+  border-top-color: var(--bg-color-dark);
+  border-right-color: var(--bg-color-light);
+  border-bottom-color: var(--bg-color-light);
+  border-left-color: var(--bg-color-dark);
+}
+
+.slot.hud {
+  display: flex;
+  justify-content: space-between;
+  border-width: 2px;
+  margin-bottom: 6px;
+  padding: 4px 5px;
+}
+.slot.board {
+  border-width: 4px;
+}
+
+.display {
+  margin: 0;
+  border-width: 1px;
+  background-color: black;
+  color: red;
+}

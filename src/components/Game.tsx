@@ -8,7 +8,7 @@ import {
   reducer as boardReducer,
   reconfigureBoard,
   revealCell,
-  turnCellState
+  turnCellState,
 } from "../logic/board";
 
 import Board from "./Board";
@@ -42,4 +42,4 @@ const Game: React.FC<HTMLAttributes<HTMLElement>> = (props) => {
   );
 };
 
-export default Game
+export default Game;
