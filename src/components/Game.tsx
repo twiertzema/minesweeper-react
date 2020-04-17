@@ -1,5 +1,5 @@
 import { ipcRenderer } from "electron";
-import React, { useReducer, useEffect } from "react";
+import React, { useReducer, useEffect, HTMLAttributes } from "react";
 
 import { CONFIG_EASY, IPC_MESSAGE, GAME_STATE } from "../lib/constants";
 
@@ -14,7 +14,7 @@ import {
 import Board from "./Board";
 import Tray from "./Tray";
 
-export default () => {
+const Game: React.FC<HTMLAttributes<HTMLElement>> = (props) => {
   const [state, dispatch] = useReducer(boardReducer, CONFIG_EASY, init);
 
   useEffect(() => {
@@ -31,7 +31,7 @@ export default () => {
   }, []);
 
   return (
-    <Tray board={state.board} gameState={state.gameState}>
+    <Tray {...props} board={state.board} gameState={state.gameState}>
       <Board
         board={state.board}
         gameState={state.gameState}
@@ -41,3 +41,5 @@ export default () => {
     </Tray>
   );
 };
+
+export default Game

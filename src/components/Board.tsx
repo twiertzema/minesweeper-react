@@ -8,14 +8,14 @@ import Cell from "./Cell";
 
 interface BoardProps extends React.HTMLAttributes<HTMLTableElement> {
   board: MinesweeperBoard;
-  gameState: GAME_STATE;
+  gameState?: GAME_STATE;
   revealCell: (x: number, y: number) => void;
   turnCellState: (x: number, y: number) => void;
 }
 
 const Board: React.FC<BoardProps> = ({
   board,
-  gameState,
+  gameState = GAME_STATE.DEFAULT,
   revealCell,
   style,
   turnCellState,
