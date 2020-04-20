@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import classnames from "classnames";
 
 import { GAME_STATE } from "../lib/constants";
@@ -20,9 +20,37 @@ interface TrayProps {
   gameState: GAME_STATE;
 }
 
+/**
+ * Logical component for the game's "tray" (everything outside the board).
+ * Accepts a render prop as `children`.
+ */
 export const Tray: React.FC<TrayProps> = ({ children, gameState }) => {
   const [numberOfMines, setNumberOfMines] = useState(0);
   const [seconds, setSeconds] = useState(0);
+
+  useEffect(() => {
+    let secondsIntervalId: NodeJS.Timeout | undefined = undefined;
+    if (gameState === GAME_STATE.SEEDED) {
+      // Once the board is seeded, start the interval to count the seconds.
+      secondsIntervalId = setInterval(() => {
+        setSeconds((currentSeconds) => {
+          if (currentSeconds + 1 >= 999 && secondsIntervalId) {
+            clearInterval(secondsIntervalId);
+          }
+
+          return currentSeconds + 1;
+        });
+      }, 1000);
+    }
+
+    return () => {
+      // If the game was just reset, reset the timer.
+      if (gameState === GAME_STATE.DEFAULT) setSeconds(0);
+
+      // No matter what `gameState` changed to, stop the interval.
+      if (secondsIntervalId) clearInterval(secondsIntervalId);
+    };
+  }, [gameState]);
 
   return children({ gameState, numberOfMines, seconds });
 };
@@ -31,6 +59,7 @@ interface XPTrayProps
   extends Omit<TrayProps, "children">,
     React.HTMLAttributes<HTMLElement> {}
 
+/* Visual component for rendering `Tray` to mimic XP. */
 export const XPTray: React.FC<XPTrayProps> = ({
   board,
   children,
