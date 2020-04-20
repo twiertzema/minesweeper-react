@@ -16,7 +16,7 @@ rules.push({
   ]
 });
 rules.push({
-  test: /\.(gif|jpg|png|svg|ico)$/,
+  test: /\.(gif|jpg|png|svg|ico|ttf)$/,
   use: ["url-loader"]
 });
 

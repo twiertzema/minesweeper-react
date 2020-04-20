@@ -1,7 +1,14 @@
+@font-face {
+  font-family: "SF Digital Readout Heavy";
+  font-style: normal;
+  font-weight: bold;
+  src: url("../res/digital-readout.heavy.ttf") format("truetype");
+}
+
 .container {
   width: fit-content;
-  border: 4px solid var(--bg-color-light);
-  padding: 6px;
+  border: calc(4px * var(--size-scale)) solid var(--bg-color-light);
+  padding: calc(6px * var(--size-scale));
   background-color: var(--bg-color-primary);
 }
 
@@ -17,17 +24,38 @@
 .slot.hud {
   display: flex;
   justify-content: space-between;
-  border-width: 2px;
-  margin-bottom: 6px;
-  padding: 4px 5px;
+  border-width: calc(2px * var(--size-scale));
+  margin-bottom: calc(6px * var(--size-scale));
+  padding: calc(4px * var(--size-scale)) calc(5px * var(--size-scale));
 }
 .slot.board {
-  border-width: 4px;
+  border-width: calc(4px * var(--size-scale));
 }
 
 .display {
+  position: relative;
+  height: calc(23px * var(--size-scale));
+  width: calc(39px * var(--size-scale));
   margin: 0;
-  border-width: 1px;
+  border-width: calc(1px * var(--size-scale));
   background-color: black;
-  color: red;
+  color: #da1a19;
+  font-family: "SF Digital Readout Heavy", monospace;
+  /* The font size needs to be much larger to compensate for leading. (?) */
+  font-size: calc(35px * var(--size-scale));
+  line-height: 0.61;
+}
+.display::before {
+  /* The "ghost" lines mimicing the LED display. */
+  content: "888";
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  color: #3c0014;
+}
+.display > span {
+  /* So the "ghost" lines can sit between the background and the text. */
+  position: relative;
 }

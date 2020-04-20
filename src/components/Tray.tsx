@@ -47,8 +47,12 @@ export const XPTray: React.FC<XPTrayProps> = ({
           >
             {/* HUD */}
             <div className={classnames(styles.slot, styles.hud)}>
-              <p className={styles.display}>{seconds}</p>
-              <p className={styles.display}>{numberOfMines}</p>
+              <p className={styles.display}>
+                <span>{String(seconds).padStart(3, "0")}</span>
+              </p>
+              <p className={styles.display}>
+                <span>{String(numberOfMines).padStart(3, "0")}</span>
+              </p>
             </div>
 
             {/* Board */}

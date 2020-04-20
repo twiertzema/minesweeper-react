@@ -2,7 +2,7 @@ import React from "react";
 import classnames from "classnames";
 
 import { CELL_STATE } from "../lib/constants";
-import FlagIcon from "../i/flag.png";
+import FlagIcon from "../res/flag.png";
 
 import styles from "./Cell.css";
 
