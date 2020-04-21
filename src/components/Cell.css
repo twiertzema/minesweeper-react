@@ -1,6 +1,6 @@
 .cell {
   --border-size: calc(2px * var(--size-scale));
-  --size: calc(16px * var(--size-scale));
+  --size: calc(15px * var(--size-scale));
 
   width: var(--size);
   height: var(--size);

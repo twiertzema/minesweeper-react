@@ -39,7 +39,7 @@
   margin: 0;
   border-width: calc(1px * var(--size-scale));
   background-color: black;
-  color: #da1a19;
+  color: #f00;
   font-family: "SF Digital Readout Heavy", monospace;
   /* The font size needs to be much larger to compensate for leading. (?) */
   font-size: calc(35px * var(--size-scale));
@@ -53,7 +53,7 @@
   width: 100%;
   top: 0;
   left: 0;
-  color: #3c0014;
+  color: #800;
 }
 .display > span {
   /* So the "ghost" lines can sit between the background and the text. */

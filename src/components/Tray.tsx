@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import classnames from "classnames";
 
-import { GAME_STATE } from "../lib/constants";
+import { CELL_STATE, GAME_STATE } from "../lib/constants";
 import { MinesweeperBoard } from "../types";
 
 import styles from "./Tray.css";
 
 interface RenderPropProps {
   gameState: number; // For the state of the smiley face
-  numberOfMines: number; // For the text display
+  minesLeft: number; // For the text display
   seconds: number; // For the text display
 }
 
@@ -24,13 +24,34 @@ interface TrayProps {
  * Logical component for the game's "tray" (everything outside the board).
  * Accepts a render prop as `children`.
  */
-export const Tray: React.FC<TrayProps> = ({ children, gameState }) => {
-  const [numberOfMines, setNumberOfMines] = useState(0);
+export const Tray: React.FC<TrayProps> = ({ board, children, gameState }) => {
+  const [minesLeft, setMinesLeft] = useState(0);
   const [seconds, setSeconds] = useState(0);
 
+  // Calculate number of unflagged mines left.
   useEffect(() => {
+    let _numberOfMines = 0;
+    let _numberOfFlags = 0;
+
+    for (const row of board) {
+      for (const cell of row) {
+        if (cell.hasMine) _numberOfMines++;
+        if (cell.state === CELL_STATE.FLAGGED) _numberOfFlags++;
+      }
+    }
+
+    setMinesLeft(_numberOfMines - _numberOfFlags);
+  }, [board]);
+
+  // Set up and manage the timer.
+  useEffect(() => {
+    console.log("Game state changed:", gameState);
+
     let secondsIntervalId: NodeJS.Timeout | undefined = undefined;
-    if (gameState === GAME_STATE.SEEDED) {
+
+    // If the game was just reset, reset the timer.
+    if (gameState === GAME_STATE.DEFAULT) setSeconds(0);
+    else if (gameState === GAME_STATE.SEEDED) {
       // Once the board is seeded, start the interval to count the seconds.
       secondsIntervalId = setInterval(() => {
         setSeconds((currentSeconds) => {
@@ -44,15 +65,13 @@ export const Tray: React.FC<TrayProps> = ({ children, gameState }) => {
     }
 
     return () => {
-      // If the game was just reset, reset the timer.
-      if (gameState === GAME_STATE.DEFAULT) setSeconds(0);
 
       // No matter what `gameState` changed to, stop the interval.
       if (secondsIntervalId) clearInterval(secondsIntervalId);
     };
   }, [gameState]);
 
-  return children({ gameState, numberOfMines, seconds });
+  return children({ gameState, minesLeft: minesLeft, seconds });
 };
 
 interface XPTrayProps
@@ -68,7 +87,7 @@ export const XPTray: React.FC<XPTrayProps> = ({
 }) => {
   return (
     <Tray board={board} gameState={gameState}>
-      {({ gameState, numberOfMines, seconds }) => {
+      {({ gameState, minesLeft, seconds }) => {
         return (
           <main
             {...props}
@@ -77,10 +96,10 @@ export const XPTray: React.FC<XPTrayProps> = ({
             {/* HUD */}
             <div className={classnames(styles.slot, styles.hud)}>
               <p className={styles.display}>
-                <span>{String(seconds).padStart(3, "0")}</span>
+                <span>{String(minesLeft).padStart(3, "0")}</span>
               </p>
               <p className={styles.display}>
-                <span>{String(numberOfMines).padStart(3, "0")}</span>
+                <span>{String(seconds).padStart(3, "0")}</span>
               </p>
             </div>
 
