@@ -1,6 +1,12 @@
 import React from "react";
+import { act } from "react-dom/test-utils";
 
-import { render, restoreRandom, seedRandom } from "../../utils/test.utils";
+import {
+  getSeededBoard,
+  render,
+  restoreRandom,
+  seedRandom,
+} from "../../utils/test.utils";
 
 import {
   CELL_STATE,
@@ -13,25 +19,49 @@ import { MinesweeperBoard } from "../types";
 
 import { Tray } from "./Tray";
 
+jest.useFakeTimers();
+
 beforeEach(() => {
   seedRandom();
 });
 
 afterEach(() => {
   restoreRandom();
+
+  jest.clearAllTimers();
 });
 
 describe("Tray", () => {
   const MINES_LEFT_ID = "test-mines-left";
   const SECONDS_ID = "test-seconds";
 
-  function renderMineCount(board: MinesweeperBoard, gameState: GAME_STATE) {
-    return render(
-      <Tray board={board} gameState={GAME_STATE.DEFAULT}>
-        {({ minesLeft }) => <p data-testid={MINES_LEFT_ID}>{minesLeft}</p>}
-      </Tray>
-    );
-  }
+  /** Test component to just render the value of `minesLeft`. */
+  const TestMinesLeft: React.FC<{
+    board: MinesweeperBoard;
+    gameState: GAME_STATE;
+  }> = ({ board, gameState, ...props }) => (
+    <Tray board={board} gameState={gameState}>
+      {({ minesLeft }) => (
+        <p {...props} data-testid={MINES_LEFT_ID}>
+          {minesLeft}
+        </p>
+      )}
+    </Tray>
+  );
+
+  /** Test component to just render the value of `seconds`. */
+  const TestSeconds: React.FC<{
+    board: MinesweeperBoard;
+    gameState: GAME_STATE;
+  }> = ({ board, gameState, ...props }) => (
+    <Tray board={board} gameState={gameState}>
+      {({ seconds }) => (
+        <p {...props} data-testid={SECONDS_ID}>
+          {seconds}
+        </p>
+      )}
+    </Tray>
+  );
 
   it("should render", () => {
     render(
@@ -55,25 +85,123 @@ describe("Tray", () => {
     );
   });
 
-  it("should count how many mines there are", () => {
-    const board = placeMines(CONFIG_EASY, getBoard(CONFIG_EASY), 0, 0);
+  describe("minesLeft", () => {
+    it("should count how many mines there are", () => {
+      const board = getSeededBoard(CONFIG_EASY);
 
-    const { getByTestId } = renderMineCount(board, GAME_STATE.DEFAULT);
+      const { getByTestId } = render(
+        <TestMinesLeft board={board} gameState={GAME_STATE.DEFAULT} />
+      );
 
-    const result = getByTestId(MINES_LEFT_ID);
-    expect(result.innerHTML).toBe(String(CONFIG_EASY.mines));
+      const result = getByTestId(MINES_LEFT_ID);
+      expect(result.innerHTML).toBe(String(CONFIG_EASY.mines));
+    });
+
+    it("should substract flags from mines left", () => {
+      const board = getSeededBoard(CONFIG_EASY);
+
+      // Flag a couple of cells.
+      board[0][0].state = CELL_STATE.FLAGGED;
+      board[0][1].state = CELL_STATE.FLAGGED;
+
+      const { getByTestId } = render(
+        <TestMinesLeft board={board} gameState={GAME_STATE.DEFAULT} />
+      );
+
+      const result = getByTestId(MINES_LEFT_ID);
+      expect(result.innerHTML).toBe(String(CONFIG_EASY.mines - 2));
+    });
   });
 
-  it("should substract flags from mines left", () => {
-    const board = placeMines(CONFIG_EASY, getBoard(CONFIG_EASY), 0, 0);
+  describe("seconds", () => {
+    /**
+     * Convenience function to render the `Tray` and ensure the timer has
+     *  started.
+     */
+    function expectBaselineSecondsFunctionality(
+      board: MinesweeperBoard,
+      gameState: GAME_STATE
+    ) {
+      const renderResult = render(
+        <TestSeconds board={board} gameState={gameState} />
+      );
 
-    // Flag a couple of cells.
-    board[0][0].state = CELL_STATE.FLAGGED;
-    board[0][1].state = CELL_STATE.FLAGGED;
+      // For sanity.
+      expect(renderResult.getByText("0")).toBeDefined();
 
-    const { getByTestId } = renderMineCount(board, GAME_STATE.DEFAULT);
+      act(() => {
+        // Advance timers by 1 second.
+        jest.advanceTimersByTime(1000);
+      });
 
-    const result = getByTestId(MINES_LEFT_ID);
-    expect(result.innerHTML).toBe(String(CONFIG_EASY.mines - 2));
+      // Verify the seconds were incremented.
+      expect(renderResult.getByText("1")).toBeDefined();
+
+      return renderResult;
+    }
+
+    it("should count seconds when the board is seeded", () => {
+      const board = getSeededBoard(CONFIG_EASY);
+      expectBaselineSecondsFunctionality(board, GAME_STATE.SEEDED);
+    });
+
+    it("should stop the timer if >= 999", () => {
+      const board = getSeededBoard(CONFIG_EASY);
+      const { getByText } = expectBaselineSecondsFunctionality(
+        board,
+        GAME_STATE.SEEDED
+      );
+
+      act(() => {
+        // Shoot that timer to exactly 999.
+        jest.advanceTimersByTime(999 * 1000);
+      });
+
+      expect(getByText("999")).toBeDefined();
+
+      act(() => {
+        // Advance one more second...
+        jest.advanceTimersByTime(1000);
+      });
+
+      // And make sure the seconds haven't been incrememnted.
+      expect(getByText("999")).toBeDefined();
+    });
+
+    it("should stop the timer if the game is lost", () => {
+      const board = getSeededBoard(CONFIG_EASY);
+      const { getByText, rerender } = expectBaselineSecondsFunctionality(
+        board,
+        GAME_STATE.SEEDED
+      );
+
+      // Re-render with the "lose" state.
+      rerender(<TestSeconds board={board} gameState={GAME_STATE.LOSE} />);
+
+      act(() => {
+        jest.advanceTimersByTime(1000);
+      });
+
+      // The timer should be stopped at "1".
+      expect(getByText("1")).toBeDefined();
+    });
+
+    it("should stop the timer if the game is won", () => {
+      const board = getSeededBoard(CONFIG_EASY);
+      const { getByText, rerender } = expectBaselineSecondsFunctionality(
+        board,
+        GAME_STATE.SEEDED
+      );
+
+      // Re-render with the "lose" state.
+      rerender(<TestSeconds board={board} gameState={GAME_STATE.WIN} />);
+
+      act(() => {
+        jest.advanceTimersByTime(1000);
+      });
+
+      // The timer should be stopped at "1".
+      expect(getByText("1")).toBeDefined();
+    });
   });
 });

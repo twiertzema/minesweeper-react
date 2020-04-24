@@ -1,6 +1,8 @@
 import seedrandom from "seedrandom";
 import { render, RenderOptions } from "@testing-library/react";
-import { MinesweeperBoard } from "../types/types";
+
+import {getBoard, placeMines} from '../src/lib/utils'
+import { MinesweeperBoard, MinesweeperConfig } from "../types/types";
 
 const customRender = (ui: React.ReactElement, options?: RenderOptions) =>
   render(ui, {
@@ -18,7 +20,7 @@ export const restoreRandom = () => (global.Math.random = __originalRandom);
  * @param board 
  * @param state - If `true`, prints the cells' state instead of mine count.
  */
-export const printBoard = (board: MinesweeperBoard, state: boolean = false) => {
+export function printBoard (board: MinesweeperBoard, state: boolean = false) {
   let string = "";
 
   board.forEach((row, j) => {
@@ -39,6 +41,13 @@ export const printBoard = (board: MinesweeperBoard, state: boolean = false) => {
 
   console.log(string);
 };
+
+/**
+ * Convenience function to automatically generate and place mines on a board.
+ */
+export function getSeededBoard (config: MinesweeperConfig) {
+  return placeMines(config, getBoard(config), 0, 0);
+}
 
 export * from "@testing-library/react";
 

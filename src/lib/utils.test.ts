@@ -1,4 +1,4 @@
-import { seedRandom, restoreRandom } from "../../utils/test.utils";
+import { getSeededBoard, seedRandom, restoreRandom } from "../../utils/test.utils";
 import { MinesweeperBoard, MinesweeperConfig } from "../types";
 
 import {
@@ -646,9 +646,6 @@ describe("getMineDisplayCount", () => {
   });
 
   it("should count mines", () => {
-    const getSeededBoard = (config: MinesweeperConfig) =>
-      placeMines(config, getBoard(config), 0, 0);
-
     expect(getMineDisplayCount(getSeededBoard(CONFIG_EASY))).toBe(
       CONFIG_EASY.mines
     );
@@ -661,7 +658,7 @@ describe("getMineDisplayCount", () => {
   });
 
   it("should subtract flags from mines", () => {
-    const board = placeMines(CONFIG_EASY, getBoard(CONFIG_EASY), 0, 0);
+    const board = getSeededBoard(CONFIG_EASY);
 
     // Flag a couple of cells.
     board[0][0].state = CELL_STATE.FLAGGED;
@@ -671,7 +668,7 @@ describe("getMineDisplayCount", () => {
   });
 
   it("should allow returning a negative number", () => {
-    const board = placeMines(CONFIG_EASY, getBoard(CONFIG_EASY), 0, 0);
+    const board = getSeededBoard(CONFIG_EASY);
 
     // Flag a couple of cells.
     board[0][0].state = CELL_STATE.FLAGGED;

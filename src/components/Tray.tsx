@@ -46,6 +46,7 @@ export const Tray: React.FC<TrayProps> = ({ board, children, gameState }) => {
         setSeconds((currentSeconds) => {
           if (currentSeconds + 1 >= 999 && secondsIntervalId) {
             clearInterval(secondsIntervalId);
+            return 999; // Upper bound.
           }
 
           return currentSeconds + 1;
@@ -59,7 +60,7 @@ export const Tray: React.FC<TrayProps> = ({ board, children, gameState }) => {
     };
   }, [gameState]);
 
-  return children({ gameState, minesLeft: minesLeft, seconds });
+  return children({ gameState, minesLeft, seconds });
 };
 
 interface XPTrayProps
