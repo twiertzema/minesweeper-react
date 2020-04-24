@@ -6,13 +6,13 @@ import {
   BoardAction,
   ReconfigureBoardAction,
   RevealCellAction,
-  TurnCellStateAction
+  TurnCellStateAction,
 } from "./types";
 import {
   chordCells,
   getBoard,
   placeMines,
-  OutOfBoundsError
+  OutOfBoundsError,
 } from "../../lib/utils";
 import { CELL_STATE, GAME_STATE } from "../../lib/constants";
 
@@ -28,7 +28,7 @@ export const reconfigureBoard = (
 ): ReconfigureBoardAction => {
   return {
     type: RECONFIGURE_BOARD,
-    configuration
+    configuration,
   };
 };
 
@@ -37,7 +37,7 @@ export const revealCell = (x: number, y: number): RevealCellAction => {
   return {
     type: REVEAL_CELL,
     x,
-    y
+    y,
   };
 };
 
@@ -46,7 +46,7 @@ export const turnCellState = (x: number, y: number): TurnCellStateAction => {
   return {
     type: TURN_CELL_STATE,
     x,
-    y
+    y,
   };
 };
 
@@ -68,7 +68,7 @@ export const modifyCell = (
       if (i !== x) return cell;
       return {
         ...cell,
-        ...mod
+        ...mod,
       };
     });
   });
@@ -78,7 +78,7 @@ export const modifyCell = (
 export const init = (config: MinesweeperConfig): BoardState => ({
   board: getBoard(config),
   config,
-  gameState: GAME_STATE.DEFAULT
+  gameState: GAME_STATE.DEFAULT,
 });
 
 export function reducer(state: BoardState, action: BoardAction): BoardState {
@@ -90,7 +90,7 @@ export function reducer(state: BoardState, action: BoardAction): BoardState {
       const { x, y } = action;
 
       let newBoard = modifyCell(state.board, x, y, {
-        state: CELL_STATE.REVEALED
+        state: CELL_STATE.REVEALED,
       });
       if (state.gameState === GAME_STATE.DEFAULT) {
         // Seed the board.
@@ -101,10 +101,11 @@ export function reducer(state: BoardState, action: BoardAction): BoardState {
       const cell = newBoard[y][x];
       if (cell.hasMine) {
         // Game lose! X(
+        console.log("Game lose! X(");
         return {
           ...state,
           board: newBoard,
-          gameState: GAME_STATE.LOSE
+          gameState: GAME_STATE.LOSE,
         };
       } else if (cell.mineCount === 0) {
         // Cell chording.
@@ -112,13 +113,13 @@ export function reducer(state: BoardState, action: BoardAction): BoardState {
         return {
           ...state,
           board: newBoard,
-          gameState: GAME_STATE.SEEDED
+          gameState: GAME_STATE.SEEDED,
         };
       } else {
         return {
           ...state,
           board: newBoard,
-          gameState: GAME_STATE.SEEDED
+          gameState: GAME_STATE.SEEDED,
         };
       }
     }
@@ -148,7 +149,7 @@ export function reducer(state: BoardState, action: BoardAction): BoardState {
 
       return {
         ...state,
-        board: modifyCell(state.board, x, y, { state: newState })
+        board: modifyCell(state.board, x, y, { state: newState }),
       };
     }
 

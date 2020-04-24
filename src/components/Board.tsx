@@ -1,54 +1,46 @@
-import { ipcRenderer } from "electron";
-import React, { useEffect, useReducer } from "react";
+import React, { useMemo, useReducer } from "react";
 
-import { CONFIG_EASY, IPC_MESSAGE, GAME_STATE } from "../lib/constants";
+import { GAME_STATE } from "../lib/constants";
 
-import {
-  init,
-  reducer as boardReducer,
-  reconfigureBoard,
-  revealCell,
-  turnCellState
-} from "../logic/board";
+import { MinesweeperBoard } from "../types";
 
 import Cell from "./Cell";
 
-import styles from "./Board.css";
+interface BoardProps extends React.HTMLAttributes<HTMLTableElement> {
+  board: MinesweeperBoard;
+  gameState?: GAME_STATE;
+  revealCell: (x: number, y: number) => void;
+  turnCellState: (x: number, y: number) => void;
+}
 
-export default () => {
-  const [state, dispatch] = useReducer(boardReducer, CONFIG_EASY, init);
-
-  useEffect(() => {
-    const newGameListener = () => {
-      dispatch(reconfigureBoard(state.config));
-    };
-
-    // Listen for the "new game" message from the main process.
-    ipcRenderer.on(IPC_MESSAGE.NEW_GAME, newGameListener);
-
-    return () => {
-      ipcRenderer.removeListener(IPC_MESSAGE.NEW_GAME, newGameListener);
-    };
-  }, []);
-
+const Board: React.FC<BoardProps> = ({
+  board,
+  gameState = GAME_STATE.DEFAULT,
+  revealCell,
+  style,
+  turnCellState,
+  ...props
+}) => {
   const onCellClick = (x: number, y: number) => {
-    if (state.gameState < GAME_STATE.LOSE) {
+    if (gameState < GAME_STATE.LOSE) {
       // The game hasn't been won or lost yet.
-      dispatch(revealCell(x, y))
+      revealCell(x, y);
     }
-  }
+  };
 
   const onCellRightClick = (x: number, y: number) => {
-    if (state.gameState < GAME_STATE.LOSE) {
+    if (gameState < GAME_STATE.LOSE) {
       // The game hasn't been won or lost yet.
-      dispatch(turnCellState(x, y))
+      turnCellState(x, y);
     }
-  }
+  };
+
+  const tableStyle = useMemo(() => ({ borderSpacing: 0, ...style }), [style]);
 
   return (
-    <table className={styles.board}>
+    <table {...props} style={tableStyle}>
       <tbody>
-        {state.board.map((row, i) => (
+        {board.map((row, i) => (
           <tr key={`row_${i}`}>
             {row.map((cell, j) => (
               <Cell
@@ -68,3 +60,5 @@ export default () => {
     </table>
   );
 };
+
+export default Board;

@@ -1,29 +1,30 @@
-import { seedRandom, restoreRandom } from "../../utils/test.utils";
-import { MinesweeperBoard } from "../types";
+import { getSeededBoard, seedRandom, restoreRandom } from "../../utils/test.utils";
+import { MinesweeperBoard, MinesweeperConfig } from "../types";
 
 import {
   CELL_STATE,
   CONFIG_DEFAULT,
   CONFIG_EASY,
   CONFIG_EXPERT,
-  CONFIG_INTERMEDIATE
+  CONFIG_INTERMEDIATE,
 } from "./constants";
 import {
   chordCells,
   forEachAdjacentCell,
   getBoard,
+  getMineDisplayCount,
   isConfigValid,
   isOutOfBounds,
   placeMine,
   placeMines,
   InvalidConfigError,
-  OutOfBoundsError
+  OutOfBoundsError,
 } from "./utils";
 
 const testConfig = { x: 13, y: 13, mines: 13 };
 let __defaultBoard = getBoard(testConfig);
 const cloneBoard = (board: MinesweeperBoard) =>
-  board.map(row => row.map(cell => ({ ...cell })));
+  board.map((row) => row.map((cell) => ({ ...cell })));
 
 const seededMineCoords = [
   { x: 0, y: 3 },
@@ -38,7 +39,7 @@ const seededMineCoords = [
   { x: 8, y: 7 },
   { x: 8, y: 8 },
   { x: 9, y: 4 },
-  { x: 12, y: 5 }
+  { x: 12, y: 5 },
 ];
 const seededMineCounts = [
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -53,7 +54,7 @@ const seededMineCounts = [
   [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0]
+  [0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0],
 ];
 
 describe("isConfigValid", () => {
@@ -170,51 +171,51 @@ describe("getBoard", () => {
   it("should generate a board of the correct size", () => {
     const resultDefault = getBoard(CONFIG_DEFAULT);
     expect(resultDefault.length).toBe(CONFIG_DEFAULT.y);
-    resultDefault.forEach(row => expect(row.length).toBe(CONFIG_DEFAULT.x));
+    resultDefault.forEach((row) => expect(row.length).toBe(CONFIG_DEFAULT.x));
 
     const resultEasy = getBoard(CONFIG_EASY);
     expect(resultEasy.length).toBe(CONFIG_EASY.y);
-    resultEasy.forEach(row => expect(row.length).toBe(CONFIG_EASY.x));
+    resultEasy.forEach((row) => expect(row.length).toBe(CONFIG_EASY.x));
 
     const resultIntermediate = getBoard(CONFIG_INTERMEDIATE);
     expect(resultIntermediate.length).toBe(CONFIG_INTERMEDIATE.y);
-    resultIntermediate.forEach(row =>
+    resultIntermediate.forEach((row) =>
       expect(row.length).toBe(CONFIG_INTERMEDIATE.x)
     );
 
     const resultExpert = getBoard(CONFIG_EXPERT);
     expect(resultExpert.length).toBe(CONFIG_EXPERT.y);
-    resultExpert.forEach(row => expect(row.length).toBe(CONFIG_EXPERT.x));
+    resultExpert.forEach((row) => expect(row.length).toBe(CONFIG_EXPERT.x));
 
     const resultTest = getBoard(testConfig);
     expect(resultTest.length).toBe(testConfig.y);
-    resultTest.forEach(row => expect(row.length).toBe(testConfig.x));
+    resultTest.forEach((row) => expect(row.length).toBe(testConfig.x));
   });
 
   it("should generate a board with all the cells in the default state", () => {
-    getBoard(CONFIG_EASY).forEach(row =>
-      row.forEach(cell => {
+    getBoard(CONFIG_EASY).forEach((row) =>
+      row.forEach((cell) => {
         expect(cell.state).toBe(CELL_STATE.DEFAULT);
         expect(cell.hasMine).toBe(false);
         expect(cell.mineCount).toBe(0);
       })
     );
-    getBoard(CONFIG_INTERMEDIATE).forEach(row =>
-      row.forEach(cell => {
+    getBoard(CONFIG_INTERMEDIATE).forEach((row) =>
+      row.forEach((cell) => {
         expect(cell.state).toBe(CELL_STATE.DEFAULT);
         expect(cell.hasMine).toBe(false);
         expect(cell.mineCount).toBe(0);
       })
     );
-    getBoard(CONFIG_EXPERT).forEach(row =>
-      row.forEach(cell => {
+    getBoard(CONFIG_EXPERT).forEach((row) =>
+      row.forEach((cell) => {
         expect(cell.state).toBe(CELL_STATE.DEFAULT);
         expect(cell.hasMine).toBe(false);
         expect(cell.mineCount).toBe(0);
       })
     );
-    getBoard(testConfig).forEach(row =>
-      row.forEach(cell => {
+    getBoard(testConfig).forEach((row) =>
+      row.forEach((cell) => {
         expect(cell.state).toBe(CELL_STATE.DEFAULT);
         expect(cell.hasMine).toBe(false);
         expect(cell.mineCount).toBe(0);
@@ -233,7 +234,7 @@ describe("forEachAdjacentCell", () => {
   const getCallbackExpect = (callback: jest.Mock) => {
     return (_x: number, _y: number) => {
       expect(
-        callback.mock.calls.some(call => call[1] === _x && call[2] === _y)
+        callback.mock.calls.some((call) => call[1] === _x && call[2] === _y)
       ).toBe(true);
     };
   };
@@ -259,7 +260,7 @@ describe("forEachAdjacentCell", () => {
     expectCallback(x, y + 1);
     expectCallback(x + 1, y + 1);
 
-    expect(callback.mock.calls.every(call => call[0] !== x && call[1] !== y));
+    expect(callback.mock.calls.every((call) => call[0] !== x && call[1] !== y));
   });
 
   describe("should invoke the given callback for every cell that isn't out of bounds", () => {
@@ -437,7 +438,7 @@ describe("placeMine", () => {
     expect(result).toBe(true);
     expect(testBoard[y][x]).toEqual({
       ...cellBefore,
-      hasMine: true
+      hasMine: true,
     });
   });
 
@@ -529,7 +530,7 @@ describe("placeMines", () => {
 
     testBoard.forEach((row, j) =>
       row.forEach((cell, i) => {
-        if (seededMineCoords.some(coord => coord.x === i && coord.y === j))
+        if (seededMineCoords.some((coord) => coord.x === i && coord.y === j))
           expect(cell.hasMine).toBe(true);
         else expect(cell.hasMine).toBe(false);
       })
@@ -591,7 +592,7 @@ describe("chordCells", () => {
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     ];
 
     testBoard.forEach((row, j) =>
@@ -626,5 +627,62 @@ describe("chordCells", () => {
     expect(() => chordCells(testConfig, testBoard, 1337, 1337)).toThrowError(
       OutOfBoundsError
     );
+  });
+});
+
+describe("getMineDisplayCount", () => {
+  beforeEach(() => {
+    seedRandom();
+  });
+
+  afterEach(() => {
+    restoreRandom();
+  });
+
+  it("should return 0 for an empty board", () => {
+    expect(getMineDisplayCount([])).toBe(0);
+    expect(getMineDisplayCount(getBoard(CONFIG_DEFAULT))).toBe(0);
+    expect(getMineDisplayCount(getBoard(CONFIG_EASY))).toBe(0);
+  });
+
+  it("should count mines", () => {
+    expect(getMineDisplayCount(getSeededBoard(CONFIG_EASY))).toBe(
+      CONFIG_EASY.mines
+    );
+    expect(getMineDisplayCount(getSeededBoard(CONFIG_INTERMEDIATE))).toBe(
+      CONFIG_INTERMEDIATE.mines
+    );
+    expect(getMineDisplayCount(getSeededBoard(CONFIG_EXPERT))).toBe(
+      CONFIG_EXPERT.mines
+    );
+  });
+
+  it("should subtract flags from mines", () => {
+    const board = getSeededBoard(CONFIG_EASY);
+
+    // Flag a couple of cells.
+    board[0][0].state = CELL_STATE.FLAGGED;
+    board[0][1].state = CELL_STATE.FLAGGED;
+
+    expect(getMineDisplayCount(board)).toBe(CONFIG_EASY.mines - 2);
+  });
+
+  it("should allow returning a negative number", () => {
+    const board = getSeededBoard(CONFIG_EASY);
+
+    // Flag a couple of cells.
+    board[0][0].state = CELL_STATE.FLAGGED;
+    board[0][1].state = CELL_STATE.FLAGGED;
+    board[0][2].state = CELL_STATE.FLAGGED;
+    board[0][3].state = CELL_STATE.FLAGGED;
+    board[0][4].state = CELL_STATE.FLAGGED;
+    board[0][5].state = CELL_STATE.FLAGGED;
+    board[0][6].state = CELL_STATE.FLAGGED;
+    board[0][7].state = CELL_STATE.FLAGGED;
+    board[0][8].state = CELL_STATE.FLAGGED;
+    board[1][0].state = CELL_STATE.FLAGGED;
+    board[1][1].state = CELL_STATE.FLAGGED;
+
+    expect(getMineDisplayCount(board)).toBe(-1);
   });
 });
