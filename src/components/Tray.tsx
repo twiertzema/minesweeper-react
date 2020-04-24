@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import classnames from "classnames";
 
-import { CELL_STATE, GAME_STATE } from "../lib/constants";
+import { GAME_STATE } from "../lib/constants";
+import { getMineDisplayCount } from "../lib/utils";
 import { MinesweeperBoard } from "../types";
 
 import styles from "./Tray.css";
@@ -12,7 +13,7 @@ interface RenderPropProps {
   seconds: number; // For the text display
 }
 
-type RenderProp = (props: RenderPropProps) => React.ReactElement | null;
+type RenderProp = React.FC<RenderPropProps>;
 
 interface TrayProps {
   board: MinesweeperBoard;
@@ -25,28 +26,16 @@ interface TrayProps {
  * Accepts a render prop as `children`.
  */
 export const Tray: React.FC<TrayProps> = ({ board, children, gameState }) => {
-  const [minesLeft, setMinesLeft] = useState(0);
+  const [minesLeft, setMinesLeft] = useState(getMineDisplayCount(board));
   const [seconds, setSeconds] = useState(0);
 
   // Calculate number of unflagged mines left.
   useEffect(() => {
-    let _numberOfMines = 0;
-    let _numberOfFlags = 0;
-
-    for (const row of board) {
-      for (const cell of row) {
-        if (cell.hasMine) _numberOfMines++;
-        if (cell.state === CELL_STATE.FLAGGED) _numberOfFlags++;
-      }
-    }
-
-    setMinesLeft(_numberOfMines - _numberOfFlags);
+    setMinesLeft(getMineDisplayCount(board));
   }, [board]);
 
   // Set up and manage the timer.
   useEffect(() => {
-    console.log("Game state changed:", gameState);
-
     let secondsIntervalId: NodeJS.Timeout | undefined = undefined;
 
     // If the game was just reset, reset the timer.
@@ -65,7 +54,6 @@ export const Tray: React.FC<TrayProps> = ({ board, children, gameState }) => {
     }
 
     return () => {
-
       // No matter what `gameState` changed to, stop the interval.
       if (secondsIntervalId) clearInterval(secondsIntervalId);
     };

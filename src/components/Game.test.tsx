@@ -24,16 +24,16 @@ afterEach(() => {
 const TEST_ID = "test-game";
 
 it("should render", () => {
-  render(<Game data-test-id={TEST_ID} />);
+  const { getByTestId } = render(<Game data-testid={TEST_ID} />);
 
-  const testGame = document.querySelector(`[data-test-id="${TEST_ID}"]`);
+  const testGame = getByTestId(TEST_ID);
   expect(testGame).toBeTruthy();
 });
 
 it('should reset on "new game"', () => {
-  render(<Game data-test-id={TEST_ID} />);
+  const { getByTestId } = render(<Game data-testid={TEST_ID} />);
 
-  const testGame = document.querySelector(`[data-test-id="${TEST_ID}"]`);
+  const testGame = getByTestId(TEST_ID);
   expect(testGame).toBeTruthy();
 
   const cell = document.querySelector(".cell");

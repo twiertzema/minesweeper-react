@@ -376,6 +376,24 @@ const _chordCells = (
 };
 
 /**
+ * Counts how many mines are on the board, subtracting the number of flags that
+ *  have been placed.
+ */
+export const getMineDisplayCount = (board: MinesweeperBoard): number => {
+  let _numberOfMines = 0;
+  let _numberOfFlags = 0;
+
+  for (const row of board) {
+    for (const cell of row) {
+      if (cell.hasMine) _numberOfMines++;
+      if (cell.state === CELL_STATE.FLAGGED) _numberOfFlags++;
+    }
+  }
+
+  return _numberOfMines - _numberOfFlags;
+}
+
+/**
  * Indicates that the supplied configuration is not valid.
  * Automatically supplies the error message of `"invalid config"`.
  */
