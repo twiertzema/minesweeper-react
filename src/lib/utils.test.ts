@@ -1,5 +1,9 @@
-import { getSeededBoard, seedRandom, restoreRandom } from "../../utils/test.utils";
-import { MinesweeperBoard, MinesweeperConfig } from "../types";
+import {
+  getSeededBoard,
+  seedRandom,
+  restoreRandom,
+} from "../../utils/test.utils";
+import { MinesweeperBoard } from "../types";
 
 import {
   CELL_STATE,
@@ -7,8 +11,10 @@ import {
   CONFIG_EASY,
   CONFIG_EXPERT,
   CONFIG_INTERMEDIATE,
+  GAME_STATE,
 } from "./constants";
 import {
+  determineBoardState,
   chordCells,
   forEachAdjacentCell,
   getBoard,
@@ -684,5 +690,90 @@ describe("getMineDisplayCount", () => {
     board[1][1].state = CELL_STATE.FLAGGED;
 
     expect(getMineDisplayCount(board)).toBe(-1);
+  });
+});
+
+describe("determineBoardState", () => {
+  beforeEach(() => {
+    seedRandom();
+  });
+
+  afterEach(() => {
+    restoreRandom();
+  });
+
+  it("should return `GAME_STATE.DEFAULT` for an empty board", () => {
+    expect(determineBoardState([])).toBe(GAME_STATE.DEFAULT);
+    expect(determineBoardState([[]])).toBe(GAME_STATE.DEFAULT);
+    expect(determineBoardState([[], [], []])).toBe(GAME_STATE.DEFAULT);
+    expect(determineBoardState(getBoard(CONFIG_DEFAULT))).toBe(
+      GAME_STATE.DEFAULT
+    );
+  });
+
+  it("should return `GAME_STATE.DEFAULT` for a non-seeded board", () => {
+    expect(determineBoardState(getBoard(CONFIG_EASY))).toBe(GAME_STATE.DEFAULT);
+    expect(determineBoardState(getBoard(CONFIG_INTERMEDIATE))).toBe(
+      GAME_STATE.DEFAULT
+    );
+    expect(determineBoardState(getBoard(CONFIG_EXPERT))).toBe(
+      GAME_STATE.DEFAULT
+    );
+  });
+
+  it("should return `GAME_STATE.SEEDED` for a freshly seeded board", () => {
+    expect(determineBoardState(getSeededBoard(CONFIG_EASY))).toBe(
+      GAME_STATE.SEEDED
+    );
+    expect(determineBoardState(getSeededBoard(CONFIG_INTERMEDIATE))).toBe(
+      GAME_STATE.SEEDED
+    );
+    expect(determineBoardState(getSeededBoard(CONFIG_EXPERT))).toBe(
+      GAME_STATE.SEEDED
+    );
+  });
+
+  it("should return `GAME_STATE.SEEDED` for a board with some revealed cells", () => {
+    const board = getSeededBoard(CONFIG_EASY);
+
+    // "Reveal" every cell on the first row.
+    // - They don't have mines, and the randomness is seeded.
+    for (const cell of board[0]) {
+      cell.state = CELL_STATE.REVEALED;
+    }
+
+    expect(determineBoardState(board)).toBe(GAME_STATE.SEEDED);
+  });
+
+  it("should return `GAME_STATE.WIN` for a fully revealed board", () => {
+    const board = getSeededBoard(CONFIG_EASY);
+
+    for (const row of board) {
+      for (const cell of row) {
+        if (!cell.hasMine) cell.state = CELL_STATE.REVEALED;
+      }
+    }
+
+    expect(determineBoardState(board)).toBe(GAME_STATE.WIN);
+  });
+
+  it("should return `GAME_STATE.LOSE` if a mine is revealed", () => {
+    const board = getSeededBoard(CONFIG_EASY);
+
+    let didIt = false;
+    for (const row of board) {
+      for (const cell of row) {
+        // Reveal the first cell we find
+        if (cell.hasMine) {
+          cell.state = CELL_STATE.REVEALED;
+          didIt = true;
+          break;
+        }
+      }
+
+      if (didIt) break;
+    }
+
+    expect(determineBoardState(board)).toBe(GAME_STATE.LOSE);
   });
 });
