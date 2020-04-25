@@ -763,7 +763,7 @@ describe("determineBoardState", () => {
     let didIt = false;
     for (const row of board) {
       for (const cell of row) {
-        // Reveal the first cell we find
+        // Reveal the first cell we find.
         if (cell.hasMine) {
           cell.state = CELL_STATE.REVEALED;
           didIt = true;

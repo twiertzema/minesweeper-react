@@ -1,5 +1,9 @@
 /* eslint-env jest */
-import { restoreRandom, seedRandom } from "../../../utils/test.utils";
+import {
+  getSeededBoard,
+  restoreRandom,
+  seedRandom,
+} from "../../../utils/test.utils";
 
 import {
   CELL_STATE,
@@ -7,7 +11,7 @@ import {
   CONFIG_EASY,
   CONFIG_EXPERT,
   CONFIG_INTERMEDIATE,
-  GAME_STATE
+  GAME_STATE,
 } from "../../lib/constants";
 import { OutOfBoundsError } from "../../lib/utils";
 
@@ -23,7 +27,7 @@ const expectBlankBoard = (
       expect(board?.[j]?.[i]).toEqual({
         hasMine: false,
         mineCount: 0,
-        state: CELL_STATE.DEFAULT
+        state: CELL_STATE.DEFAULT,
       });
     }
   }
@@ -32,7 +36,7 @@ const expectBlankBoard = (
 it("should return the current state if action type is unrecognized", () => {
   const stateBefore = init(CONFIG_DEFAULT);
   const action = {
-    type: "bogus_action"
+    type: "bogus_action",
   };
   const result = reducer(stateBefore, action as any);
   expect(result).toBe(stateBefore);
@@ -46,7 +50,7 @@ describe("RECONFIGURE_BOARD", () => {
     expect(result).toEqual({
       ...stateBefore,
       board: [],
-      config: CONFIG_DEFAULT
+      config: CONFIG_DEFAULT,
     });
   });
 
@@ -165,6 +169,33 @@ describe("REVEAL_CELL", () => {
         }
       })
     );
+  });
+
+  it("should go to WIN if all non-mine cells are revealed", () => {
+    const board = getSeededBoard(CONFIG_EASY);
+
+    for (const row of board) {
+      for (const cell of row) {
+        // Reveal every non-mine cell.
+        if (!cell.hasMine) cell.state = CELL_STATE.REVEALED;
+      }
+    }
+
+    const actionX = 0;
+    const actionY = 4;
+
+    // Unreveal the cell to be revealed.
+    board[actionY][actionX].state = CELL_STATE.DEFAULT;
+
+    const stateBefore = {
+      ...init(CONFIG_EASY),
+      board,
+      gameState: GAME_STATE.SEEDED,
+    };
+    const action = revealCell(actionX, actionY);
+    const result = reducer(stateBefore, action);
+
+    expect(result.gameState).toBe(GAME_STATE.WIN);
   });
 });
 

@@ -85,6 +85,7 @@ export const XPTray: React.FC<XPTrayProps> = ({
             {/* HUD */}
             <div className={classnames(styles.slot, styles.hud)}>
               <p className={styles.display}>
+                {/* TODO: "0-X" bug for negative numbers. */}
                 <span>{String(minesLeft).padStart(3, "0")}</span>
               </p>
               <p className={styles.display}>
