@@ -11,13 +11,14 @@ import {
 import {
   chordCells,
   determineBoardState,
+  flagAllMines,
   getBoard,
   placeMines,
   OutOfBoundsError,
 } from "../../lib/utils";
 import { CELL_STATE, GAME_STATE } from "../../lib/constants";
 
-interface BoardState {
+export interface BoardState {
   board: MinesweeperBoard;
   config: MinesweeperConfig;
   gameState: GAME_STATE;
@@ -111,6 +112,11 @@ export function reducer(state: BoardState, action: BoardAction): BoardState {
       const newState = cell.hasMine
         ? GAME_STATE.LOSE
         : determineBoardState(newBoard);
+
+      // If the game was just won, make sure to flag all the cells.
+      if (newState === GAME_STATE.WIN) {
+        flagAllMines(newBoard);
+      }
 
       return {
         ...state,

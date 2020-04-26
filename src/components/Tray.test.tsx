@@ -111,6 +111,25 @@ describe("Tray", () => {
       const result = getByTestId(MINES_LEFT_ID);
       expect(result.innerHTML).toBe(String(CONFIG_EASY.mines - 2));
     });
+
+    it("should be set to 0 when the game is won", () => {
+      const board = getSeededBoard(CONFIG_EASY);
+
+      const { getByTestId, rerender } = render(
+        <TestMinesLeft board={board} gameState={GAME_STATE.SEEDED} />
+      );
+
+      // First, make sure `minesLeft` is non-zero.
+      expect(getByTestId(MINES_LEFT_ID).innerHTML).toBe(
+        String(CONFIG_EASY.mines)
+      );
+
+      // Then simply set the state to WIN.
+      rerender(<TestMinesLeft board={board} gameState={GAME_STATE.WIN} />);
+
+      // And make sure `minesLeft` was set to 0.
+      expect(getByTestId(MINES_LEFT_ID).innerHTML).toBe(String(0));
+    });
   });
 
   describe("seconds", () => {

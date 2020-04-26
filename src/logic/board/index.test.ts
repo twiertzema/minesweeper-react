@@ -15,7 +15,13 @@ import {
 } from "../../lib/constants";
 import { OutOfBoundsError } from "../../lib/utils";
 
-import { init, reconfigureBoard, reducer, revealCell } from "./index";
+import {
+  BoardState,
+  init,
+  reconfigureBoard,
+  reducer,
+  revealCell,
+} from "./index";
 import { MinesweeperBoard, MinesweeperConfig } from "../../types";
 
 const expectBlankBoard = (
@@ -87,6 +93,34 @@ describe("REVEAL_CELL", () => {
   afterEach(() => {
     restoreRandom();
   });
+
+  /**
+   * Convenience function to construct and enacta `BoardState` that is won.
+   */
+  function getWonState(): BoardState {
+    const board = getSeededBoard(CONFIG_EASY);
+
+    for (const row of board) {
+      for (const cell of row) {
+        // Reveal every non-mine cell.
+        if (!cell.hasMine) cell.state = CELL_STATE.REVEALED;
+      }
+    }
+
+    const actionX = 0;
+    const actionY = 4;
+
+    // Unreveal the cell to be revealed.
+    board[actionY][actionX].state = CELL_STATE.DEFAULT;
+
+    const stateBefore = {
+      ...init(CONFIG_EASY),
+      board,
+      gameState: GAME_STATE.SEEDED,
+    };
+    const action = revealCell(actionX, actionY);
+    return reducer(stateBefore, action);
+  }
 
   it("should throw an error for a default board", () => {
     const stateBefore = init(CONFIG_DEFAULT);
@@ -171,31 +205,20 @@ describe("REVEAL_CELL", () => {
     );
   });
 
-  it("should go to WIN if all non-mine cells are revealed", () => {
-    const board = getSeededBoard(CONFIG_EASY);
-
-    for (const row of board) {
-      for (const cell of row) {
-        // Reveal every non-mine cell.
-        if (!cell.hasMine) cell.state = CELL_STATE.REVEALED;
-      }
-    }
-
-    const actionX = 0;
-    const actionY = 4;
-
-    // Unreveal the cell to be revealed.
-    board[actionY][actionX].state = CELL_STATE.DEFAULT;
-
-    const stateBefore = {
-      ...init(CONFIG_EASY),
-      board,
-      gameState: GAME_STATE.SEEDED,
-    };
-    const action = revealCell(actionX, actionY);
-    const result = reducer(stateBefore, action);
+  it("should flag all mines go to WIN if all non-mine cells are revealed", () => {
+    const result = getWonState();
 
     expect(result.gameState).toBe(GAME_STATE.WIN);
+  });
+
+  it("should flag all mines if all non-mine cells are revealed", () => {
+    const result = getWonState();
+
+    for (const row of result.board) {
+      for (const cell of row) {
+        if (cell.hasMine) expect(cell.state).toBe(CELL_STATE.FLAGGED);
+      }
+    }
   });
 });
 

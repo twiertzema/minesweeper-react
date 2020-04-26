@@ -26,13 +26,15 @@ interface TrayProps {
  * Accepts a render prop as `children`.
  */
 export const Tray: React.FC<TrayProps> = ({ board, children, gameState }) => {
-  const [minesLeft, setMinesLeft] = useState(getMineDisplayCount(board));
+  const [minesLeft, setMinesLeft] = useState(
+    getMineDisplayCount(board, gameState)
+  );
   const [seconds, setSeconds] = useState(0);
 
   // Calculate number of unflagged mines left.
   useEffect(() => {
-    setMinesLeft(getMineDisplayCount(board));
-  }, [board]);
+    setMinesLeft(getMineDisplayCount(board, gameState));
+  }, [board, gameState]);
 
   // Set up and manage the timer.
   useEffect(() => {

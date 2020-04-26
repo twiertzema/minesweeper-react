@@ -379,7 +379,12 @@ function _chordCells(
  * Counts how many mines are on the board, subtracting the number of flags that
  *  have been placed.
  */
-export function getMineDisplayCount(board: MinesweeperBoard): number {
+export function getMineDisplayCount(
+  board: MinesweeperBoard,
+  gameState: GAME_STATE
+): number {
+  if (gameState === GAME_STATE.WIN) return 0;
+
   let _numberOfMines = 0;
   let _numberOfFlags = 0;
 
@@ -394,7 +399,7 @@ export function getMineDisplayCount(board: MinesweeperBoard): number {
 }
 
 /**
- * Determines whether or not a board is in the win condition.
+ * Determines what state the game is in from the board.
  */
 export function determineBoardState(board: MinesweeperBoard): GAME_STATE {
   let isSeeded = false;
@@ -440,6 +445,21 @@ export function determineBoardState(board: MinesweeperBoard): GAME_STATE {
     return isSeeded ? GAME_STATE.SEEDED : GAME_STATE.DEFAULT;
   } else {
     return GAME_STATE.WIN;
+  }
+}
+
+/**
+ * Sets the `state` of all cells that have mines to `FLAGGED`.
+ * - This is to be called at the end of the game confirm the placement of mines
+ *   to the user in case they didn't flag them.
+ * 
+ * **Warning:** This is <u>not</u> a pure function.
+ */
+export function flagAllMines(board: MinesweeperBoard): void {
+  for (const row of board) {
+    for (const cell of row) {
+      if (cell.hasMine) cell.state = CELL_STATE.FLAGGED;
+    }
   }
 }
 
