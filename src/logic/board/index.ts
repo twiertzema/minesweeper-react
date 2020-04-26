@@ -10,13 +10,15 @@ import {
 } from "./types";
 import {
   chordCells,
+  determineBoardState,
+  flagAllMines,
   getBoard,
   placeMines,
   OutOfBoundsError,
 } from "../../lib/utils";
 import { CELL_STATE, GAME_STATE } from "../../lib/constants";
 
-interface BoardState {
+export interface BoardState {
   board: MinesweeperBoard;
   config: MinesweeperConfig;
   gameState: GAME_STATE;
@@ -94,34 +96,33 @@ export function reducer(state: BoardState, action: BoardAction): BoardState {
       });
       if (state.gameState === GAME_STATE.DEFAULT) {
         // Seed the board.
-        // TODO: Split this out into a different action so this one is idempotent.
+        // TODO: It would be great if this happened somewhere else so this
+        //  reducer remained idempotent.
         placeMines(state.config, newBoard, x, y);
       }
 
       const cell = newBoard[y][x];
-      if (cell.hasMine) {
-        // Game lose! X(
-        console.log("Game lose! X(");
-        return {
-          ...state,
-          board: newBoard,
-          gameState: GAME_STATE.LOSE,
-        };
-      } else if (cell.mineCount === 0) {
+      if (cell.mineCount === 0) {
         // Cell chording.
         chordCells(state.config, newBoard, x, y);
-        return {
-          ...state,
-          board: newBoard,
-          gameState: GAME_STATE.SEEDED,
-        };
-      } else {
-        return {
-          ...state,
-          board: newBoard,
-          gameState: GAME_STATE.SEEDED,
-        };
       }
+
+      // If a mine was just revealed, we can short-circuit the determination of
+      //  the game state.
+      const newState = cell.hasMine
+        ? GAME_STATE.LOSE
+        : determineBoardState(newBoard);
+
+      // If the game was just won, make sure to flag all the cells.
+      if (newState === GAME_STATE.WIN) {
+        flagAllMines(newBoard);
+      }
+
+      return {
+        ...state,
+        board: newBoard,
+        gameState: newState,
+      };
     }
 
     case TURN_CELL_STATE: {

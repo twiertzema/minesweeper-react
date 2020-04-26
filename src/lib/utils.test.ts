@@ -1,5 +1,9 @@
-import { getSeededBoard, seedRandom, restoreRandom } from "../../utils/test.utils";
-import { MinesweeperBoard, MinesweeperConfig } from "../types";
+import {
+  getSeededBoard,
+  seedRandom,
+  restoreRandom,
+} from "../../utils/test.utils";
+import { MinesweeperBoard } from "../types";
 
 import {
   CELL_STATE,
@@ -7,9 +11,12 @@ import {
   CONFIG_EASY,
   CONFIG_EXPERT,
   CONFIG_INTERMEDIATE,
+  GAME_STATE,
 } from "./constants";
 import {
   chordCells,
+  determineBoardState,
+  flagAllMines,
   forEachAdjacentCell,
   getBoard,
   getMineDisplayCount,
@@ -640,21 +647,28 @@ describe("getMineDisplayCount", () => {
   });
 
   it("should return 0 for an empty board", () => {
-    expect(getMineDisplayCount([])).toBe(0);
-    expect(getMineDisplayCount(getBoard(CONFIG_DEFAULT))).toBe(0);
-    expect(getMineDisplayCount(getBoard(CONFIG_EASY))).toBe(0);
+    expect(getMineDisplayCount([], GAME_STATE.DEFAULT)).toBe(0);
+    expect(
+      getMineDisplayCount(getBoard(CONFIG_DEFAULT), GAME_STATE.DEFAULT)
+    ).toBe(0);
+    expect(getMineDisplayCount(getBoard(CONFIG_EASY), GAME_STATE.DEFAULT)).toBe(
+      0
+    );
   });
 
   it("should count mines", () => {
-    expect(getMineDisplayCount(getSeededBoard(CONFIG_EASY))).toBe(
-      CONFIG_EASY.mines
-    );
-    expect(getMineDisplayCount(getSeededBoard(CONFIG_INTERMEDIATE))).toBe(
-      CONFIG_INTERMEDIATE.mines
-    );
-    expect(getMineDisplayCount(getSeededBoard(CONFIG_EXPERT))).toBe(
-      CONFIG_EXPERT.mines
-    );
+    expect(
+      getMineDisplayCount(getSeededBoard(CONFIG_EASY), GAME_STATE.DEFAULT)
+    ).toBe(CONFIG_EASY.mines);
+    expect(
+      getMineDisplayCount(
+        getSeededBoard(CONFIG_INTERMEDIATE),
+        GAME_STATE.DEFAULT
+      )
+    ).toBe(CONFIG_INTERMEDIATE.mines);
+    expect(
+      getMineDisplayCount(getSeededBoard(CONFIG_EXPERT), GAME_STATE.DEFAULT)
+    ).toBe(CONFIG_EXPERT.mines);
   });
 
   it("should subtract flags from mines", () => {
@@ -664,7 +678,9 @@ describe("getMineDisplayCount", () => {
     board[0][0].state = CELL_STATE.FLAGGED;
     board[0][1].state = CELL_STATE.FLAGGED;
 
-    expect(getMineDisplayCount(board)).toBe(CONFIG_EASY.mines - 2);
+    expect(getMineDisplayCount(board, GAME_STATE.DEFAULT)).toBe(
+      CONFIG_EASY.mines - 2
+    );
   });
 
   it("should allow returning a negative number", () => {
@@ -683,6 +699,133 @@ describe("getMineDisplayCount", () => {
     board[1][0].state = CELL_STATE.FLAGGED;
     board[1][1].state = CELL_STATE.FLAGGED;
 
-    expect(getMineDisplayCount(board)).toBe(-1);
+    expect(getMineDisplayCount(board, GAME_STATE.DEFAULT)).toBe(-1);
+  });
+
+  it("should return 0 if `gameState` is `WIN`", () => {
+    const board = getSeededBoard(CONFIG_EASY);
+
+    expect(getMineDisplayCount(board, GAME_STATE.WIN)).toBe(0);
+  });
+});
+
+describe("determineBoardState", () => {
+  beforeEach(() => {
+    seedRandom();
+  });
+
+  afterEach(() => {
+    restoreRandom();
+  });
+
+  it("should return `GAME_STATE.DEFAULT` for an empty board", () => {
+    expect(determineBoardState([])).toBe(GAME_STATE.DEFAULT);
+    expect(determineBoardState([[]])).toBe(GAME_STATE.DEFAULT);
+    expect(determineBoardState([[], [], []])).toBe(GAME_STATE.DEFAULT);
+    expect(determineBoardState(getBoard(CONFIG_DEFAULT))).toBe(
+      GAME_STATE.DEFAULT
+    );
+  });
+
+  it("should return `GAME_STATE.DEFAULT` for a non-seeded board", () => {
+    expect(determineBoardState(getBoard(CONFIG_EASY))).toBe(GAME_STATE.DEFAULT);
+    expect(determineBoardState(getBoard(CONFIG_INTERMEDIATE))).toBe(
+      GAME_STATE.DEFAULT
+    );
+    expect(determineBoardState(getBoard(CONFIG_EXPERT))).toBe(
+      GAME_STATE.DEFAULT
+    );
+  });
+
+  it("should return `GAME_STATE.SEEDED` for a freshly seeded board", () => {
+    expect(determineBoardState(getSeededBoard(CONFIG_EASY))).toBe(
+      GAME_STATE.SEEDED
+    );
+    expect(determineBoardState(getSeededBoard(CONFIG_INTERMEDIATE))).toBe(
+      GAME_STATE.SEEDED
+    );
+    expect(determineBoardState(getSeededBoard(CONFIG_EXPERT))).toBe(
+      GAME_STATE.SEEDED
+    );
+  });
+
+  it("should return `GAME_STATE.SEEDED` for a board with some revealed cells", () => {
+    const board = getSeededBoard(CONFIG_EASY);
+
+    // "Reveal" every cell on the first row.
+    // - They don't have mines, and the randomness is seeded.
+    for (const cell of board[0]) {
+      cell.state = CELL_STATE.REVEALED;
+    }
+
+    expect(determineBoardState(board)).toBe(GAME_STATE.SEEDED);
+  });
+
+  it("should return `GAME_STATE.WIN` for a fully revealed board", () => {
+    const board = getSeededBoard(CONFIG_EASY);
+
+    for (const row of board) {
+      for (const cell of row) {
+        if (!cell.hasMine) cell.state = CELL_STATE.REVEALED;
+      }
+    }
+
+    expect(determineBoardState(board)).toBe(GAME_STATE.WIN);
+  });
+
+  it("should return `GAME_STATE.LOSE` if a mine is revealed", () => {
+    const board = getSeededBoard(CONFIG_EASY);
+
+    let didIt = false;
+    for (const row of board) {
+      for (const cell of row) {
+        // Reveal the first mine we find.
+        if (cell.hasMine) {
+          cell.state = CELL_STATE.REVEALED;
+          didIt = true;
+          break;
+        }
+      }
+
+      if (didIt) break;
+    }
+
+    expect(determineBoardState(board)).toBe(GAME_STATE.LOSE);
+  });
+});
+
+describe("flagAllMines", () => {
+  it("should flag all mines", () => {
+    const board = getSeededBoard(CONFIG_EASY);
+
+    flagAllMines(board);
+
+    for (const row of board) {
+      for (const cell of row) {
+        if (cell.hasMine) {
+          expect(cell.state).toBe(CELL_STATE.FLAGGED);
+        }
+      }
+    }
+  });
+
+  it("should not interfere with cells that don't have mines", () => {
+    const board = getSeededBoard(CONFIG_EASY);
+
+    const boardBefore = JSON.parse(JSON.stringify(board));
+
+    flagAllMines(board);
+
+    for (let j = 0; j < board.length; j++) {
+      const row = board[j];
+
+      for (let i = 0; i < row.length; i++) {
+        const cell = row[i];
+
+        if (!cell.hasMine) {
+          expect(cell.state).toBe(boardBefore[j][i].state);
+        }
+      }
+    }
   });
 });

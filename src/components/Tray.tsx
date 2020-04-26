@@ -26,13 +26,15 @@ interface TrayProps {
  * Accepts a render prop as `children`.
  */
 export const Tray: React.FC<TrayProps> = ({ board, children, gameState }) => {
-  const [minesLeft, setMinesLeft] = useState(getMineDisplayCount(board));
+  const [minesLeft, setMinesLeft] = useState(
+    getMineDisplayCount(board, gameState)
+  );
   const [seconds, setSeconds] = useState(0);
 
   // Calculate number of unflagged mines left.
   useEffect(() => {
-    setMinesLeft(getMineDisplayCount(board));
-  }, [board]);
+    setMinesLeft(getMineDisplayCount(board, gameState));
+  }, [board, gameState]);
 
   // Set up and manage the timer.
   useEffect(() => {
@@ -85,6 +87,7 @@ export const XPTray: React.FC<XPTrayProps> = ({
             {/* HUD */}
             <div className={classnames(styles.slot, styles.hud)}>
               <p className={styles.display}>
+                {/* TODO: "0-X" bug for negative numbers. */}
                 <span>{String(minesLeft).padStart(3, "0")}</span>
               </p>
               <p className={styles.display}>
