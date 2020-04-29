@@ -1,7 +1,8 @@
 import { ipcRenderer } from "electron";
 import React, { useReducer, useEffect, HTMLAttributes } from "react";
+import {castDraft} from 'immer'
 
-import { CONFIG_EASY, IPC_MESSAGE, GAME_STATE } from "../lib/constants";
+import { CONFIG_EASY, IPC_MESSAGE } from "../lib/constants";
 
 import {
   init,
@@ -31,9 +32,9 @@ const Game: React.FC<HTMLAttributes<HTMLElement>> = (props) => {
   }, []);
 
   return (
-    <Tray {...props} board={state.board} gameState={state.gameState}>
+    <Tray {...props} board={castDraft(state.board)} gameState={state.gameState}>
       <Board
-        board={state.board}
+        board={castDraft(state.board)}
         gameState={state.gameState}
         revealCell={(x, y) => dispatch(revealCell(x, y))}
         turnCellState={(x, y) => dispatch(turnCellState(x, y))}
