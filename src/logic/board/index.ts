@@ -91,7 +91,8 @@ export const reducer = produce((draft: BoardState, action: BoardAction) => {
 
       const cell = _getCell(draft.board, x, y);
 
-      if (cell.state === CELL_STATE.REVEALED) return draft;
+      // If the cell is already revealed, we don't need to do anything.
+      if (cell.state === CELL_STATE.REVEALED) return;
 
       cell.state = CELL_STATE.REVEALED;
 

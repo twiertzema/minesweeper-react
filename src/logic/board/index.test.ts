@@ -188,6 +188,17 @@ describe("REVEAL_CELL", () => {
     expect(result.board[2][0].hasMine).toBe(true);
   });
 
+  it("should do nothing if the cell is already revealed", () => {
+    const stateBefore = init(CONFIG_EASY);
+    const actionX = 0;
+    const actionY = 0;
+    stateBefore.board[actionY][actionX].state = CELL_STATE.REVEALED;
+
+    const action = revealCell(actionX, actionY);
+    const result = reducer(stateBefore, action);
+    expect(result).toBe(stateBefore);
+  });
+
   it("should go to LOSE gameState if a mine is revealed", () => {
     const initState = init(CONFIG_EASY);
     const seedingAction = revealCell(0, 0);
