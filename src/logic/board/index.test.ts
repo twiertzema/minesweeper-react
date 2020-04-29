@@ -1,6 +1,7 @@
 /* eslint-env jest */
 import {
   getSeededBoard,
+  printBoard,
   restoreRandom,
   seedRandom,
 } from "../../../utils/test.utils";
@@ -13,7 +14,7 @@ import {
   CONFIG_INTERMEDIATE,
   GAME_STATE,
 } from "../../lib/constants";
-import { OutOfBoundsError } from "../../lib/utils";
+import { OutOfBoundsError, getBoard } from "../../lib/utils";
 
 import {
   BoardState,
@@ -21,6 +22,7 @@ import {
   reconfigureBoard,
   reducer,
   revealCell,
+  turnCellState,
 } from "./index";
 import { MinesweeperBoard, MinesweeperConfig } from "../../types";
 
@@ -38,6 +40,24 @@ const expectBlankBoard = (
     }
   }
 };
+
+beforeEach(() => {
+  seedRandom();
+});
+
+afterEach(() => {
+  restoreRandom();
+});
+
+it("should have a default value", () => {
+  const action = { type: "bogus_action" };
+  const result = reducer(undefined as any, action as any);
+  expect(result).toEqual({
+    board: getBoard(CONFIG_DEFAULT),
+    config: CONFIG_DEFAULT,
+    gameState: GAME_STATE.DEFAULT,
+  });
+});
 
 it("should return the current state if action type is unrecognized", () => {
   const stateBefore = init(CONFIG_DEFAULT);
@@ -86,14 +106,6 @@ describe("RECONFIGURE_BOARD", () => {
 });
 
 describe("REVEAL_CELL", () => {
-  beforeEach(() => {
-    seedRandom();
-  });
-
-  afterEach(() => {
-    restoreRandom();
-  });
-
   /**
    * Convenience function to construct and enacta `BoardState` that is won.
    */
@@ -127,6 +139,35 @@ describe("REVEAL_CELL", () => {
     const action = revealCell(0, 0);
 
     expect(() => reducer(stateBefore, action)).toThrow(OutOfBoundsError);
+  });
+
+  it("should throw an error for crazy coordinates", () => {
+    const stateBefore = init(CONFIG_EASY);
+
+    expect(() => reducer(stateBefore, revealCell(-1, 0))).toThrow(
+      OutOfBoundsError
+    );
+    expect(() => reducer(stateBefore, revealCell(0, -1))).toThrow(
+      OutOfBoundsError
+    );
+    expect(() => reducer(stateBefore, revealCell(CONFIG_EASY.x, 0))).toThrow(
+      OutOfBoundsError
+    );
+    expect(() => reducer(stateBefore, revealCell(0, CONFIG_EASY.y))).toThrow(
+      OutOfBoundsError
+    );
+    expect(() => reducer(stateBefore, revealCell(NaN, 0))).toThrow(
+      OutOfBoundsError
+    );
+    expect(() => reducer(stateBefore, revealCell(0, NaN))).toThrow(
+      OutOfBoundsError
+    );
+    expect(() => reducer(stateBefore, revealCell(Infinity, 0))).toThrow(
+      OutOfBoundsError
+    );
+    expect(() => reducer(stateBefore, revealCell(0, Infinity))).toThrow(
+      OutOfBoundsError
+    );
   });
 
   it("should seed if in DEFAULT gameState", () => {
@@ -223,5 +264,110 @@ describe("REVEAL_CELL", () => {
 });
 
 // TODO: TURN_CELL_STATE
+describe("TURN_CELL_STATE", () => {
+  it("should change cell state from DEFAULT to FLAGGED", () => {
+    const board = getSeededBoard(CONFIG_EASY);
 
-// TODO: modifyCell
+    const stateBefore = {
+      ...init(CONFIG_EASY),
+      board,
+      gameState: GAME_STATE.SEEDED,
+    };
+    const actionX = 0;
+    const actionY = 4;
+
+    // Make sure the target cell is in the DEFAULT state.
+    expect(stateBefore.board[actionY][actionX].state).toBe(CELL_STATE.DEFAULT);
+
+    const action = turnCellState(actionX, actionY);
+    const result = reducer(stateBefore, action);
+
+    expect(result.board[actionY][actionX].state).toBe(CELL_STATE.FLAGGED);
+  });
+
+  it("should change cell state from FLAGGED to QUESTIONED", () => {
+    const actionX = 0;
+    const actionY = 4;
+
+    const board = getSeededBoard(CONFIG_EASY);
+    board[actionY][actionX].state = CELL_STATE.FLAGGED;
+
+    const stateBefore = {
+      ...init(CONFIG_EASY),
+      board,
+      gameState: GAME_STATE.SEEDED,
+    };
+
+    const action = turnCellState(actionX, actionY);
+    const result = reducer(stateBefore, action);
+
+    expect(result.board[actionY][actionX].state).toBe(CELL_STATE.QUESTIONED);
+  });
+
+  it("should change cell state from QUESTIONED to DEFAULT", () => {
+    const actionX = 0;
+    const actionY = 4;
+
+    const board = getSeededBoard(CONFIG_EASY);
+    board[actionY][actionX].state = CELL_STATE.QUESTIONED;
+
+    const stateBefore = {
+      ...init(CONFIG_EASY),
+      board,
+      gameState: GAME_STATE.SEEDED,
+    };
+
+    const action = turnCellState(actionX, actionY);
+    const result = reducer(stateBefore, action);
+
+    expect(result.board[actionY][actionX].state).toBe(CELL_STATE.DEFAULT);
+  });
+
+  it("should do nothing if the cell is REVEALED", () => {
+    const actionX = 0;
+    const actionY = 0;
+
+    const board = getSeededBoard(CONFIG_EASY);
+    board[actionY][actionX].state = CELL_STATE.REVEALED;
+
+    const stateBefore = {
+      ...init(CONFIG_EASY),
+      board,
+      gameState: GAME_STATE.SEEDED,
+    };
+
+    const action = turnCellState(actionX, actionY);
+    const result = reducer(stateBefore, action);
+
+    expect(result).toBe(stateBefore);
+  });
+
+  it("should throw an error for crazy coordinates", () => {
+    const stateBefore = init(CONFIG_EASY);
+
+    expect(() => reducer(stateBefore, turnCellState(-1, 0))).toThrow(
+      OutOfBoundsError
+    );
+    expect(() => reducer(stateBefore, turnCellState(0, -1))).toThrow(
+      OutOfBoundsError
+    );
+    expect(() => reducer(stateBefore, turnCellState(CONFIG_EASY.x, 0))).toThrow(
+      OutOfBoundsError
+    );
+    expect(() => reducer(stateBefore, turnCellState(0, CONFIG_EASY.y))).toThrow(
+      OutOfBoundsError
+    );
+    expect(() => reducer(stateBefore, turnCellState(NaN, 0))).toThrow(
+      OutOfBoundsError
+    );
+    expect(() => reducer(stateBefore, turnCellState(0, NaN))).toThrow(
+      OutOfBoundsError
+    );
+    expect(() => reducer(stateBefore, turnCellState(Infinity, 0))).toThrow(
+      OutOfBoundsError
+    );
+    expect(() => reducer(stateBefore, turnCellState(0, Infinity))).toThrow(
+      OutOfBoundsError
+    );
+  });
+});

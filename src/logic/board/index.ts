@@ -22,7 +22,7 @@ import {
   placeMines,
   OutOfBoundsError,
 } from "../../lib/utils";
-import { CELL_STATE, GAME_STATE } from "../../lib/constants";
+import { CELL_STATE, GAME_STATE, CONFIG_DEFAULT } from "../../lib/constants";
 
 export interface BoardState {
   board: MinesweeperBoard;
@@ -117,8 +117,6 @@ export const reducer = produce((draft: BoardState, action: BoardAction) => {
       if (draft.gameState === GAME_STATE.WIN) {
         flagAllMines(draft.board);
       }
-
-      return draft;
     }
 
     case TURN_CELL_STATE: {
@@ -149,8 +147,6 @@ export const reducer = produce((draft: BoardState, action: BoardAction) => {
       }
 
       cell.state = newState;
-
-      return draft;
     }
   }
-});
+}, init(CONFIG_DEFAULT));
