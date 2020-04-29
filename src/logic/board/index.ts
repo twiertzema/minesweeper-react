@@ -1,4 +1,10 @@
-import { MinesweeperBoard, MinesweeperConfig } from "../../types";
+import produce from "immer";
+
+import {
+  MinesweeperBoard,
+  MinesweeperConfig,
+  MinesweeperCell,
+} from "../../types";
 import {
   RECONFIGURE_BOARD,
   REVEAL_CELL,
@@ -16,7 +22,7 @@ import {
   placeMines,
   OutOfBoundsError,
 } from "../../lib/utils";
-import { CELL_STATE, GAME_STATE } from "../../lib/constants";
+import { CELL_STATE, GAME_STATE, CONFIG_DEFAULT } from "../../lib/constants";
 
 export interface BoardState {
   board: MinesweeperBoard;
@@ -52,30 +58,6 @@ export const turnCellState = (x: number, y: number): TurnCellStateAction => {
   };
 };
 
-/**
- * Merges an update into the specified {@link MinesweeperCell} in a {@link MinesweeperBoard}.
- * @returns {MinesweeperBoard} A _new_ board.
- * @throws {OutOfBoundsError}
- */
-export const modifyCell = (
-  board: MinesweeperBoard,
-  x: number,
-  y: number,
-  mod: Object
-): MinesweeperBoard => {
-  if (!board[y]?.[x]) throw new OutOfBoundsError(x, y);
-  return board.map((row, j) => {
-    if (j !== y) return row;
-    return row.map((cell, i) => {
-      if (i !== x) return cell;
-      return {
-        ...cell,
-        ...mod,
-      };
-    });
-  });
-};
-
 /** Creates a fresh `BoardState` from the provided `MinesweeperConfig`. */
 export const init = (config: MinesweeperConfig): BoardState => ({
   board: getBoard(config),
@@ -83,7 +65,23 @@ export const init = (config: MinesweeperConfig): BoardState => ({
   gameState: GAME_STATE.DEFAULT,
 });
 
-export function reducer(state: BoardState, action: BoardAction): BoardState {
+/**
+ * Safeguards retrieving a cell from the board.
+ * @throws {OutOfBoundsError}
+ * @private
+ */
+function _getCell(
+  board: MinesweeperBoard,
+  x: number,
+  y: number
+): MinesweeperCell {
+  const cell = board[y]?.[x];
+  if (!cell) throw new OutOfBoundsError(x, y);
+
+  return cell;
+}
+
+export const reducer = produce((draft: BoardState, action: BoardAction) => {
   switch (action.type) {
     case RECONFIGURE_BOARD:
       return init(action.configuration);
@@ -91,45 +89,42 @@ export function reducer(state: BoardState, action: BoardAction): BoardState {
     case REVEAL_CELL: {
       const { x, y } = action;
 
-      let newBoard = modifyCell(state.board, x, y, {
-        state: CELL_STATE.REVEALED,
-      });
-      if (state.gameState === GAME_STATE.DEFAULT) {
+      const cell = _getCell(draft.board, x, y);
+
+      if (cell.state === CELL_STATE.REVEALED) return draft;
+
+      cell.state = CELL_STATE.REVEALED;
+
+      if (draft.gameState === GAME_STATE.DEFAULT) {
         // Seed the board.
         // TODO: It would be great if this happened somewhere else so this
         //  reducer remained idempotent.
-        placeMines(state.config, newBoard, x, y);
+        placeMines(draft.config, draft.board, x, y);
       }
 
-      const cell = newBoard[y][x];
       if (cell.mineCount === 0) {
         // Cell chording.
-        chordCells(state.config, newBoard, x, y);
+        chordCells(draft.config, draft.board, x, y);
       }
 
       // If a mine was just revealed, we can short-circuit the determination of
       //  the game state.
-      const newState = cell.hasMine
+      draft.gameState = cell.hasMine
         ? GAME_STATE.LOSE
-        : determineBoardState(newBoard);
+        : determineBoardState(draft.board);
 
       // If the game was just won, make sure to flag all the cells.
-      if (newState === GAME_STATE.WIN) {
-        flagAllMines(newBoard);
+      if (draft.gameState === GAME_STATE.WIN) {
+        flagAllMines(draft.board);
       }
-
-      return {
-        ...state,
-        board: newBoard,
-        gameState: newState,
-      };
     }
 
     case TURN_CELL_STATE: {
       const { x, y } = action;
-      const cell = state.board[y][x];
 
-      if (cell.state === CELL_STATE.REVEALED) return state;
+      const cell = _getCell(draft.board, x, y);
+
+      if (cell.state === CELL_STATE.REVEALED) return draft;
 
       let newState = CELL_STATE.DEFAULT;
 
@@ -137,24 +132,21 @@ export function reducer(state: BoardState, action: BoardAction): BoardState {
         case CELL_STATE.DEFAULT:
           newState = CELL_STATE.FLAGGED;
           break;
+
         case CELL_STATE.FLAGGED:
           // Check if question is enabled.
           newState = CELL_STATE.QUESTIONED;
           break;
+
         case CELL_STATE.QUESTIONED:
           newState = CELL_STATE.DEFAULT;
           break;
+
         default:
           break;
       }
 
-      return {
-        ...state,
-        board: modifyCell(state.board, x, y, { state: newState }),
-      };
+      cell.state = newState;
     }
-
-    default:
-      return state;
   }
-}
+}, init(CONFIG_DEFAULT));
