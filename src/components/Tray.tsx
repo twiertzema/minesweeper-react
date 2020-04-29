@@ -79,10 +79,14 @@ export const XPTray: React.FC<XPTrayProps> = ({
   return (
     <Tray board={board} gameState={gameState}>
       {({ gameState, minesLeft, seconds }) => {
+        const [isScared, setIsScared] = useState(false);
+
         return (
           <main
             {...props}
             className={classnames(styles.container, props.className)}
+            onMouseDown={() => setIsScared(true)}
+            onMouseUp={() => setIsScared(false)}
           >
             {/* HUD */}
             <div className={classnames(styles.slot, styles.hud)}>
@@ -94,6 +98,7 @@ export const XPTray: React.FC<XPTrayProps> = ({
               <button className={styles.smileyButton}>
                 <img
                   className={classnames(styles.smileyImage, {
+                    [styles.scared]: isScared,
                     [styles.cool]: gameState === GAME_STATE.WIN,
                     [styles.dead]: gameState === GAME_STATE.LOSE,
                   })}
