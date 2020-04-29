@@ -90,6 +90,16 @@ export const XPTray: React.FC<XPTrayProps> = ({
                 {/* TODO: "0-X" bug for negative numbers. */}
                 <span>{String(minesLeft).padStart(3, "0")}</span>
               </p>
+
+              <button className={styles.smileyButton}>
+                <img
+                  className={classnames(styles.smileyImage, {
+                    [styles.cool]: gameState === GAME_STATE.WIN,
+                    [styles.dead]: gameState === GAME_STATE.LOSE,
+                  })}
+                />
+              </button>
+
               <p className={styles.display}>
                 <span>{String(seconds).padStart(3, "0")}</span>
               </p>

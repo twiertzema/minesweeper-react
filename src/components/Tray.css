@@ -13,7 +13,8 @@
 }
 
 .slot,
-.display {
+.display,
+.smileyButton {
   border-style: solid;
   border-top-color: var(--bg-color-dark);
   border-right-color: var(--bg-color-light);
@@ -24,6 +25,7 @@
 .slot.hud {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   border-width: calc(2px * var(--size-scale));
   margin-bottom: calc(6px * var(--size-scale));
   padding: calc(4px * var(--size-scale)) calc(5px * var(--size-scale));
@@ -58,4 +60,54 @@
 .display > span {
   /* So the "ghost" lines can sit between the background and the text. */
   position: relative;
+}
+
+.smileyButton {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  appearance: none;
+  height: calc(24px * var(--size-scale));
+  width: calc(24px * var(--size-scale));
+  box-sizing: border-box;
+  padding: 0;
+  border-width: calc(2px * var(--size-scale));
+  border-top-color: var(--bg-color-light);
+  border-right-color: var(--bg-color-dark);
+  border-bottom-color: var(--bg-color-dark);
+  border-left-color: var(--bg-color-light);
+  background-color: var(--bg-color-primary);
+
+  outline: calc(1px * var(--size-scale)) solid var(--bg-color-dark);
+}
+.smileyButton:active {
+  border-width: calc(1px * var(--size-scale));
+  border-top-color: var(--bg-color-dark);
+  border-right-color: transparent;
+  border-bottom-color: transparent;
+  border-left-color: var(--bg-color-dark);
+
+  /* Budge the image to make it look the button is depressed. */
+  padding-top: calc(1px * var(--size-scale));
+  padding-left: calc(1px * var(--size-scale));
+}
+
+.smileyImage {
+  --size: calc(17px * var(--size-scale));
+
+  height: var(--size);
+  width: var(--size);
+  background-image: url("../res/smilies.png");
+  background-size: calc(100% * var(--size-scale));
+  background-position: 0 0;
+  image-rendering: pixelated;
+}
+.smileyImage.scared {
+  background-position: var(--size) 0;
+}
+.smileyImage.cool {
+  background-position: 0 var(--size);
+}
+.smileyImage.dead {
+  background-position: var(--size) var(--size);
 }
