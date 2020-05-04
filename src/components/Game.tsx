@@ -1,6 +1,6 @@
 import { ipcRenderer } from "electron";
 import React, { useReducer, useEffect, HTMLAttributes } from "react";
-import {castDraft} from 'immer'
+import { castDraft } from "immer";
 
 import { CONFIG_EASY, IPC_MESSAGE } from "../lib/constants";
 
@@ -32,7 +32,12 @@ const Game: React.FC<HTMLAttributes<HTMLElement>> = (props) => {
   }, []);
 
   return (
-    <Tray {...props} board={castDraft(state.board)} gameState={state.gameState}>
+    <Tray
+      {...props}
+      board={castDraft(state.board)}
+      gameState={state.gameState}
+      onSmileyClick={() => dispatch(reconfigureBoard(state.config))}
+    >
       <Board
         board={castDraft(state.board)}
         gameState={state.gameState}

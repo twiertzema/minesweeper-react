@@ -14,7 +14,7 @@ import {
   CONFIG_EASY,
   GAME_STATE,
 } from "../lib/constants";
-import { getBoard, placeMines } from "../lib/utils";
+import { getBoard } from "../lib/utils";
 import { MinesweeperBoard } from "../types";
 
 import { Tray } from "./Tray";
@@ -40,7 +40,7 @@ describe("Tray", () => {
     board: MinesweeperBoard;
     gameState: GAME_STATE;
   }> = ({ board, gameState, ...props }) => (
-    <Tray board={board} gameState={gameState}>
+    <Tray board={board} gameState={gameState} onSmileyClick={() => {}}>
       {({ minesLeft }) => (
         <p {...props} data-testid={MINES_LEFT_ID}>
           {minesLeft}
@@ -54,7 +54,7 @@ describe("Tray", () => {
     board: MinesweeperBoard;
     gameState: GAME_STATE;
   }> = ({ board, gameState, ...props }) => (
-    <Tray board={board} gameState={gameState}>
+    <Tray board={board} gameState={gameState} onSmileyClick={() => {}}>
       {({ seconds }) => (
         <p {...props} data-testid={SECONDS_ID}>
           {seconds}
@@ -65,19 +65,29 @@ describe("Tray", () => {
 
   it("should render", () => {
     render(
-      <Tray board={getBoard(CONFIG_DEFAULT)} gameState={GAME_STATE.DEFAULT}>
+      <Tray
+        board={getBoard(CONFIG_DEFAULT)}
+        gameState={GAME_STATE.DEFAULT}
+        onSmileyClick={() => {}}
+      >
         {() => null}
       </Tray>
     );
   });
 
   it("should set proper default render prop props", () => {
+    const testOnSmileyClick = () => {};
     render(
-      <Tray board={getBoard(CONFIG_DEFAULT)} gameState={GAME_STATE.DEFAULT}>
-        {({ gameState, minesLeft, seconds }) => {
+      <Tray
+        board={getBoard(CONFIG_DEFAULT)}
+        gameState={GAME_STATE.DEFAULT}
+        onSmileyClick={testOnSmileyClick}
+      >
+        {({ gameState, minesLeft, onSmileyClick, seconds }) => {
           expect(gameState).toBe(GAME_STATE.DEFAULT);
           expect(minesLeft).toBe(0);
           expect(seconds).toBe(0);
+          expect(onSmileyClick).toBe(testOnSmileyClick);
 
           return null;
         }}

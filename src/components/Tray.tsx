@@ -1,16 +1,25 @@
-import React, { useState, useEffect } from "react";
+import React, {
+  useState,
+  useEffect,
+  MouseEvent,
+  MouseEventHandler,
+} from "react";
 import classnames from "classnames";
 
 import { GAME_STATE } from "../lib/constants";
 import { getMineDisplayCount } from "../lib/utils";
-import { MinesweeperBoard } from "../types";
+import { MinesweeperBoard, MinesweeperConfig } from "../types";
 
 import styles from "./Tray.css";
 
 interface RenderPropProps {
-  gameState: number; // For the state of the smiley face
-  minesLeft: number; // For the text display
-  seconds: number; // For the text display
+  // For the state of the smiley face.
+  gameState: number;
+  // For the text display.
+  minesLeft: number;
+  onSmileyClick: () => void;
+  // For the text display.
+  seconds: number;
 }
 
 type RenderProp = React.FC<RenderPropProps>;
@@ -19,13 +28,19 @@ interface TrayProps {
   board: MinesweeperBoard;
   children: RenderProp;
   gameState: GAME_STATE;
+  onSmileyClick: () => void;
 }
 
 /**
  * Logical component for the game's "tray" (everything outside the board).
  * Accepts a render prop as `children`.
  */
-export const Tray: React.FC<TrayProps> = ({ board, children, gameState }) => {
+export const Tray: React.FC<TrayProps> = ({
+  board,
+  children,
+  gameState,
+  onSmileyClick,
+}) => {
   const [minesLeft, setMinesLeft] = useState(
     getMineDisplayCount(board, gameState)
   );
@@ -62,27 +77,35 @@ export const Tray: React.FC<TrayProps> = ({ board, children, gameState }) => {
     };
   }, [gameState]);
 
-  return children({ gameState, minesLeft, seconds });
+  return children({ gameState, minesLeft, onSmileyClick, seconds });
 };
 
 interface XPTrayProps
   extends Omit<TrayProps, "children">,
     React.HTMLAttributes<HTMLElement> {}
 
+const SMILEY_BUTTON_ID = "smiley-button";
+
 /* Visual component for rendering `Tray` to mimic XP. */
 export const XPTray: React.FC<XPTrayProps> = ({
   board,
   children,
   gameState,
+  onSmileyClick,
   ...props
 }) => {
   return (
-    <Tray board={board} gameState={gameState}>
-      {({ gameState, minesLeft, seconds }) => {
+    <Tray board={board} gameState={gameState} onSmileyClick={onSmileyClick}>
+      {({ gameState, minesLeft, onSmileyClick, seconds }) => {
+        const [isScared, setIsScared] = useState(false);
+
         return (
           <main
             {...props}
             className={classnames(styles.container, props.className)}
+            onMouseDown={() => setIsScared(true)}
+            onMouseUp={() => setIsScared(false)}
+            onMouseLeave={() => setIsScared(false)}
           >
             {/* HUD */}
             <div className={classnames(styles.slot, styles.hud)}>
@@ -90,6 +113,25 @@ export const XPTray: React.FC<XPTrayProps> = ({
                 {/* TODO: "0-X" bug for negative numbers. */}
                 <span>{String(minesLeft).padStart(3, "0")}</span>
               </p>
+
+              <button
+                className={styles.smileyButton}
+                id={SMILEY_BUTTON_ID}
+                onClick={onSmileyClick}
+                onMouseDown={(e) => {
+                  // Eat the event so it doesn't get scared.
+                  e.stopPropagation();
+                }}
+              >
+                <img
+                  className={classnames(styles.smileyImage, {
+                    [styles.scared]: isScared,
+                    [styles.cool]: gameState === GAME_STATE.WIN,
+                    [styles.dead]: gameState === GAME_STATE.LOSE,
+                  })}
+                />
+              </button>
+
               <p className={styles.display}>
                 <span>{String(seconds).padStart(3, "0")}</span>
               </p>
