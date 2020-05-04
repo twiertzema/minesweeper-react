@@ -60,6 +60,7 @@
 .display > span {
   /* So the "ghost" lines can sit between the background and the text. */
   position: relative;
+  user-select: none;
 }
 
 .smileyButton {
