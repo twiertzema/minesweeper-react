@@ -450,15 +450,29 @@ export function determineBoardState(board: MinesweeperBoard): GAME_STATE {
 
 /**
  * Sets the `state` of all cells that have mines to `FLAGGED`.
- * - This is to be called at the end of the game confirm the placement of mines
- *   to the user in case they didn't flag them.
- * 
+ * - This is to be called at the successful end of the game to confirm the
+ *   placement of mines to the user in case they didn't flag them.
+ *
  * **Warning:** This is <u>not</u> a pure function.
  */
 export function flagAllMines(board: MinesweeperBoard): void {
   for (const row of board) {
     for (const cell of row) {
       if (cell.hasMine) cell.state = CELL_STATE.FLAGGED;
+    }
+  }
+}
+
+/**
+ * Sets the `state` of all cells that have mines to `REVEALED`.
+ * - This is to be called when the user loses the game by revealing a mine.
+ *
+ * ** Warning:** This is <u>not</u> a pure function.
+ */
+export function revealAllMines(board: MinesweeperBoard): void {
+  for (const row of board) {
+    for (const cell of row) {
+      if (cell.hasMine) cell.state = CELL_STATE.REVEALED;
     }
   }
 }

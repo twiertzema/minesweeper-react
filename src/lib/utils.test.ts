@@ -24,6 +24,7 @@ import {
   isOutOfBounds,
   placeMine,
   placeMines,
+  revealAllMines,
   InvalidConfigError,
   OutOfBoundsError,
 } from "./utils";
@@ -812,6 +813,44 @@ describe("flagAllMines", () => {
   it("should not interfere with cells that don't have mines", () => {
     const board = getSeededBoard(CONFIG_EASY);
 
+    // Poor man's clone.
+    const boardBefore = JSON.parse(JSON.stringify(board));
+
+    flagAllMines(board);
+
+    for (let j = 0; j < board.length; j++) {
+      const row = board[j];
+
+      for (let i = 0; i < row.length; i++) {
+        const cell = row[i];
+
+        if (!cell.hasMine) {
+          expect(cell.state).toBe(boardBefore[j][i].state);
+        }
+      }
+    }
+  });
+});
+
+describe("revealAllMines", () => {
+  it("should reveal all mines", () => {
+    const board = getSeededBoard(CONFIG_EASY);
+
+    revealAllMines(board);
+
+    for (const row of board) {
+      for (const cell of row) {
+        if (cell.hasMine) {
+          expect(cell.state).toBe(CELL_STATE.REVEALED);
+        }
+      }
+    }
+  });
+
+  it("should not interfere with cells that don't have mines", () => {
+    const board = getSeededBoard(CONFIG_EASY);
+
+    // Poor man's clone.
     const boardBefore = JSON.parse(JSON.stringify(board));
 
     flagAllMines(board);

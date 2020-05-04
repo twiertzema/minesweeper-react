@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import classnames from "classnames";
 
 import { CELL_STATE } from "../lib/constants";
 import FlagIcon from "../res/flag.png";
+import MineIcon from "../res/mine.png";
 
 import styles from "./Cell.css";
 
@@ -59,7 +60,7 @@ const getCellProps = (props: CellProps) => ({
   onClick: () => {},
   onRightClick: () => {},
   state: CELL_STATE.DEFAULT,
-  ...props
+  ...props,
 });
 
 export class Cell extends React.Component<CellProps> {
@@ -70,13 +71,11 @@ export class Cell extends React.Component<CellProps> {
       onClick,
       state,
       x,
-      y
+      y,
     } = getCellProps(this.props);
 
     if (evt.button === 0) {
       // Left click
-      // TODO: If hasMine, enter lose state; else, reveal cell.
-      console.log(`Cell clicked: ${JSON.stringify(this.props)}`);
       if (state !== CELL_STATE.FLAGGED && state !== CELL_STATE.REVEALED) {
         onClick(x, y);
       }
@@ -101,7 +100,7 @@ export class Cell extends React.Component<CellProps> {
       handleRightClick: this.handleRightClick,
       hasMine,
       mineCount,
-      state
+      state,
     });
   }
 }
@@ -127,11 +126,14 @@ const getXPCellProps = (props: XPCellProps) => ({
   state: CELL_STATE.DEFAULT,
   x: 0,
   y: 0,
-  ...props
+  ...props,
 });
 
 export const XPCell = (props: XPCellProps) => {
   const { className, ...rest } = getXPCellProps(props);
+
+  let [hasBeenClicked, setHasBeenClicked] = useState(false);
+
   return (
     <Cell {...rest}>
       {(props: RenderPropProps) => {
@@ -140,7 +142,7 @@ export const XPCell = (props: XPCellProps) => {
           handleRightClick,
           hasMine,
           mineCount,
-          state
+          state,
         } = props;
 
         let cellClassName = styles.cell;
@@ -149,7 +151,7 @@ export const XPCell = (props: XPCellProps) => {
         switch (state) {
           case CELL_STATE.FLAGGED:
             content = <img src={FlagIcon} alt="flag" />;
-            cellClassName = classnames(styles.cell, styles.flagged);
+            cellClassName = classnames(cellClassName, styles.flagged);
             break;
 
           case CELL_STATE.QUESTIONED:
@@ -158,8 +160,12 @@ export const XPCell = (props: XPCellProps) => {
 
           case CELL_STATE.REVEALED:
             if (hasMine) {
-              // TODO: Show mine icon.
-              content = "X";
+              content = <img src={MineIcon} alt="mine" />;
+
+              if (hasBeenClicked) {
+                // If this was the mine that was revealed, BOOM.
+                cellClassName = classnames(cellClassName, styles.boom);
+              }
             } else {
               if (mineCount > 0) {
                 content = (
@@ -169,7 +175,9 @@ export const XPCell = (props: XPCellProps) => {
                 );
               }
             }
-            cellClassName = classnames(styles.cell, styles.revealed);
+
+            cellClassName = classnames(cellClassName, styles.revealed);
+
             break;
 
           case CELL_STATE.DEFAULT:
@@ -180,7 +188,10 @@ export const XPCell = (props: XPCellProps) => {
         return (
           <td
             className={cellClassName}
-            onClick={handleClick}
+            onClick={(e) => {
+              setHasBeenClicked(true);
+              handleClick(e);
+            }}
             onContextMenu={handleRightClick}
             draggable={false}
           >
