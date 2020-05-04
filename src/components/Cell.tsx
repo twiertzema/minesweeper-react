@@ -3,6 +3,7 @@ import classnames from "classnames";
 
 import { CELL_STATE } from "../lib/constants";
 import FlagIcon from "../res/flag.png";
+import MineIcon from "../res/mine.png";
 
 import styles from "./Cell.css";
 
@@ -59,7 +60,7 @@ const getCellProps = (props: CellProps) => ({
   onClick: () => {},
   onRightClick: () => {},
   state: CELL_STATE.DEFAULT,
-  ...props
+  ...props,
 });
 
 export class Cell extends React.Component<CellProps> {
@@ -70,7 +71,7 @@ export class Cell extends React.Component<CellProps> {
       onClick,
       state,
       x,
-      y
+      y,
     } = getCellProps(this.props);
 
     if (evt.button === 0) {
@@ -101,7 +102,7 @@ export class Cell extends React.Component<CellProps> {
       handleRightClick: this.handleRightClick,
       hasMine,
       mineCount,
-      state
+      state,
     });
   }
 }
@@ -127,7 +128,7 @@ const getXPCellProps = (props: XPCellProps) => ({
   state: CELL_STATE.DEFAULT,
   x: 0,
   y: 0,
-  ...props
+  ...props,
 });
 
 export const XPCell = (props: XPCellProps) => {
@@ -140,7 +141,7 @@ export const XPCell = (props: XPCellProps) => {
           handleRightClick,
           hasMine,
           mineCount,
-          state
+          state,
         } = props;
 
         let cellClassName = styles.cell;
@@ -158,8 +159,7 @@ export const XPCell = (props: XPCellProps) => {
 
           case CELL_STATE.REVEALED:
             if (hasMine) {
-              // TODO: Show mine icon.
-              content = "X";
+              content = <img src={MineIcon} alt="flag" />;
             } else {
               if (mineCount > 0) {
                 content = (

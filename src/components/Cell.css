@@ -30,7 +30,8 @@
 .cell > img {
   display: block;
   margin: auto;
-  height: 80%;
+  height: 90%;
+  image-rendering: pixelated;
 }
 
 .one {
