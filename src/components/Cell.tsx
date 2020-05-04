@@ -76,8 +76,6 @@ export class Cell extends React.Component<CellProps> {
 
     if (evt.button === 0) {
       // Left click
-      // TODO: If hasMine, enter lose state; else, reveal cell.
-      console.log(`Cell clicked: ${JSON.stringify(this.props)}`);
       if (state !== CELL_STATE.FLAGGED && state !== CELL_STATE.REVEALED) {
         onClick(x, y);
       }
@@ -162,9 +160,10 @@ export const XPCell = (props: XPCellProps) => {
 
           case CELL_STATE.REVEALED:
             if (hasMine) {
-              content = <img src={MineIcon} alt="flag" />;
+              content = <img src={MineIcon} alt="mine" />;
 
               if (hasBeenClicked) {
+                // If this was the mine that was revealed, BOOM.
                 cellClassName = classnames(cellClassName, styles.boom);
               }
             } else {
