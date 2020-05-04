@@ -87,7 +87,7 @@
   border-bottom-color: transparent;
   border-left-color: var(--bg-color-dark);
 
-  /* Budge the image to make it look the button is depressed. */
+  /* Budge the image to make it look like the button is depressed. */
   padding-top: calc(1px * var(--size-scale));
   padding-left: calc(1px * var(--size-scale));
 }

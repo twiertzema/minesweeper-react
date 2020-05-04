@@ -105,6 +105,7 @@ export const XPTray: React.FC<XPTrayProps> = ({
             className={classnames(styles.container, props.className)}
             onMouseDown={() => setIsScared(true)}
             onMouseUp={() => setIsScared(false)}
+            onMouseLeave={() => setIsScared(false)}
           >
             {/* HUD */}
             <div className={classnames(styles.slot, styles.hud)}>
