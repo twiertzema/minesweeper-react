@@ -1,5 +1,6 @@
 declare namespace CellCssModule {
   export interface ICellCss {
+    boom: string;
     cell: string;
     eight: string;
     five: string;

@@ -26,6 +26,9 @@
   border: var(--border-size-revealed) solid darkgrey;
   line-height: calc(var(--size) - var(--border-size-revealed) * 2);
 }
+.cell.revealed.boom {
+  background-color: var(--bg-color-boom);
+}
 
 .cell > img {
   display: block;

@@ -20,6 +20,7 @@ import {
   flagAllMines,
   getBoard,
   placeMines,
+  revealAllMines,
   OutOfBoundsError,
 } from "../../lib/utils";
 import { CELL_STATE, GAME_STATE, CONFIG_DEFAULT } from "../../lib/constants";
@@ -103,20 +104,25 @@ export const reducer = produce((draft: BoardState, action: BoardAction) => {
         placeMines(draft.config, draft.board, x, y);
       }
 
-      if (cell.mineCount === 0) {
-        // Cell chording.
-        chordCells(draft.config, draft.board, x, y);
-      }
+      if (cell.hasMine) {
+        // X(
+        draft.gameState = GAME_STATE.LOSE;
 
-      // If a mine was just revealed, we can short-circuit the determination of
-      //  the game state.
-      draft.gameState = cell.hasMine
-        ? GAME_STATE.LOSE
-        : determineBoardState(draft.board);
+        // Reveal all the mines to hammer home the user's folly.
+        revealAllMines(draft.board);
+      } else {
+        if (cell.mineCount === 0) {
+          // Cell chording.
+          chordCells(draft.config, draft.board, x, y);
+        }
 
-      // If the game was just won, make sure to flag all the cells.
-      if (draft.gameState === GAME_STATE.WIN) {
-        flagAllMines(draft.board);
+        // Did we win??
+        draft.gameState = determineBoardState(draft.board);
+
+        // If the game was just won, make sure to flag all the cells.
+        if (draft.gameState === GAME_STATE.WIN) {
+          flagAllMines(draft.board);
+        }
       }
     }
 

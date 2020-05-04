@@ -209,6 +209,41 @@ describe("REVEAL_CELL", () => {
     expect(result.gameState).toBe(GAME_STATE.LOSE);
   });
 
+  it("should reveal all the mines if the game is lost", () => {
+    const initState = init(CONFIG_EASY);
+    const seedingAction = revealCell(0, 0);
+    const seededState = reducer(initState, seedingAction);
+
+    const loseAction = revealCell(0, 2);
+    const result = reducer(seededState, loseAction);
+
+    for (const row of result.board) {
+      for (const cell of row) {
+        if (cell.hasMine) {
+          expect(cell.state).toBe(CELL_STATE.REVEALED);
+        }
+      }
+    }
+  });
+
+  it("should not chord on a lone mine if revealed", () => {
+    const initState = init(CONFIG_EASY);
+    const seedingAction = revealCell(0, 0);
+    const seededState = reducer(initState, seedingAction);
+
+    const loseAction = revealCell(3, 2); // This is an isolated mine.
+    const result = reducer(seededState, loseAction);
+
+    result.board.forEach((row, j) => {
+      row.forEach((cell, i) => {
+        if (!cell.hasMine) {
+          // Just make sure that every non-mine cell's state hasn't changed.
+          expect(cell.state).toBe(seededState.board[j][i].state);
+        }
+      });
+    });
+  });
+
   it("should chord if a 0 is revealed", () => {
     const stateBefore = init(CONFIG_EASY);
     const action = revealCell(0, 0);

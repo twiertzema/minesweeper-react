@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import classnames from "classnames";
 
 import { CELL_STATE } from "../lib/constants";
@@ -133,6 +133,9 @@ const getXPCellProps = (props: XPCellProps) => ({
 
 export const XPCell = (props: XPCellProps) => {
   const { className, ...rest } = getXPCellProps(props);
+
+  let [hasBeenClicked, setHasBeenClicked] = useState(false);
+
   return (
     <Cell {...rest}>
       {(props: RenderPropProps) => {
@@ -150,7 +153,7 @@ export const XPCell = (props: XPCellProps) => {
         switch (state) {
           case CELL_STATE.FLAGGED:
             content = <img src={FlagIcon} alt="flag" />;
-            cellClassName = classnames(styles.cell, styles.flagged);
+            cellClassName = classnames(cellClassName, styles.flagged);
             break;
 
           case CELL_STATE.QUESTIONED:
@@ -160,6 +163,10 @@ export const XPCell = (props: XPCellProps) => {
           case CELL_STATE.REVEALED:
             if (hasMine) {
               content = <img src={MineIcon} alt="flag" />;
+
+              if (hasBeenClicked) {
+                cellClassName = classnames(cellClassName, styles.boom);
+              }
             } else {
               if (mineCount > 0) {
                 content = (
@@ -169,7 +176,9 @@ export const XPCell = (props: XPCellProps) => {
                 );
               }
             }
-            cellClassName = classnames(styles.cell, styles.revealed);
+
+            cellClassName = classnames(cellClassName, styles.revealed);
+
             break;
 
           case CELL_STATE.DEFAULT:
@@ -180,7 +189,10 @@ export const XPCell = (props: XPCellProps) => {
         return (
           <td
             className={cellClassName}
-            onClick={handleClick}
+            onClick={(e) => {
+              setHasBeenClicked(true);
+              handleClick(e);
+            }}
             onContextMenu={handleRightClick}
             draggable={false}
           >
