@@ -16,12 +16,12 @@ export interface MinesweeperConfig {
 }
 
 /**
- * 2-dimensional {@link Array} representing a board in Minesweeper.
+ * 2-dimensional `Array` representing a board in Minesweeper.
  *
- * **Note:** The first order of [Arrays](Array) represents the rows of the
- *  board, and the second order represents the columns. This means that the Y
- *  coordinate of a given {@link MinesweeperCell} is used as the index of the
- *  first order and the X coordinate is used as the index of the second order.
+ * **Note:** The first order of arrays represents the rows of the board, and the
+ *  second order represents the columns. This means that the Y coordinate of a
+ *  given {@link MinesweeperCell} is used as the index of the first order and
+ *  the X coordinate is used as the index of the second order.
  */
 export type MinesweeperBoard = Array<Array<MinesweeperCell>>;
 
@@ -32,17 +32,17 @@ export type MinesweeperBoard = Array<Array<MinesweeperCell>>;
 export interface MinesweeperCell {
   /**
    * Indicates whether or not this cell contains a mine.
-   * @default false
+   * @default `false`
    */
   hasMine: boolean;
   /**
    * Indicates how many mines are adjacent to this cell.
-   * @default 0
+   * @default `0`
    */
   mineCount: number;
   /**
    * Enum value indicating what state the cell is in.
-   * @default CELL_STATE.DEFAULT
+   * @default {@link CELL_STATE.DEFAULT}
    */
   state: CELL_STATE;
 }

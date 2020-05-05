@@ -20,7 +20,7 @@ export enum CELL_STATE {
    * indicating that they are unsure whether or not this {@link MinesweeperCell}
    * contains a mine.
    */
-  QUESTIONED
+  QUESTIONED,
 }
 
 /** A 9×9 board with 10 mines. */
@@ -30,7 +30,7 @@ export const CONFIG_EASY: MinesweeperConfig = { x: 9, y: 9, mines: 10 };
 export const CONFIG_INTERMEDIATE: MinesweeperConfig = {
   x: 16,
   y: 16,
-  mines: 40
+  mines: 40,
 };
 
 /** A 30×16 board with 99 mines. */
@@ -53,10 +53,14 @@ export enum GAME_STATE {
   /** A state representing the player having lost. X( */
   LOSE,
   /** A state representing the player having won. B) */
-  WIN
+  WIN,
 }
 
-/** Enum representing the Electron IPC message channels. */
+// TODO: Move out of this file; this is Electron-specific.
+/**
+ * Enum representing the Electron IPC message channels.
+ * @private
+ */
 export enum IPC_MESSAGE {
-  NEW_GAME = "new-game"
+  NEW_GAME = "new-game",
 }
