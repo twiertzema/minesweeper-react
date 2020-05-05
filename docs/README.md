@@ -1,3 +1,7 @@
+[minesweeper-react](README.md) › [Globals](globals.md)
+
+# minesweeper-react
+
 ![Tests](https://github.com/twiertzema/minesweeper-react/workflows/Tests/badge.svg?event=push)
 ![Build Check](https://github.com/twiertzema/minesweeper-react/workflows/Build%20Check/badge.svg)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
