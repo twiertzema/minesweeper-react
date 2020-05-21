@@ -3,7 +3,7 @@
   "description": "An XP Minesweeper clone using react (for fun).",
   "author": "Travis Wiertzema",
   "license": "MIT",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "main": ".webpack/main",
   "scripts": {
