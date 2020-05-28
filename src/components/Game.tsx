@@ -2,7 +2,13 @@ import { ipcRenderer } from "electron";
 import React, { useReducer, useEffect, HTMLAttributes } from "react";
 import { castDraft } from "immer";
 
-import { CONFIG_EASY, IPC_MESSAGE } from "../lib/constants";
+import {
+  CONFIG_EASY,
+  CONFIG_INTERMEDIATE,
+  CONFIG_EXPERT,
+} from "../lib/constants";
+
+import { IPC_MESSAGE } from "../electron";
 
 import {
   init,
@@ -19,14 +25,28 @@ const Game: React.FC<HTMLAttributes<HTMLElement>> = (props) => {
   const [state, dispatch] = useReducer(boardReducer, CONFIG_EASY, init);
 
   useEffect(() => {
-    const newGameListener = () => {
-      dispatch(reconfigureBoard(state.config));
-    };
+    // Set up listeners for IPC channels from the main process.
+    const beginnerListener = () => dispatch(reconfigureBoard(CONFIG_EASY));
+    const expertListener = () => dispatch(reconfigureBoard(CONFIG_EXPERT));
+    const intermediateListener = () =>
+      dispatch(reconfigureBoard(CONFIG_INTERMEDIATE));
+    const newGameListener = () => dispatch(reconfigureBoard(state.config));
 
-    // Listen for the "new game" message from the main process.
+    ipcRenderer.on(IPC_MESSAGE.DIFFICULTY_BEGINNER, beginnerListener);
+    ipcRenderer.on(IPC_MESSAGE.DIFFICULTY_EXPERT, expertListener);
+    ipcRenderer.on(IPC_MESSAGE.DIFFICULTY_INTERMEDIATE, intermediateListener);
     ipcRenderer.on(IPC_MESSAGE.NEW_GAME, newGameListener);
 
     return () => {
+      ipcRenderer.removeListener(
+        IPC_MESSAGE.DIFFICULTY_BEGINNER,
+        beginnerListener
+      );
+      ipcRenderer.removeListener(IPC_MESSAGE.DIFFICULTY_EXPERT, expertListener);
+      ipcRenderer.removeListener(
+        IPC_MESSAGE.DIFFICULTY_INTERMEDIATE,
+        intermediateListener
+      );
       ipcRenderer.removeListener(IPC_MESSAGE.NEW_GAME, newGameListener);
     };
   }, []);

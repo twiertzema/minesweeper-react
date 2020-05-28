@@ -1,6 +1,6 @@
 import { app, BrowserWindow, Menu, MenuItemConstructorOptions } from "electron";
 
-import { IPC_MESSAGE } from "./lib/constants";
+import { IPC_MESSAGE, getSimpleIpcNotifier } from "./electron";
 
 declare const MAIN_WINDOW_WEBPACK_ENTRY: any;
 
@@ -16,37 +16,73 @@ const createWindow = () => {
   const mainWindow = new BrowserWindow({
     height: 600,
     webPreferences: {
-      nodeIntegration: true
+      nodeIntegration: true,
     },
-    width: 800
+    width: 800,
   });
 
   const menuTemplate: MenuItemConstructorOptions[] = [
     {
       label: "Game",
       submenu: [
+        /* New */
         {
           label: "New",
           accelerator: "F2",
-          click: () => {
-            // Send a message to the renderer process.
-            mainWindow.webContents.send(IPC_MESSAGE.NEW_GAME);
-          }
+          click: getSimpleIpcNotifier(mainWindow, IPC_MESSAGE.NEW_GAME),
         },
+
+        // --------------------------------------------------------------------
         { type: "separator" },
-        { label: "Beginner", type: "checkbox", enabled: false, checked: true },
-        { label: "Intermediate", type: "checkbox", enabled: false },
-        { label: "Expert", type: "checkbox", enabled: false },
+
+        /* Difficulties */
+        {
+          label: "Beginner",
+          type: "checkbox",
+          click: getSimpleIpcNotifier(
+            mainWindow,
+            IPC_MESSAGE.DIFFICULTY_BEGINNER
+          ),
+          checked: true,
+        },
+        {
+          label: "Intermediate",
+          type: "checkbox",
+          click: getSimpleIpcNotifier(
+            mainWindow,
+            IPC_MESSAGE.DIFFICULTY_INTERMEDIATE
+          ),
+        },
+        {
+          label: "Expert",
+          type: "checkbox",
+          click: getSimpleIpcNotifier(
+            mainWindow,
+            IPC_MESSAGE.DIFFICULTY_EXPERT
+          ),
+        },
         { label: "Custom...", type: "checkbox", enabled: false },
+
+        // --------------------------------------------------------------------
         { type: "separator" },
+
+        /* Configuration options */
         { label: "Marks (?)", type: "checkbox", enabled: false, checked: true },
         { label: "Color", type: "checkbox", enabled: false, checked: true },
         { label: "Sound", type: "checkbox", enabled: false },
+
+        // --------------------------------------------------------------------
         { type: "separator" },
+
+        /* Best times */
         { label: "Best Times...", enabled: false },
+
+        // --------------------------------------------------------------------
         { type: "separator" },
-        { label: "Exit", role: "quit" }
-      ]
+
+        /* Exit */
+        { label: "Exit", role: "quit" },
+      ],
     },
     {
       label: "Help",
@@ -55,9 +91,9 @@ const createWindow = () => {
         { label: "Search for Help on...", enabled: false },
         { label: "Using Help", enabled: false },
         { type: "separator" },
-        { label: "About Minesweeper...", enabled: false }
-      ]
-    }
+        { label: "About Minesweeper...", enabled: false },
+      ],
+    },
   ];
 
   if (isMac) {

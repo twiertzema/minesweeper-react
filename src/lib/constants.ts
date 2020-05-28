@@ -55,12 +55,3 @@ export enum GAME_STATE {
   /** A state representing the player having won. B) */
   WIN,
 }
-
-// TODO: Move out of this file; this is Electron-specific.
-/**
- * Enum representing the Electron IPC message channels.
- * @private
- */
-export enum IPC_MESSAGE {
-  NEW_GAME = "new-game",
-}
