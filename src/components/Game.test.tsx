@@ -9,7 +9,7 @@ import {
   restoreRandom,
 } from "../../utils/test.utils";
 
-import { IPC_MESSAGE } from "../lib/constants";
+import { IPC_MESSAGE } from "../electron";
 
 import Game from "./Game";
 

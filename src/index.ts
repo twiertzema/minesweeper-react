@@ -1,6 +1,6 @@
-import { app, BrowserWindow, Menu, MenuItemConstructorOptions } from "electron";
+import { app, BrowserWindow, Menu } from "electron";
 
-import { IPC_MESSAGE, getSimpleIpcNotifier } from "./electron";
+import { getMenuTemplate } from "./main/menu";
 
 declare const MAIN_WINDOW_WEBPACK_ENTRY: any;
 
@@ -21,80 +21,7 @@ const createWindow = () => {
     width: 800,
   });
 
-  const menuTemplate: MenuItemConstructorOptions[] = [
-    {
-      label: "Game",
-      submenu: [
-        /* New */
-        {
-          label: "New",
-          accelerator: "F2",
-          click: getSimpleIpcNotifier(mainWindow, IPC_MESSAGE.NEW_GAME),
-        },
-
-        // --------------------------------------------------------------------
-        { type: "separator" },
-
-        /* Difficulties */
-        {
-          label: "Beginner",
-          type: "checkbox",
-          click: getSimpleIpcNotifier(
-            mainWindow,
-            IPC_MESSAGE.DIFFICULTY_BEGINNER
-          ),
-          checked: true,
-        },
-        {
-          label: "Intermediate",
-          type: "checkbox",
-          click: getSimpleIpcNotifier(
-            mainWindow,
-            IPC_MESSAGE.DIFFICULTY_INTERMEDIATE
-          ),
-        },
-        {
-          label: "Expert",
-          type: "checkbox",
-          click: getSimpleIpcNotifier(
-            mainWindow,
-            IPC_MESSAGE.DIFFICULTY_EXPERT
-          ),
-        },
-        { label: "Custom...", type: "checkbox", enabled: false },
-
-        // --------------------------------------------------------------------
-        { type: "separator" },
-
-        /* Configuration options */
-        { label: "Marks (?)", type: "checkbox", enabled: false, checked: true },
-        { label: "Color", type: "checkbox", enabled: false, checked: true },
-        { label: "Sound", type: "checkbox", enabled: false },
-
-        // --------------------------------------------------------------------
-        { type: "separator" },
-
-        /* Best times */
-        { label: "Best Times...", enabled: false },
-
-        // --------------------------------------------------------------------
-        { type: "separator" },
-
-        /* Exit */
-        { label: "Exit", role: "quit" },
-      ],
-    },
-    {
-      label: "Help",
-      submenu: [
-        { label: "Contents", accelerator: "F1", enabled: false },
-        { label: "Search for Help on...", enabled: false },
-        { label: "Using Help", enabled: false },
-        { type: "separator" },
-        { label: "About Minesweeper...", enabled: false },
-      ],
-    },
-  ];
+  const menuTemplate = getMenuTemplate(mainWindow);
 
   if (isMac) {
     menuTemplate.unshift({ role: "appMenu" });
