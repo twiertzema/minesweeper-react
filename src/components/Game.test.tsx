@@ -9,9 +9,17 @@ import {
   restoreRandom,
 } from "../../utils/test.utils";
 
-import { IPC_MESSAGE } from "../electron";
+import {
+  CONFIG_DEFAULT,
+  CONFIG_EASY,
+  CONFIG_INTERMEDIATE,
+  CONFIG_EXPERT,
+} from "../lib/constants";
 
-import Game from "./Game";
+import { IPC_MESSAGE } from "../electron";
+import { MinesweeperConfig } from "../types";
+
+import Game, { GameProps } from "./Game";
 
 beforeEach(() => {
   seedRandom();
@@ -23,33 +31,156 @@ afterEach(() => {
 
 const TEST_ID = "test-game";
 
-it("should render", () => {
-  const { getByTestId } = render(<Game data-testid={TEST_ID} />);
+function setUp(props?: GameProps) {
+  const testProps = render(<Game data-testid={TEST_ID} {...props} />);
 
-  const testGame = getByTestId(TEST_ID);
+  const testGame = testProps.getByTestId(TEST_ID);
   expect(testGame).toBeTruthy();
+
+  return testProps;
+}
+
+it("should render", () => {
+  setUp();
 });
 
-it('should reset on "new game"', () => {
-  const { getByTestId } = render(<Game data-testid={TEST_ID} />);
+it("should default to EASY if no initial configuration is supplied", () => {
+  setUp();
 
-  const testGame = getByTestId(TEST_ID);
-  expect(testGame).toBeTruthy();
+  const cells = document.querySelectorAll(".cell");
+  expect(cells.length).toBe(CONFIG_EASY.x * CONFIG_EASY.y);
+});
 
-  const cell = document.querySelector(".cell");
-  if (!cell) throw new Error("No cells!");
+it("should accept an optional initial configuartion", () => {
+  setUp({ initialConfig: CONFIG_DEFAULT });
 
-  seedRandom(1337);
+  const cells = document.querySelectorAll(".cell");
+  expect(cells.length).toBe(0);
+});
 
-  fireEvent.click(cell);
+describe("The 'New Game' IPC channel", () => {
+  it('should reset on "new game"', () => {
+    setUp();
 
-  // Make sure there are revealed cells before we reconfigure the board.
-  const revealedCells = document.querySelectorAll(".revealed");
-  expect(revealedCells.length).toBe(53);
+    const cell = document.querySelector(".cell");
+    if (!cell) throw new Error("No cells!");
 
-  act(() => {
-    ipcRenderer.send(IPC_MESSAGE.NEW_GAME);
+    seedRandom(1337);
+
+    fireEvent.click(cell);
+
+    // Make sure there are revealed cells before we reconfigure the board.
+    const revealedCells = document.querySelectorAll(".revealed");
+    expect(revealedCells.length).toBe(53);
+
+    act(() => {
+      ipcRenderer.send(IPC_MESSAGE.NEW_GAME);
+    });
+
+    expect(document.querySelectorAll(".revealed").length).toBe(0);
   });
 
-  expect(document.querySelectorAll(".revealed").length).toBe(0);
+  it("should be cleaned up on unmounting", () => {
+    const { unmount } = setUp();
+
+    // @ts-ignore
+    expect(ipcRenderer._channels[IPC_MESSAGE.NEW_GAME]?.length).not.toBe(0);
+
+    act(() => {
+      unmount();
+    });
+
+    // @ts-ignore
+    expect(ipcRenderer._channels[IPC_MESSAGE.NEW_GAME]?.length).toBe(0);
+  });
+});
+
+// Convenience function to encaspulate the logic of testing the behavior when
+//  a difficulty IPC channel gets pinged.
+function difficultyTest(channel: string, config: MinesweeperConfig) {
+  setUp({ initialConfig: CONFIG_DEFAULT });
+
+  // Ensure the default configuration was used (for sanity).
+  let cells = document.querySelectorAll(".cell");
+  expect(cells.length).toBe(0);
+
+  act(() => {
+    ipcRenderer.send(channel);
+  });
+
+  // Verify the game was reconfigured appropriately.
+  cells = document.querySelectorAll(".cell");
+  expect(cells.length).toBe(config.x * config.y);
+}
+
+describe("The 'Beginner' IPC channel", () => {
+  it("should reconfigure the board using the EASY configuration", () => {
+    difficultyTest(IPC_MESSAGE.DIFFICULTY_BEGINNER, CONFIG_EASY);
+  });
+
+  it("should be cleaned up on unmounting", () => {
+    const { unmount } = setUp({ initialConfig: CONFIG_DEFAULT });
+
+    expect(
+      // @ts-ignore
+      ipcRenderer._channels[IPC_MESSAGE.DIFFICULTY_BEGINNER]?.length
+    ).not.toBe(0);
+
+    act(() => {
+      unmount();
+    });
+
+    // @ts-ignore
+    expect(ipcRenderer._channels[IPC_MESSAGE.DIFFICULTY_BEGINNER]?.length).toBe(
+      0
+    );
+  });
+});
+
+describe("The 'Intermediate' IPC channel", () => {
+  it("should reconfigure the board using the INTERMEDIATE configuration", () => {
+    difficultyTest(IPC_MESSAGE.DIFFICULTY_INTERMEDIATE, CONFIG_INTERMEDIATE);
+  });
+
+  it("should be cleaned up on unmounting", () => {
+    const { unmount } = setUp({ initialConfig: CONFIG_DEFAULT });
+
+    expect(
+      // @ts-ignore
+      ipcRenderer._channels[IPC_MESSAGE.DIFFICULTY_INTERMEDIATE]?.length
+    ).not.toBe(0);
+
+    act(() => {
+      unmount();
+    });
+
+    expect(
+      // @ts-ignore
+      ipcRenderer._channels[IPC_MESSAGE.DIFFICULTY_INTERMEDIATE]?.length
+    ).toBe(0);
+  });
+});
+
+describe("The 'Expert' IPC channel", () => {
+  it("should reconfigure the board using the EXPERT configuration", () => {
+    difficultyTest(IPC_MESSAGE.DIFFICULTY_EXPERT, CONFIG_EXPERT);
+  });
+
+  it("should be cleaned up on unmounting", () => {
+    const { unmount } = setUp({ initialConfig: CONFIG_DEFAULT });
+
+    expect(
+      // @ts-ignore
+      ipcRenderer._channels[IPC_MESSAGE.DIFFICULTY_EXPERT]?.length
+    ).not.toBe(0);
+
+    act(() => {
+      unmount();
+    });
+
+    expect(
+      // @ts-ignore
+      ipcRenderer._channels[IPC_MESSAGE.DIFFICULTY_EXPERT]?.length
+    ).toBe(0);
+  });
 });

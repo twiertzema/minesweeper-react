@@ -7,9 +7,6 @@ import {
   CONFIG_INTERMEDIATE,
   CONFIG_EXPERT,
 } from "../lib/constants";
-
-import { IPC_MESSAGE } from "../electron";
-
 import {
   init,
   reducer as boardReducer,
@@ -17,19 +14,37 @@ import {
   revealCell,
   turnCellState,
 } from "../logic/board";
+import { IPC_MESSAGE } from "../electron";
+import { MinesweeperConfig } from "../types";
 
 import Board from "./Board";
 import Tray from "./Tray";
 
-const Game: React.FC<HTMLAttributes<HTMLElement>> = (props) => {
-  const [state, dispatch] = useReducer(boardReducer, CONFIG_EASY, init);
+export interface GameProps extends HTMLAttributes<HTMLElement> {
+  initialConfig?: MinesweeperConfig;
+}
+
+const Game: React.FC<GameProps> = ({ initialConfig, ...props }) => {
+  const [state, dispatch] = useReducer(
+    boardReducer,
+    initialConfig ?? CONFIG_EASY,
+    init
+  );
 
   useEffect(() => {
+    // If the provided `config` is different than the current one, reconfigures
+    //  the board.
+    function changeConfig(config: MinesweeperConfig) {
+      // This won't catch duplicate custom configs, but that's probably fine.
+      if (state.config !== config) {
+        dispatch(reconfigureBoard(config));
+      }
+    }
+
     // Set up listeners for IPC channels from the main process.
-    const beginnerListener = () => dispatch(reconfigureBoard(CONFIG_EASY));
-    const expertListener = () => dispatch(reconfigureBoard(CONFIG_EXPERT));
-    const intermediateListener = () =>
-      dispatch(reconfigureBoard(CONFIG_INTERMEDIATE));
+    const beginnerListener = () => changeConfig(CONFIG_EASY);
+    const expertListener = () => changeConfig(CONFIG_EXPERT);
+    const intermediateListener = () => changeConfig(CONFIG_INTERMEDIATE);
     const newGameListener = () => dispatch(reconfigureBoard(state.config));
 
     ipcRenderer.on(IPC_MESSAGE.DIFFICULTY_BEGINNER, beginnerListener);

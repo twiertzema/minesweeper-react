@@ -53,9 +53,9 @@ class TestIpcRenderer {
     const event: TestIpcRendererEvent = {
       preventDefault: () => {},
       sender: this,
-      senderId: 0
+      senderId: 0,
     };
-    this._channels[channel]?.forEach(listener => listener(event, ...args));
+    this._channels[channel]?.forEach((listener) => listener(event, ...args));
   }
 
   sendSync: never;
