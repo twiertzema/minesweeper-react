@@ -184,3 +184,29 @@ describe("The 'Expert' IPC channel", () => {
     ).toBe(0);
   });
 });
+
+it("should allow switching back and forth between difficulties", () => {
+  setUp({ initialConfig: CONFIG_EASY });
+
+  // Ensure the easy configuration was used (for sanity).
+  let cells = document.querySelectorAll(".cell");
+  expect(cells.length).toBe(CONFIG_EASY.x * CONFIG_EASY.y);
+
+  // Switch difficulty.
+  act(() => {
+    ipcRenderer.send(IPC_MESSAGE.DIFFICULTY_INTERMEDIATE);
+  });
+
+  // Verify the game was reconfigured appropriately.
+  cells = document.querySelectorAll(".cell");
+  expect(cells.length).toBe(CONFIG_INTERMEDIATE.x * CONFIG_INTERMEDIATE.y);
+
+  // Switch difficult back.
+  act(() => {
+    ipcRenderer.send(IPC_MESSAGE.DIFFICULTY_BEGINNER);
+  });
+
+  // Verify it switched back to the original difficulty.
+  cells = document.querySelectorAll(".cell");
+  expect(cells.length).toBe(CONFIG_EASY.x * CONFIG_EASY.y);
+});

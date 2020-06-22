@@ -32,19 +32,11 @@ const Game: React.FC<GameProps> = ({ initialConfig, ...props }) => {
   );
 
   useEffect(() => {
-    // If the provided `config` is different than the current one, reconfigures
-    //  the board.
-    function changeConfig(config: MinesweeperConfig) {
-      // This won't catch duplicate custom configs, but that's probably fine.
-      if (state.config !== config) {
-        dispatch(reconfigureBoard(config));
-      }
-    }
-
     // Set up listeners for IPC channels from the main process.
-    const beginnerListener = () => changeConfig(CONFIG_EASY);
-    const expertListener = () => changeConfig(CONFIG_EXPERT);
-    const intermediateListener = () => changeConfig(CONFIG_INTERMEDIATE);
+    const beginnerListener = () => dispatch(reconfigureBoard(CONFIG_EASY));
+    const expertListener = () => dispatch(reconfigureBoard(CONFIG_EXPERT));
+    const intermediateListener = () =>
+      dispatch(reconfigureBoard(CONFIG_INTERMEDIATE));
     const newGameListener = () => dispatch(reconfigureBoard(state.config));
 
     ipcRenderer.on(IPC_MESSAGE.DIFFICULTY_BEGINNER, beginnerListener);
