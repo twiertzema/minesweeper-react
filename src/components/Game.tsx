@@ -2,8 +2,12 @@ import { ipcRenderer } from "electron";
 import React, { useReducer, useEffect, HTMLAttributes } from "react";
 import { castDraft } from "immer";
 
-import { CONFIG_EASY, IPC_MESSAGE } from "../lib/constants";
-
+import assert from "../lib/assert";
+import {
+  CONFIG_EASY,
+  CONFIG_INTERMEDIATE,
+  CONFIG_EXPERT,
+} from "../lib/constants";
 import {
   init,
   reducer as boardReducer,
@@ -11,23 +15,78 @@ import {
   revealCell,
   turnCellState,
 } from "../logic/board";
+import { IPC_CHANNEL_MAIN, IPC_CHANNEL_RENDERER } from "../electron";
+import { MinesweeperConfig } from "../types";
 
 import Board from "./Board";
 import Tray from "./Tray";
 
-const Game: React.FC<HTMLAttributes<HTMLElement>> = (props) => {
-  const [state, dispatch] = useReducer(boardReducer, CONFIG_EASY, init);
+const TRAY_ID = "minesweeper-game-tray";
+
+export interface GameProps extends HTMLAttributes<HTMLElement> {
+  initialConfig?: MinesweeperConfig;
+}
+
+const Game: React.FC<GameProps> = ({ initialConfig, ...props }) => {
+  const [state, dispatch] = useReducer(
+    boardReducer,
+    initialConfig ?? CONFIG_EASY,
+    init
+  );
+
+  function changeDifficulty(config: MinesweeperConfig) {
+    // Change the game's underlying configuration.
+    dispatch(reconfigureBoard(config));
+
+    // Then resize the application window based on the new content size.
+    const trayElement = document.getElementById(TRAY_ID);
+    assert(trayElement);
+
+    const windowRect = trayElement.getBoundingClientRect();
+
+    // Send the message to the main process to resize the application window.
+    // - We need to let the main process handle this (as opposed to importing
+    //   `remote`) because Electron doesn't take the application menu into
+    //   account when setting the content size.
+    ipcRenderer.send(
+      IPC_CHANNEL_MAIN.RESIZE_WINDOW,
+      windowRect.width,
+      windowRect.height
+    );
+  }
 
   useEffect(() => {
-    const newGameListener = () => {
-      dispatch(reconfigureBoard(state.config));
-    };
+    // Set up listeners for IPC channels from the main process.
+    const beginnerListener = () => changeDifficulty(CONFIG_EASY);
+    const expertListener = () => changeDifficulty(CONFIG_EXPERT);
+    const intermediateListener = () => changeDifficulty(CONFIG_INTERMEDIATE);
+    const newGameListener = () => dispatch(reconfigureBoard(state.config));
 
-    // Listen for the "new game" message from the main process.
-    ipcRenderer.on(IPC_MESSAGE.NEW_GAME, newGameListener);
+    ipcRenderer.on(IPC_CHANNEL_RENDERER.DIFFICULTY_BEGINNER, beginnerListener);
+    ipcRenderer.on(IPC_CHANNEL_RENDERER.DIFFICULTY_EXPERT, expertListener);
+    ipcRenderer.on(
+      IPC_CHANNEL_RENDERER.DIFFICULTY_INTERMEDIATE,
+      intermediateListener
+    );
+    ipcRenderer.on(IPC_CHANNEL_RENDERER.NEW_GAME, newGameListener);
 
     return () => {
-      ipcRenderer.removeListener(IPC_MESSAGE.NEW_GAME, newGameListener);
+      ipcRenderer.removeListener(
+        IPC_CHANNEL_RENDERER.DIFFICULTY_BEGINNER,
+        beginnerListener
+      );
+      ipcRenderer.removeListener(
+        IPC_CHANNEL_RENDERER.DIFFICULTY_EXPERT,
+        expertListener
+      );
+      ipcRenderer.removeListener(
+        IPC_CHANNEL_RENDERER.DIFFICULTY_INTERMEDIATE,
+        intermediateListener
+      );
+      ipcRenderer.removeListener(
+        IPC_CHANNEL_RENDERER.NEW_GAME,
+        newGameListener
+      );
     };
   }, []);
 
@@ -36,6 +95,7 @@ const Game: React.FC<HTMLAttributes<HTMLElement>> = (props) => {
       {...props}
       board={castDraft(state.board)}
       gameState={state.gameState}
+      id={TRAY_ID}
       onSmileyClick={() => dispatch(reconfigureBoard(state.config))}
     >
       <Board

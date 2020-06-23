@@ -1,4 +1,4 @@
-import React, { useMemo, useReducer } from "react";
+import React, { useMemo } from "react";
 
 import { GAME_STATE } from "../lib/constants";
 
@@ -35,6 +35,7 @@ const Board: React.FC<BoardProps> = ({
     }
   };
 
+  // Functional styling.
   const tableStyle = useMemo(() => ({ borderSpacing: 0, ...style }), [style]);
 
   return (
