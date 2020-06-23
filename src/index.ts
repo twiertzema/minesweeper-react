@@ -1,6 +1,8 @@
-import { app, BrowserWindow, Menu } from "electron";
+import { BrowserWindow, Menu, app, ipcMain } from "electron";
 
 import { getMenuTemplate } from "./main/menu";
+
+import { IPC_CHANNEL_MAIN } from "./electron";
 
 declare const MAIN_WINDOW_WEBPACK_ENTRY: any;
 
@@ -11,16 +13,26 @@ if (require("electron-squirrel-startup")) {
 
 const isMac = process.platform === "darwin";
 
+const INITIAL_HEIGHT = 600;
+const INITIAL_WIDTH = 800;
+
+// Need this to truly calculate content size (barf).
+// - To be determined after "did-finish-load".
+let menuHeight = 0;
+
 const createWindow = () => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    height: 600,
+    height: INITIAL_HEIGHT,
+    resizable: false,
+    useContentSize: true,
     webPreferences: {
       nodeIntegration: true,
     },
-    width: 800,
+    width: INITIAL_WIDTH,
   });
 
+  // Set up the menu.
   const menuTemplate = getMenuTemplate(mainWindow);
 
   if (isMac) {
@@ -30,11 +42,27 @@ const createWindow = () => {
   const menu = Menu.buildFromTemplate(menuTemplate);
   Menu.setApplicationMenu(menu);
 
-  // and load the index.html of the app.
+  // IPC listeners.
+  ipcMain.on(IPC_CHANNEL_MAIN.RESIZE_WINDOW, (event, width, height) => {
+    // Need to take the menu's height into account here (good grief).
+    const trueHeight = height + menuHeight;
+
+    // NOTE: Does NOT take the menu's height into account (*facepalm*).
+    mainWindow.setContentSize(width, trueHeight);
+  });
+
+  // Load the index.html of the app.
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
+  // Window lifecycle event listeners.
+  mainWindow.webContents.on("did-finish-load", () => {
+    // Calculate the invisible pixels getting eaten by the menu.
+    const contentSize = mainWindow.getContentSize();
+    menuHeight = INITIAL_HEIGHT - contentSize[1];
+  });
+
   // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
 };
 
 // This method will be called when Electron has finished

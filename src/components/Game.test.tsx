@@ -16,7 +16,7 @@ import {
   CONFIG_EXPERT,
 } from "../lib/constants";
 
-import { IPC_MESSAGE } from "../electron";
+import { IPC_CHANNEL_RENDERER } from "../electron";
 import { MinesweeperConfig } from "../types";
 
 import Game, { GameProps } from "./Game";
@@ -74,7 +74,8 @@ describe("The 'New Game' IPC channel", () => {
     expect(revealedCells.length).toBe(53);
 
     act(() => {
-      ipcRenderer.send(IPC_MESSAGE.NEW_GAME);
+      // @ts-ignore
+      ipcRenderer._simulate(IPC_CHANNEL_RENDERER.NEW_GAME);
     });
 
     expect(document.querySelectorAll(".revealed").length).toBe(0);
@@ -84,14 +85,14 @@ describe("The 'New Game' IPC channel", () => {
     const { unmount } = setUp();
 
     // @ts-ignore
-    expect(ipcRenderer._channels[IPC_MESSAGE.NEW_GAME]?.length).not.toBe(0);
+    expect(ipcRenderer._channels[IPC_CHANNEL_RENDERER.NEW_GAME]?.length).not.toBe(0);
 
     act(() => {
       unmount();
     });
 
     // @ts-ignore
-    expect(ipcRenderer._channels[IPC_MESSAGE.NEW_GAME]?.length).toBe(0);
+    expect(ipcRenderer._channels[IPC_CHANNEL_RENDERER.NEW_GAME]?.length).toBe(0);
   });
 });
 
@@ -105,7 +106,8 @@ function difficultyTest(channel: string, config: MinesweeperConfig) {
   expect(cells.length).toBe(0);
 
   act(() => {
-    ipcRenderer.send(channel);
+    // @ts-ignore
+    ipcRenderer._simulate(channel);
   });
 
   // Verify the game was reconfigured appropriately.
@@ -115,7 +117,7 @@ function difficultyTest(channel: string, config: MinesweeperConfig) {
 
 describe("The 'Beginner' IPC channel", () => {
   it("should reconfigure the board using the EASY configuration", () => {
-    difficultyTest(IPC_MESSAGE.DIFFICULTY_BEGINNER, CONFIG_EASY);
+    difficultyTest(IPC_CHANNEL_RENDERER.DIFFICULTY_BEGINNER, CONFIG_EASY);
   });
 
   it("should be cleaned up on unmounting", () => {
@@ -123,7 +125,7 @@ describe("The 'Beginner' IPC channel", () => {
 
     expect(
       // @ts-ignore
-      ipcRenderer._channels[IPC_MESSAGE.DIFFICULTY_BEGINNER]?.length
+      ipcRenderer._channels[IPC_CHANNEL_RENDERER.DIFFICULTY_BEGINNER]?.length
     ).not.toBe(0);
 
     act(() => {
@@ -131,7 +133,7 @@ describe("The 'Beginner' IPC channel", () => {
     });
 
     // @ts-ignore
-    expect(ipcRenderer._channels[IPC_MESSAGE.DIFFICULTY_BEGINNER]?.length).toBe(
+    expect(ipcRenderer._channels[IPC_CHANNEL_RENDERER.DIFFICULTY_BEGINNER]?.length).toBe(
       0
     );
   });
@@ -139,7 +141,7 @@ describe("The 'Beginner' IPC channel", () => {
 
 describe("The 'Intermediate' IPC channel", () => {
   it("should reconfigure the board using the INTERMEDIATE configuration", () => {
-    difficultyTest(IPC_MESSAGE.DIFFICULTY_INTERMEDIATE, CONFIG_INTERMEDIATE);
+    difficultyTest(IPC_CHANNEL_RENDERER.DIFFICULTY_INTERMEDIATE, CONFIG_INTERMEDIATE);
   });
 
   it("should be cleaned up on unmounting", () => {
@@ -147,7 +149,7 @@ describe("The 'Intermediate' IPC channel", () => {
 
     expect(
       // @ts-ignore
-      ipcRenderer._channels[IPC_MESSAGE.DIFFICULTY_INTERMEDIATE]?.length
+      ipcRenderer._channels[IPC_CHANNEL_RENDERER.DIFFICULTY_INTERMEDIATE]?.length
     ).not.toBe(0);
 
     act(() => {
@@ -156,14 +158,14 @@ describe("The 'Intermediate' IPC channel", () => {
 
     expect(
       // @ts-ignore
-      ipcRenderer._channels[IPC_MESSAGE.DIFFICULTY_INTERMEDIATE]?.length
+      ipcRenderer._channels[IPC_CHANNEL_RENDERER.DIFFICULTY_INTERMEDIATE]?.length
     ).toBe(0);
   });
 });
 
 describe("The 'Expert' IPC channel", () => {
   it("should reconfigure the board using the EXPERT configuration", () => {
-    difficultyTest(IPC_MESSAGE.DIFFICULTY_EXPERT, CONFIG_EXPERT);
+    difficultyTest(IPC_CHANNEL_RENDERER.DIFFICULTY_EXPERT, CONFIG_EXPERT);
   });
 
   it("should be cleaned up on unmounting", () => {
@@ -171,7 +173,7 @@ describe("The 'Expert' IPC channel", () => {
 
     expect(
       // @ts-ignore
-      ipcRenderer._channels[IPC_MESSAGE.DIFFICULTY_EXPERT]?.length
+      ipcRenderer._channels[IPC_CHANNEL_RENDERER.DIFFICULTY_EXPERT]?.length
     ).not.toBe(0);
 
     act(() => {
@@ -180,7 +182,7 @@ describe("The 'Expert' IPC channel", () => {
 
     expect(
       // @ts-ignore
-      ipcRenderer._channels[IPC_MESSAGE.DIFFICULTY_EXPERT]?.length
+      ipcRenderer._channels[IPC_CHANNEL_RENDERER.DIFFICULTY_EXPERT]?.length
     ).toBe(0);
   });
 });
@@ -194,7 +196,8 @@ it("should allow switching back and forth between difficulties", () => {
 
   // Switch difficulty.
   act(() => {
-    ipcRenderer.send(IPC_MESSAGE.DIFFICULTY_INTERMEDIATE);
+    // @ts-ignore
+    ipcRenderer._simulate(IPC_CHANNEL_RENDERER.DIFFICULTY_INTERMEDIATE);
   });
 
   // Verify the game was reconfigured appropriately.
@@ -203,7 +206,8 @@ it("should allow switching back and forth between difficulties", () => {
 
   // Switch difficult back.
   act(() => {
-    ipcRenderer.send(IPC_MESSAGE.DIFFICULTY_BEGINNER);
+    // @ts-ignore
+    ipcRenderer._simulate(IPC_CHANNEL_RENDERER.DIFFICULTY_BEGINNER);
   });
 
   // Verify it switched back to the original difficulty.

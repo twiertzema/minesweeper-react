@@ -6,7 +6,7 @@
 }
 
 .container {
-  width: fit-content;
+  width: max-content;
   border: calc(4px * var(--size-scale)) solid var(--bg-color-light);
   padding: calc(6px * var(--size-scale));
   background-color: var(--bg-color-primary);

@@ -6,7 +6,7 @@ import {
   MenuItemConstructorOptions,
 } from "electron";
 
-import { IPC_MESSAGE, getSimpleIpcNotifier } from "../electron";
+import { IPC_CHANNEL_RENDERER, getSimpleIpcNotifier } from "../electron";
 
 enum MENU_ID {
   GAME = "game",
@@ -41,7 +41,7 @@ function uncheckMenuItem(menu: Menu, id: string) {
 export function getMenuTemplate(
   window: BrowserWindow
 ): MenuItemConstructorOptions[] {
-  function getDifficultyClickHandler(id: GAME_MENU_ID, channel: IPC_MESSAGE) {
+  function getDifficultyClickHandler(id: GAME_MENU_ID, channel: IPC_CHANNEL_RENDERER) {
     return (menuItem: MenuItem) => {
       const gameMenu = Menu.getApplicationMenu()?.items.find(
         ({ id }) => id === MENU_ID.GAME
@@ -86,7 +86,7 @@ export function getMenuTemplate(
         /* New */
         {
           accelerator: "F2",
-          click: getSimpleIpcNotifier(window, IPC_MESSAGE.NEW_GAME),
+          click: getSimpleIpcNotifier(window, IPC_CHANNEL_RENDERER.NEW_GAME),
           id: GAME_MENU_ID.NEW,
           label: "New",
         },
@@ -99,7 +99,7 @@ export function getMenuTemplate(
           checked: true,
           click: getDifficultyClickHandler(
             GAME_MENU_ID.DIFFICULTY_BEGINNER,
-            IPC_MESSAGE.DIFFICULTY_BEGINNER
+            IPC_CHANNEL_RENDERER.DIFFICULTY_BEGINNER
           ),
           id: GAME_MENU_ID.DIFFICULTY_BEGINNER,
           label: "Beginner",
@@ -108,7 +108,7 @@ export function getMenuTemplate(
         {
           click: getDifficultyClickHandler(
             GAME_MENU_ID.DIFFICULTY_INTERMEDIATE,
-            IPC_MESSAGE.DIFFICULTY_INTERMEDIATE
+            IPC_CHANNEL_RENDERER.DIFFICULTY_INTERMEDIATE
           ),
           id: GAME_MENU_ID.DIFFICULTY_INTERMEDIATE,
           label: "Intermediate",
@@ -117,7 +117,7 @@ export function getMenuTemplate(
         {
           click: getDifficultyClickHandler(
             GAME_MENU_ID.DIFFICULTY_EXPERT,
-            IPC_MESSAGE.DIFFICULTY_EXPERT
+            IPC_CHANNEL_RENDERER.DIFFICULTY_EXPERT
           ),
           id: GAME_MENU_ID.DIFFICULTY_EXPERT,
           label: "Expert",

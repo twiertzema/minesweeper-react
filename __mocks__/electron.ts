@@ -49,7 +49,9 @@ class TestIpcRenderer {
     }
   }
 
-  send(channel: string, ...args: any[]) {
+  send(channel: string, ...args: any[]) {}
+
+  _simulate(channel: string, ...args: any[]) {
     const event: TestIpcRendererEvent = {
       preventDefault: () => {},
       sender: this,
